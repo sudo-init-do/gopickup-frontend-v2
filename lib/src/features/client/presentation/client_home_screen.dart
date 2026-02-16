@@ -21,264 +21,195 @@ class ClientHomeScreen extends ConsumerWidget {
       ),
       extendBodyBehindAppBar: true, // Allow body to extend behind status bar
       body: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
-          // Custom Header
+          // Combined Header & Search Bar Sliver
           SliverToBoxAdapter(
-            child: Stack(
+            child: Column(
               children: [
-                // Green Gradient Background
-                Container(
-                  height: 340, // Extended height
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF3B7D23), // Primary Green
-                        Color(0xFF4CA634), // Lighter Green
-                      ],
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Green Gradient Background
+                    Container(
+                      height: 300,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF3B7D23),
+                            Color(0xFF4CA634),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(32),
+                        ),
+                      ),
                     ),
-                    borderRadius: BorderRadius.vertical(
-                      bottom: Radius.circular(32),
+                    // Decorative Circles
+                    Positioned(
+                      top: -50,
+                      right: -50,
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                // Decorative Circles
-                Positioned(
-                  top: -50,
-                  right: -50,
-                  child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
-                      shape: BoxShape.circle,
+                    Positioned(
+                      top: 100,
+                      left: -30,
+                      child: Container(
+                        width: 150,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                Positioned(
-                  top: 100,
-                  left: -30,
-                  child: Container(
-                    width: 150,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-                // Header Content
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // Header Content
+                    SafeArea(
+                      bottom: false,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'GOOD MORNING',
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.9),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 1.2,
-                                      ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'GOOD MORNING',
+                                          style: TextStyle(
+                                            color: Colors.white.withOpacity(0.9),
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 1.2,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        const Text(
+                                          '👋',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 6),
+                                    const SizedBox(height: 8),
                                     const Text(
-                                      '👋',
-                                      style: TextStyle(fontSize: 14),
+                                      'Welcome back',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: -0.5,
+                                      ),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Welcome back',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: -0.5,
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.15),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(
+                                      Icons.notifications_outlined,
+                                      color: Colors.white,
+                                      size: 26,
+                                    ),
+                                    onPressed: () {},
+                                    padding: const EdgeInsets.all(10),
                                   ),
                                 ),
                               ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Stack(
+                            const SizedBox(height: 32),
+                            // Delivery Address Card
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(28),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: const Row(
                                 children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.15),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: IconButton(
-                                      icon: const Icon(
-                                        Icons.notifications_outlined,
-                                        color: Colors.white,
-                                        size: 26,
-                                      ),
-                                      onPressed: () {},
-                                      constraints: const BoxConstraints(),
-                                      padding: const EdgeInsets.all(10),
-                                      style: IconButton.styleFrom(
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                      ),
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'DELIVER TO',
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          'Add delivery address',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Positioned(
-                                    right: 12,
-                                    top: 12,
-                                    child: Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFEF4444),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: const Color(0xFF3B7D23),
-                                          width: 2,
-                                        ),
-                                      ),
-                                    ),
+                                  Icon(
+                                    Icons.chevron_right,
+                                    color: Colors.white,
+                                    size: 24,
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 32),
-                        // Delivery Address Card
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(28),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.2),
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.location_on_outlined,
-                                  color: Colors.white,
-                                  size: 22,
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'DELIVER TO',
-                                      style: TextStyle(
-                                        color: Colors.white.withOpacity(0.8),
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    const Text(
-                                      'Add delivery address',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Icon(
-                                Icons.chevron_right,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 48,
-                        ), // Space for search bar overlap
-                      ],
+                      ),
                     ),
+                  ],
+                ),
+                // Floating Search Bar with translation to overlap
+                Transform.translate(
+                  offset: const Offset(0, -28),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: _FloatingSearchBar(),
                   ),
                 ),
               ],
             ),
           ),
 
-          // Search Bar (Overlapping)
-          SliverToBoxAdapter(
-            child: Transform.translate(
-              offset: const Offset(0, -36),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(32),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    style: const TextStyle(fontSize: 16),
-                    decoration: InputDecoration(
-                      hintText: 'Search materials, vendors...',
-                      hintStyle: TextStyle(
-                        color: Colors.grey[400],
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 12),
-                        child: Icon(
-                          Icons.search,
-                          color: Colors.grey[400],
-                          size: 26,
-                        ),
-                      ),
-                      border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 18,
-                        horizontal: 20,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // Reset spacing for the content below
+          const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
           // Quick Actions Title
           SliverToBoxAdapter(
@@ -524,6 +455,80 @@ class ClientHomeScreen extends ConsumerWidget {
 
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
+      ),
+    );
+  }
+}
+
+class _FloatingSearchBar extends StatelessWidget {
+  const _FloatingSearchBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 12),
+          ),
+        ],
+      ),
+      child: TextField(
+        textAlignVertical: TextAlignVertical.center,
+        decoration: InputDecoration(
+          hintText: 'Search materials, vendors...',
+          hintStyle: TextStyle(
+            color: Colors.grey[400],
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
+          ),
+          prefixIcon: Padding(
+            padding: const EdgeInsets.only(left: 20, right: 12),
+            child: Icon(
+              Icons.search_rounded,
+              color: AppColors.primary,
+              size: 24,
+            ),
+          ),
+          suffixIcon: Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 24,
+                  width: 1,
+                  color: Colors.grey.withOpacity(0.2),
+                ),
+                const SizedBox(width: 4),
+                IconButton(
+                  icon: Icon(
+                    Icons.tune_rounded,
+                    color: AppColors.primary,
+                    size: 22,
+                  ),
+                  onPressed: () {},
+                ),
+              ],
+            ),
+          ),
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 18,
+          ),
+        ),
       ),
     );
   }
