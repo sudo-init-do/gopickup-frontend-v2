@@ -369,12 +369,24 @@ class _StepBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color bgColor;
+    Color contentColor;
+
+    if (isCompleted) {
+      bgColor = AppColors.primaryLight.withOpacity(0.5);
+      contentColor = AppColors.primary;
+    } else if (isActive) {
+      bgColor = AppColors.primary;
+      contentColor = Colors.white;
+    } else {
+      bgColor = const Color(0xFFF9FAFB);
+      contentColor = const Color(0xFF6B7280);
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: isCompleted 
-            ? AppColors.primaryLight.withOpacity(0.5) 
-            : (isActive ? AppColors.primary : const Color(0xFFF9FAFB)),
+        color: bgColor,
         borderRadius: BorderRadius.circular(20),
         border: isCompleted ? Border.all(color: AppColors.primary.withOpacity(0.2)) : null,
       ),
@@ -384,7 +396,7 @@ class _StepBubble extends StatelessWidget {
           Icon(
             icon,
             size: 18,
-            color: (isActive || isCompleted) ? AppColors.primary : const Color(0xFF6B7280),
+            color: contentColor,
           ),
           const SizedBox(width: 8),
           Text(
@@ -392,7 +404,7 @@ class _StepBubble extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: (isActive || isCompleted) ? AppColors.primary : const Color(0xFF6B7280),
+              color: contentColor,
             ),
           ),
         ],
