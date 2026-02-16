@@ -145,7 +145,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _isFormValid ? () => context.go('/roles') : null,
+                  onPressed: _isFormValid ? () => context.push('/verify?email=${_emailController.text}') : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     disabledBackgroundColor: AppColors.primarySage.withOpacity(0.5),

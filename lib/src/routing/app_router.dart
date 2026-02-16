@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/signup_screen.dart';
+import '../features/auth/presentation/otp_verification_screen.dart';
 import '../features/auth/presentation/role_picker_screen.dart';
 import '../features/client/presentation/client_home_screen.dart';
 import '../features/client/presentation/client_products_screen.dart';
@@ -31,6 +32,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(path: '/', builder: (context, state) => const LoginScreen()),
       GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
+      GoRoute(
+        path: '/verify',
+        builder: (context, state) {
+          final email = state.uri.queryParameters['email'] ?? '';
+          return OtpVerificationScreen(email: email);
+        },
+      ),
       GoRoute(
         path: '/roles',
         builder: (context, state) => const RolePickerScreen(),
