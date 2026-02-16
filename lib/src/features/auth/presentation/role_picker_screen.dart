@@ -138,7 +138,7 @@ class _RolePickerScreenState extends State<RolePickerScreen> {
                       ? () {
                           // Navigate based on role
                           if (_selectedRole == 'Client') {
-                            context.go('/client');
+                            context.push('/complete-profile');
                           } else if (_selectedRole == 'Driver') {
                             context.go('/driver');
                           } else {
