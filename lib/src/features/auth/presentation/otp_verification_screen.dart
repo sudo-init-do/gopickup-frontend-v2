@@ -142,6 +142,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
                         counterText: "",
+                        contentPadding: EdgeInsets.zero,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25),
                           borderSide: BorderSide(color: Colors.grey.shade200, width: 1.5),

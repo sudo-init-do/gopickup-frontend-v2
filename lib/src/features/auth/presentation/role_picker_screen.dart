@@ -3,128 +3,313 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
 
-class RolePickerScreen extends ConsumerWidget {
+class RolePickerScreen extends StatefulWidget {
   const RolePickerScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  State<RolePickerScreen> createState() => _RolePickerScreenState();
+}
+
+class _RolePickerScreenState extends State<RolePickerScreen> {
+  String? _selectedRole;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 48),
-              Text(
-                'Welcome to\nGoPickup Unity',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 48),
-              Text(
-                'Choose your role',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(color: Colors.white70),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              Expanded(
-                child: ListView(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _RoleCard(
+                    const SizedBox(height: 40),
+                    // Logo and Name
+                    Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: const BoxDecoration(
+                            color: AppColors.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.local_shipping,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Go Pickup',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF1F2937),
+                              ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 48),
+                    // Title
+                    const Text(
+                      'Choose your role',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1F2937),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Subtitle
+                    const Text(
+                      'Select how you want to use Go Pickup',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF6B7280),
+                        letterSpacing: 0.1,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    // Role Cards
+                    _RoleOptionCard(
                       title: 'Client',
-                      subtitle: 'Book deliveries & buy materials',
+                      subtitle: 'Buy materials & book deliveries',
                       icon: Icons.person_outline,
-                      onTap: () => context.go('/client'),
+                      iconColor: const Color(0xFF3B82F6),
+                      iconBgColor: const Color(0xFFEFF6FF),
+                      tags: const [
+                        'Browse marketplace',
+                        'Post loads',
+                        'Track deliveries',
+                        'Manage payments'
+                      ],
+                      isSelected: _selectedRole == 'Client',
+                      onTap: () => setState(() => _selectedRole = 'Client'),
                     ),
                     const SizedBox(height: 16),
-                    _RoleCard(
+                    _RoleOptionCard(
                       title: 'Driver',
-                      subtitle: 'Find loads & earn money',
+                      subtitle: 'Deliver loads & earn money',
                       icon: Icons.local_shipping_outlined,
-                      onTap: () => context.go('/driver'),
+                      iconColor: const Color(0xFFF97316),
+                      iconBgColor: const Color(0xFFFFF7ED),
+                      tags: const [
+                        'Accept jobs',
+                        'Bid on loads',
+                        'Navigate routes',
+                        'Track earnings'
+                      ],
+                      isSelected: _selectedRole == 'Driver',
+                      onTap: () => setState(() => _selectedRole = 'Driver'),
                     ),
                     const SizedBox(height: 16),
-                    _RoleCard(
+                    _RoleOptionCard(
                       title: 'Vendor',
-                      subtitle: 'Sell materials & manage inventory',
+                      subtitle: 'Sell your products online',
                       icon: Icons.store_outlined,
-                      onTap: () => context.go('/vendor'),
+                      iconColor: const Color(0xFFA855F7),
+                      iconBgColor: const Color(0xFFFAF5FF),
+                      tags: const [
+                        'List products',
+                        'Manage inventory',
+                        'Process orders',
+                        'Receive payments'
+                      ],
+                      isSelected: _selectedRole == 'Vendor',
+                      onTap: () => setState(() => _selectedRole = 'Vendor'),
                     ),
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            // Continue Button at the bottom
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _selectedRole != null
+                      ? () {
+                          // Navigate based on role
+                          if (_selectedRole == 'Client') {
+                            context.go('/client');
+                          } else if (_selectedRole == 'Driver') {
+                            context.go('/driver');
+                          } else {
+                            context.go('/vendor');
+                          }
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B7D23),
+                    disabledBackgroundColor: const Color(0xFF3B7D23).withOpacity(0.5),
+                    foregroundColor: Colors.white,
+                    disabledForegroundColor: Colors.white.withOpacity(0.7),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text(
+                        'Continue',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.arrow_forward_rounded, size: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _RoleCard extends StatelessWidget {
+class _RoleOptionCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
+  final Color iconColor;
+  final Color iconBgColor;
+  final List<String> tags;
+  final bool isSelected;
   final VoidCallback onTap;
 
-  const _RoleCard({
+  const _RoleOptionCard({
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.iconColor,
+    required this.iconBgColor,
+    required this.tags,
+    required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: AppColors.primary, size: 32),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryDark,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
-            ],
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(
+            color: isSelected ? Colors.black : const Color(0xFFF3F4F6),
+            width: isSelected ? 2 : 1.5,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  )
+                ]
+              : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: iconBgColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: iconColor, size: 28),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1F2937),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF6B7280),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected ? const Color(0xFF4CAF50) : Colors.transparent,
+                    border: Border.all(
+                      color: isSelected ? const Color(0xFF4CAF50) : const Color(0xFFD1D5DB),
+                      width: 2,
+                    ),
+                  ),
+                  child: isSelected
+                      ? const Icon(Icons.check, color: Colors.white, size: 16)
+                      : null,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: tags.map((tag) => _FeatureTag(tag: tag)).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FeatureTag extends StatelessWidget {
+  final String tag;
+  const _FeatureTag({required this.tag});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        tag,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF4B5563),
         ),
       ),
     );
