@@ -237,9 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 height: 56,
                 child: OutlinedButton(
-                  onPressed: () {
-                    // Navigate to sign up
-                  },
+                  onPressed: () => context.push('/signup'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.black87,
                     side: BorderSide(color: Colors.grey.shade300),
