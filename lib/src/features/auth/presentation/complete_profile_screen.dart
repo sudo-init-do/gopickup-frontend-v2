@@ -20,6 +20,15 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _nameController.dispose();
+    _addressController.dispose();
+    _cityController.dispose();
+    super.dispose();
+  }
+
   bool get _isProfileValid => _nameController.text.trim().length >= 3;
   bool get _isAddressValid => 
       _addressController.text.trim().isNotEmpty && 
@@ -260,7 +269,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               border: Border.all(color: Colors.white, width: 4),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: Colors.black.withOpacity(0.03),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
