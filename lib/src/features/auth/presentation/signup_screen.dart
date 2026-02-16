@@ -11,12 +11,13 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   bool _isFormValid = false;
 
   void _validateForm() {
     setState(() {
-      _isFormValid = _phoneController.text.length >= 10;
+      // Simple email validation
+      _isFormValid = _emailController.text.contains('@') && _emailController.text.contains('.');
     });
   }
 
@@ -70,7 +71,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 12),
               // Subtext
               const Text(
-                'Enter your phone number to get started',
+                'Enter your email address to get started',
                 style: TextStyle(
                   fontSize: 16,
                   color: Color(0xFF6B7280),
@@ -78,39 +79,29 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-              // Phone Input
+              // Email Input
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFFF3F4F6), width: 1.5),
+                  border: Border.all(
+                    color: _isFormValid ? AppColors.primary : const Color(0xFFF3F4F6),
+                    width: 1.5,
+                  ),
                 ),
                 child: TextField(
-                  controller: _phoneController,
+                  controller: _emailController,
                   onChanged: (_) => _validateForm(),
-                  keyboardType: TextInputType.phone,
+                  keyboardType: TextInputType.emailAddress,
                   style: const TextStyle(fontSize: 16),
-                  decoration: InputDecoration(
-                    hintText: 'Phone number',
-                    hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
-                    prefixIcon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(width: 20),
-                        const Icon(Icons.phone_outlined, color: Color(0xFF6B7280), size: 20),
-                        const SizedBox(width: 12),
-                        const Text(
-                          '+1',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF6B7280),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                      ],
+                  decoration: const InputDecoration(
+                    hintText: 'Email address',
+                    hintStyle: TextStyle(color: Color(0xFF9CA3AF)),
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Icon(Icons.mail_outline, color: Color(0xFF6B7280), size: 20),
                     ),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 20),
+                    contentPadding: EdgeInsets.symmetric(vertical: 20),
                   ),
                 ),
               ),
@@ -156,17 +147,18 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: ElevatedButton(
                   onPressed: _isFormValid ? () => context.go('/roles') : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF98BF8F), // Faded green from design
-                    disabledBackgroundColor: const Color(0xFF98BF8F).withOpacity(0.5),
+                    backgroundColor: AppColors.primary,
+                    disabledBackgroundColor: AppColors.primarySage.withOpacity(0.5),
                     foregroundColor: Colors.white,
+                    disabledForegroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Text(
                         'Send Code',
                         style: TextStyle(
