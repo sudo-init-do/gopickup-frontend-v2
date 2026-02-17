@@ -129,7 +129,7 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                 width: double.infinity,
                 height: 56,
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => setState(() => _hasAddress = true),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF1F2937),
                     side: const BorderSide(color: Color(0xFFF3F4F6)),
@@ -267,7 +267,7 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.62,
+                      childAspectRatio: 0.58,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
                     ),
