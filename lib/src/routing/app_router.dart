@@ -10,6 +10,7 @@ import '../features/client/presentation/client_home_screen.dart';
 import '../features/client/presentation/client_products_screen.dart';
 import '../features/client/presentation/client_orders_screen.dart';
 import '../features/client/presentation/client_profile_screen.dart';
+import '../features/client/presentation/client_cart_screen.dart';
 import '../features/client/presentation/order_detail_screen.dart';
 import '../features/driver/presentation/driver_home_screen.dart';
 import '../features/driver/presentation/driver_earnings_screen.dart';
@@ -100,6 +101,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/client/products',
             builder: (context, state) => const ClientProductsScreen(),
+          ),
+          GoRoute(
+            path: '/client/cart',
+            builder: (context, state) => const ClientCartScreen(),
           ),
           GoRoute(
             path: '/client/orders',
