@@ -91,13 +91,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
               NavigationItem(
                 unselectedIcon: Icons.chat_bubble_outline_rounded,
-                selectedIcon: Icons.chat_bubble_outline_rounded,
+                selectedIcon: Icons.chat_bubble_rounded,
                 label: 'Chat',
                 route: '/client/chat',
               ),
               NavigationItem(
                 unselectedIcon: Icons.account_balance_wallet_outlined,
-                selectedIcon: Icons.account_balance_wallet_outlined,
+                selectedIcon: Icons.account_balance_wallet_rounded,
                 label: 'Wallet',
                 route: '/client/wallet',
               ),

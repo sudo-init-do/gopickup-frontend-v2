@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../../common/styles/app_colors.dart';
 import 'chat_repository.dart';
 
 class ChatListScreen extends ConsumerWidget {
@@ -12,41 +11,227 @@ class ChatListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(chatsProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Messages')),
-      body: ListView.separated(
-        itemCount: chats.length,
-        separatorBuilder: (context, index) => const Divider(height: 1),
-        itemBuilder: (context, index) {
-          final chat = chats[index];
-          final otherUser = chat.participants.firstWhere((p) => p.id != 'me');
+    // Color constants for high-fidelity design
+    const kDarkTextColor = Color(0xFF111827);
+    const kMidTextColor = Color(0xFF6B7280);
+    const kLightTextColor = Color(0xFF9CA3AF);
+    const kBrandGreen = Color(0xFF3B7D23);
 
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor: AppColors.primaryLight,
-              child: Text(
-                otherUser.name[0],
-                style: const TextStyle(color: AppColors.primary),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9FAFB),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Section
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Messages',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w800,
+                      color: kDarkTextColor,
+                      letterSpacing: -1,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Search Bar
+                  Container(
+                    height: 54,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 15,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search conversations...',
+                        hintStyle: const TextStyle(
+                          color: kLightTextColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search_rounded,
+                          color: kMidTextColor,
+                          size: 24,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            title: Text(
-              otherUser.name,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            
+            // Conversations List
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                itemCount: chats.length,
+                itemBuilder: (context, index) {
+                  final chat = chats[index];
+                  final otherUser = chat.participants.firstWhere((p) => p.id != 'me');
+                  
+                  // Mock unread count for BuildMart Supplies to match mockup
+                  final hasUnread = otherUser.name == 'BuildMart Supplies';
+                  final unreadCount = hasUnread ? 2 : 0;
+
+                  return _ChatListItem(
+                    name: otherUser.name,
+                    lastMessage: chat.lastMessage,
+                    time: _formatDateTime(chat.lastUpdated),
+                    unreadCount: unreadCount,
+                    kDarkTextColor: kDarkTextColor,
+                    kMidTextColor: kMidTextColor,
+                    kLightTextColor: kLightTextColor,
+                    kBrandGreen: kBrandGreen,
+                    onTap: () => context.push('/chat/${chat.id}', extra: chat),
+                  );
+                },
+              ),
             ),
-            subtitle: Text(
-              chat.lastMessage,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inMinutes < 1) return 'Just now';
+    if (difference.inMinutes < 60) return '${difference.inMinutes} mins ago';
+    if (difference.inHours < 24) return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    if (difference.inDays == 1) return 'Yesterday';
+    return DateFormat('MMM d').format(dateTime);
+  }
+}
+
+class _ChatListItem extends StatelessWidget {
+  final String name;
+  final String lastMessage;
+  final String time;
+  final int unreadCount;
+  final Color kDarkTextColor;
+  final Color kMidTextColor;
+  final Color kLightTextColor;
+  final Color kBrandGreen;
+  final VoidCallback onTap;
+
+  const _ChatListItem({
+    required this.name,
+    required this.lastMessage,
+    required this.time,
+    required this.unreadCount,
+    required this.kDarkTextColor,
+    required this.kMidTextColor,
+    required this.kLightTextColor,
+    required this.kBrandGreen,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            // Avatar
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: kBrandGreen.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.person_outline_rounded,
+                color: kBrandGreen,
+                size: 28,
+              ),
             ),
-            trailing: Text(
-              DateFormat('h:mm a').format(chat.lastUpdated),
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            const SizedBox(width: 16),
+            // Message Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: unreadCount > 0 ? FontWeight.w800 : FontWeight.w700,
+                          color: kDarkTextColor,
+                        ),
+                      ),
+                      Text(
+                        time,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: unreadCount > 0 ? kDarkTextColor.withOpacity(0.6) : kLightTextColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          lastMessage,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: unreadCount > 0 ? FontWeight.w600 : FontWeight.w500,
+                            color: unreadCount > 0 ? kMidTextColor : kLightTextColor,
+                          ),
+                        ),
+                      ),
+                      if (unreadCount > 0)
+                        Container(
+                          margin: const EdgeInsets.only(left: 8),
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(
+                            color: kBrandGreen,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            unreadCount.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            onTap: () {
-              context.push('/chat/${chat.id}', extra: chat);
-            },
-          );
-        },
+          ],
+        ),
       ),
     );
   }

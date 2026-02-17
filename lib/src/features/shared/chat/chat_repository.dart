@@ -9,6 +9,29 @@ class ChatRepository {
       participants: [
         User(id: 'me', name: 'Me', role: UserRole.client),
         User(
+          id: 'v1',
+          name: 'BuildMart Supplies',
+          role: UserRole.vendor,
+          avatarUrl: '',
+        ),
+      ],
+      messages: [
+        Message(
+          id: 'm1',
+          senderId: 'v1',
+          content: 'Your order has been shipped!',
+          timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
+          isMe: false,
+        ),
+      ],
+      lastMessage: 'Your order has been shipped!',
+      lastUpdated: DateTime.now().subtract(const Duration(minutes: 2)),
+    ),
+    Chat(
+      id: 'chat-2',
+      participants: [
+        User(id: 'me', name: 'Me', role: UserRole.client),
+        User(
           id: 'd1',
           name: 'John Driver',
           role: UserRole.driver,
@@ -19,28 +42,21 @@ class ChatRepository {
         Message(
           id: 'm1',
           senderId: 'd1',
-          content: 'I will be there in 10 mins.',
-          timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
+          content: "I'll be there in 15 minutes",
+          timestamp: DateTime.now().subtract(const Duration(hours: 1)),
           isMe: false,
         ),
-        Message(
-          id: 'm2',
-          senderId: 'me',
-          content: 'Great, see you then.',
-          timestamp: DateTime.now().subtract(const Duration(minutes: 4)),
-          isMe: true,
-        ),
       ],
-      lastMessage: 'Great, see you then.',
-      lastUpdated: DateTime.now().subtract(const Duration(minutes: 4)),
+      lastMessage: "I'll be there in 15 minutes",
+      lastUpdated: DateTime.now().subtract(const Duration(hours: 1)),
     ),
     Chat(
-      id: 'chat-2',
+      id: 'chat-3',
       participants: [
         User(id: 'me', name: 'Me', role: UserRole.client),
         User(
-          id: 'v1',
-          name: 'Cement Supplier',
+          id: 'v2',
+          name: 'Steel Works Co.',
           role: UserRole.vendor,
           avatarUrl: '',
         ),
@@ -48,14 +64,14 @@ class ChatRepository {
       messages: [
         Message(
           id: 'm1',
-          senderId: 'v1',
-          content: 'Your order is ready for pickup.',
-          timestamp: DateTime.now().subtract(const Duration(hours: 1)),
+          senderId: 'v2',
+          content: 'Thank you for your order!',
+          timestamp: DateTime.now().subtract(const Duration(days: 1)),
           isMe: false,
         ),
       ],
-      lastMessage: 'Your order is ready for pickup.',
-      lastUpdated: DateTime.now().subtract(const Duration(hours: 1)),
+      lastMessage: 'Thank you for your order!',
+      lastUpdated: DateTime.now().subtract(const Duration(days: 1)),
     ),
   ];
 
