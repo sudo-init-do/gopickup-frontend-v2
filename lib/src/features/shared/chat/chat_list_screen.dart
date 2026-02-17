@@ -160,7 +160,7 @@ class _ChatListItem extends StatelessWidget {
                 color: kBrandGreen.withOpacity(0.08),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.person_outline_rounded,
                 color: kBrandGreen,
                 size: 28,
@@ -212,7 +212,7 @@ class _ChatListItem extends StatelessWidget {
                         Container(
                           margin: const EdgeInsets.only(left: 8),
                           padding: const EdgeInsets.all(6),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: kBrandGreen,
                             shape: BoxShape.circle,
                           ),
