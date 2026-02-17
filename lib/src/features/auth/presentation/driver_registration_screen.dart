@@ -10,27 +10,47 @@ class DriverRegistrationScreen extends StatefulWidget {
 }
 
 class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
-  final PageController _pageController = PageController();
+  late final PageController _pageController;
   int _currentStep = 0;
 
   // Form Controllers
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _addressController;
+  late final TextEditingController _licenseController;
+  late final TextEditingController _plateController;
+  String? _selectedVehicleType;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _nameController = TextEditingController();
+    _addressController = TextEditingController();
+    _licenseController = TextEditingController();
+    _plateController = TextEditingController();
+  }
 
   @override
   void dispose() {
     _pageController.dispose();
     _nameController.dispose();
     _addressController.dispose();
+    _licenseController.dispose();
+    _plateController.dispose();
     super.dispose();
   }
 
   bool get _isFormValid {
     if (_currentStep == 0) {
-      return _nameController.text.trim().isNotEmpty && 
-             _addressController.text.trim().isNotEmpty;
+      final name = _nameController.text.trim();
+      final address = _addressController.text.trim();
+      return name.isNotEmpty && address.isNotEmpty;
+    } else if (_currentStep == 1) {
+      return _licenseController.text.trim().isNotEmpty;
+    } else if (_currentStep == 2) {
+      return _selectedVehicleType != null && _plateController.text.trim().isNotEmpty;
     }
-    return true; // For other steps which are placeholders for now
+    return true; 
   }
 
   void _nextStep() {
@@ -63,7 +83,6 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 48),
-                    // Title and Subtitle
                     Text(
                       'Driver Registration',
                       style: TextStyle(
@@ -83,7 +102,6 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    // Tabs/Stepper
                     Row(
                       children: [
                         _buildTab(
@@ -98,7 +116,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
                           icon: Icons.badge_outlined,
                           label: 'License',
                           isActive: _currentStep == 1,
-                          isCompleted: _currentStep > 2,
+                          isCompleted: _currentStep > 1,
                           activeColor: kOrangeColor,
                         ),
                         _buildDivider(),
@@ -112,16 +130,15 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
                       ],
                     ),
                     const SizedBox(height: 40),
-                    // Page Content
                     SizedBox(
-                      height: 500, // Fixed height for simplicity in this version
+                      height: 500,
                       child: PageView(
                         controller: _pageController,
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
                           _buildProfileForm(kDarkTextColor, kMidTextColor, kOrangeColor),
-                          _buildPlaceholderStep('License Information'),
-                          _buildPlaceholderStep('Vehicle Details'),
+                          _buildLicenseForm(kDarkTextColor, kMidTextColor),
+                          _buildVehicleForm(kDarkTextColor, kMidTextColor, kOrangeColor),
                         ],
                       ),
                     ),
@@ -129,7 +146,6 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
                 ),
               ),
             ),
-            // Bottom Action Button
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: SizedBox(
@@ -177,8 +193,12 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
     required bool isCompleted,
     required Color activeColor,
   }) {
-    final bgColor = isActive ? activeColor : const Color(0xFFF3F4F6);
-    final contentColor = isActive ? Colors.white : const Color(0xFF94A3B8);
+    final bgColor = isCompleted 
+        ? const Color(0xFFE8F3E5) 
+        : (isActive ? activeColor : const Color(0xFFF3F4F6));
+    final contentColor = isCompleted 
+        ? const Color(0xFF3B7D23) 
+        : (isActive ? Colors.white : const Color(0xFF94A3B8));
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -189,7 +209,11 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 20, color: contentColor),
+          Icon(
+            isCompleted ? Icons.check_rounded : icon, 
+            size: 18, 
+            color: contentColor
+          ),
           const SizedBox(width: 8),
           Text(
             label,
@@ -218,15 +242,14 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Profile Photo Picker
         Center(
           child: Stack(
             children: [
               Container(
                 width: 120,
                 height: 120,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5F9),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF1F5F9),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -256,7 +279,6 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
           ),
         ),
         const SizedBox(height: 48),
-        // Name Field
         Text(
           'Full Name',
           style: TextStyle(
@@ -269,10 +291,8 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
         _buildTextField(
           controller: _nameController,
           hintText: 'Enter your full name',
-          onChanged: (value) => setState(() {}),
         ),
         const SizedBox(height: 32),
-        // Address Field
         Text(
           'Address',
           style: TextStyle(
@@ -285,7 +305,75 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
         _buildTextField(
           controller: _addressController,
           hintText: 'Enter your address',
-          onChanged: (value) => setState(() {}),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLicenseForm(Color darkText, Color midText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Driver's License Number",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: darkText,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildTextField(
+          controller: _licenseController,
+          hintText: 'Enter license number',
+        ),
+        const SizedBox(height: 32),
+        Text(
+          'Upload License Photo',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: darkText,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 40),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: const Color(0xFFD1D5DB), width: 1.5),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF3F4F6),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.file_upload_outlined, color: Color(0xFF6B7280), size: 28),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Upload license',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: darkText,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'PNG, JPG up to 5MB',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF9CA3AF),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -294,7 +382,6 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String hintText,
-    ValueChanged<String>? onChanged,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -304,13 +391,133 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
       ),
       child: TextField(
         controller: controller,
-        onChanged: onChanged,
+        onChanged: (_) => setState(() {}),
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w400),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVehicleForm(Color darkText, Color midText, Color orange) {
+    final vehicleTypes = [
+      {'title': 'Motorcycle', 'subtitle': 'Up to 50kg', 'icon': Icons.motorcycle_rounded},
+      {'title': 'Pickup', 'subtitle': 'Up to 500kg', 'icon': Icons.local_shipping_rounded},
+      {'title': 'Van', 'subtitle': 'Up to 1 ton', 'icon': Icons.airport_shuttle_rounded},
+      {'title': 'Truck', 'subtitle': 'Up to 5 tons', 'icon': Icons.fire_truck_rounded},
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Select Vehicle Type',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: darkText,
+          ),
+        ),
+        const SizedBox(height: 16),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1.2,
+          ),
+          itemCount: vehicleTypes.length,
+          itemBuilder: (context, index) {
+            final type = vehicleTypes[index];
+            final isSelected = _selectedVehicleType == type['title'];
+            return _buildVehicleCard(
+              title: type['title'] as String,
+              subtitle: type['subtitle'] as String,
+              icon: type['icon'] as IconData,
+              isSelected: isSelected,
+              activeColor: orange,
+            );
+          },
+        ),
+        const SizedBox(height: 32),
+        Text(
+          'Plate Number',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: darkText,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildTextField(
+          controller: _plateController,
+          hintText: 'Enter plate number',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVehicleCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required bool isSelected,
+    required Color activeColor,
+  }) {
+    return GestureDetector(
+      onTap: () => setState(() => _selectedVehicleType = title),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isSelected ? activeColor : const Color(0xFFF1F5F9),
+            width: isSelected ? 2 : 1.5,
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: activeColor.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
+                ]
+              : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? activeColor : const Color(0xFF94A3B8),
+              size: 28,
+            ),
+            const Spacer(),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF111827),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF94A3B8),
+              ),
+            ),
+          ],
         ),
       ),
     );
