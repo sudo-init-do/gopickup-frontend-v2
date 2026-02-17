@@ -405,10 +405,10 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
 
   Widget _buildVehicleForm(Color darkText, Color midText, Color orange) {
     final vehicleTypes = [
-      {'title': 'Motorcycle', 'subtitle': 'Up to 50kg', 'icon': Icons.motorcycle_rounded},
-      {'title': 'Pickup', 'subtitle': 'Up to 500kg', 'icon': Icons.local_shipping_rounded},
-      {'title': 'Van', 'subtitle': 'Up to 1 ton', 'icon': Icons.airport_shuttle_rounded},
-      {'title': 'Truck', 'subtitle': 'Up to 5 tons', 'icon': Icons.fire_truck_rounded},
+      {'title': 'Motorcycle', 'subtitle': 'Up to 50kg', 'icon': Icons.motorcycle},
+      {'title': 'Pickup', 'subtitle': 'Up to 500kg', 'icon': Icons.local_shipping},
+      {'title': 'Van', 'subtitle': 'Up to 1 ton', 'icon': Icons.airport_shuttle},
+      {'title': 'Truck', 'subtitle': 'Up to 5 tons', 'icon': Icons.fire_truck},
     ];
 
     return Column(
@@ -499,7 +499,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
               color: isSelected ? activeColor : const Color(0xFF94A3B8),
               size: 28,
             ),
-            const Spacer(),
+            const SizedBox(height: 12),
             Text(
               title,
               style: TextStyle(
