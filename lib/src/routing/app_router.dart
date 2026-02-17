@@ -98,6 +98,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const ClientHomeScreen(),
           ),
           GoRoute(
+            path: '/client/products',
+            builder: (context, state) => const ClientProductsScreen(),
+          ),
+          GoRoute(
             path: '/client/orders',
             builder: (context, state) => const ClientOrdersScreen(),
             routes: [

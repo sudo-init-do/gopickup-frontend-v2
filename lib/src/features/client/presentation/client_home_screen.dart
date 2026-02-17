@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../client/data/product_repository.dart';
 import '../../../common/models/product.dart';
@@ -234,11 +235,15 @@ class ClientHomeScreen extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 children: [
-                  _QuickActionCard(
-                    icon: Icons.shopping_bag_outlined,
-                    color: AppColors.primary,
-                    title: 'Buy Materials',
-                    subtitle: 'Verified vendors',
+                  InkWell(
+                    onTap: () => context.go('/client/products'),
+                    borderRadius: BorderRadius.circular(28),
+                    child: _QuickActionCard(
+                      icon: Icons.shopping_bag_outlined,
+                      color: AppColors.primary,
+                      title: 'Buy Materials',
+                      subtitle: 'Verified vendors',
+                    ),
                   ),
                   const SizedBox(width: 16),
                   _QuickActionCard(
