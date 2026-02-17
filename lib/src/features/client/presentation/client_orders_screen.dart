@@ -79,24 +79,26 @@ class ClientOrdersScreen extends ConsumerWidget {
 
     switch (order.status) {
       case OrderStatus.transit:
-        badgeColor = const Color(0xFFFFF7ED);
-        badgeTextColor = const Color(0xFFF97316);
+        badgeColor = const Color(0xFFFEF3C7);
+        badgeTextColor = const Color(0xFF92400E);
         statusText = 'In Transit';
         break;
       case OrderStatus.delivered:
-        badgeColor = const Color(0xFFECFDF5);
-        badgeTextColor = const Color(0xFF10B981);
+        badgeColor = const Color(0xFFDCFCE7);
+        badgeTextColor = const Color(0xFF166534);
         statusText = 'Delivered';
         break;
       case OrderStatus.processing:
         badgeColor = const Color(0xFFF0FDF4);
-        badgeTextColor = const Color(0xFF3B7D23);
+        badgeTextColor = const Color(0xFF15803D);
         statusText = 'Processing';
         break;
     }
 
-    // In a real app, these would come from the order model/vendor relation
-    final vendorName = order.items.isNotEmpty ? 'BuildMart Supplies' : 'General Vendor';
+    const kDarkTextColor = Color(0xFF111827);
+    const kMidTextColor = Color(0xFF6B7280);
+    const kLightTextColor = Color(0xFF9CA3AF);
+    const kBrandGreen = Color(0xFF3B7D23);
 
     return GestureDetector(
       onTap: () => context.push('/client/orders/${order.id}', extra: order),
@@ -128,8 +130,8 @@ class ClientOrdersScreen extends ConsumerWidget {
                   ),
                   child: const Icon(
                     Icons.inventory_2_outlined,
-                    color: Color(0xFF3B7D23),
-                    size: 28,
+                    color: kBrandGreen,
+                    size: 26,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -148,15 +150,16 @@ class ClientOrdersScreen extends ConsumerWidget {
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w900,
                                   fontSize: 18,
-                                  color: Color(0xFF1F2937),
+                                  color: kDarkTextColor,
                                   letterSpacing: -0.5,
                                 ),
                               ),
+                              const SizedBox(height: 2),
                               Text(
                                 DateFormat('MMM d, yyyy').format(order.placedAt),
                                 style: const TextStyle(
                                   fontSize: 13,
-                                  color: Color(0xFF9CA3AF),
+                                  color: kLightTextColor,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -184,21 +187,21 @@ class ClientOrdersScreen extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Column(
+                          const Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                vendorName,
-                                style: const TextStyle(
-                                  color: Color(0xFF6B7280),
+                                'BuildMart Supplies',
+                                style: TextStyle(
+                                  color: kMidTextColor,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               Text(
-                                '${order.items.length} items',
-                                style: const TextStyle(
-                                  color: Color(0xFF9CA3AF),
+                                '5 items',
+                                style: TextStyle(
+                                  color: kLightTextColor,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -212,7 +215,7 @@ class ClientOrdersScreen extends ConsumerWidget {
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,
-                                  color: Color(0xFF1F2937),
+                                  color: kDarkTextColor,
                                   letterSpacing: -0.5,
                                 ),
                               ),
@@ -231,32 +234,32 @@ class ClientOrdersScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            if (order.status != OrderStatus.delivered) ...[
+            if (statusText != 'Delivered') ...[
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Divider(color: Color(0xFFF3F4F6), height: 1),
               ),
-              Row(
+              const Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.access_time_rounded,
                     size: 18,
-                    color: Color(0xFF3B7D23),
+                    color: kBrandGreen,
                   ),
-                  const SizedBox(width: 8),
-                  const Text(
+                  SizedBox(width: 8),
+                  Text(
                     'ETA:',
                     style: TextStyle(
-                      color: Color(0xFF9CA3AF),
+                      color: kLightTextColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Text(
-                    order.status == OrderStatus.transit ? '2 hours' : 'Tomorrow',
-                    style: const TextStyle(
-                      color: Color(0xFF111827),
+                    '2 hours',
+                    style: TextStyle(
+                      color: kDarkTextColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
                     ),
