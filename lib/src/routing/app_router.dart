@@ -64,17 +64,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             currentLocation: state.uri.toString(),
             items: [
               NavigationItem(
-                icon: Icons.storefront_outlined,
-                label: 'Store',
+                icon: Icons.home_outlined,
+                label: 'Home',
                 route: '/client',
               ),
               NavigationItem(
-                icon: Icons.inventory_2_outlined,
-                label: 'Products',
+                icon: Icons.shopping_bag_outlined,
+                label: 'Shop',
                 route: '/client/products',
               ),
               NavigationItem(
-                icon: Icons.receipt_long_outlined,
+                icon: Icons.inventory_2_outlined,
                 label: 'Orders',
                 route: '/client/orders',
               ),
@@ -84,8 +84,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 route: '/client/chat',
               ),
               NavigationItem(
-                icon: Icons.person_outline,
-                label: 'Profile',
+                icon: Icons.account_balance_wallet_outlined,
+                label: 'Wallet',
                 route: '/client/profile',
               ),
             ],
