@@ -43,13 +43,12 @@ class ScaffoldWithNavBar extends StatelessWidget {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 25,
-              offset: const Offset(0, -5),
+          border: Border(
+            top: BorderSide(
+              color: Colors.black.withOpacity(0.05),
+              width: 1,
             ),
-          ],
+          ),
         ),
         child: SafeArea(
           child: Container(
@@ -68,33 +67,20 @@ class ScaffoldWithNavBar extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.elasticOut,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isSelected ? 20 : 12, 
-                            vertical: 8
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFF3B7D23).withOpacity(0.12) : Colors.transparent,
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                          child: Icon(
-                            (isSelected ? item.selectedIcon : item.unselectedIcon) ?? Icons.error_outline,
-                            color: isSelected ? const Color(0xFF3B7D23) : const Color(0xFF94A3B8),
-                            size: isSelected ? 24 : 22,
-                          ),
+                        Icon(
+                          isSelected ? item.selectedIcon : item.unselectedIcon,
+                          color: isSelected ? const Color(0xFF3B7D23) : const Color(0xFF94A3B8),
+                          size: 26,
                         ),
-                        const SizedBox(height: 4),
-                        AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 300),
+                        const SizedBox(height: 6),
+                        Text(
+                          item.label,
                           style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                            fontSize: 12,
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                             color: isSelected ? const Color(0xFF3B7D23) : const Color(0xFF94A3B8),
-                            letterSpacing: isSelected ? 0 : -0.2,
+                            letterSpacing: -0.2,
                           ),
-                          child: Text(item.label),
                         ),
                       ],
                     ),
