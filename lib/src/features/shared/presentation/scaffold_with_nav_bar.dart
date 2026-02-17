@@ -80,7 +80,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
                             borderRadius: BorderRadius.circular(24),
                           ),
                           child: Icon(
-                            isSelected ? item.selectedIcon : item.unselectedIcon,
+                            (isSelected ? item.selectedIcon : item.unselectedIcon) ?? Icons.error_outline,
                             color: isSelected ? const Color(0xFF3B7D23) : const Color(0xFF94A3B8),
                             size: isSelected ? 24 : 22,
                           ),
