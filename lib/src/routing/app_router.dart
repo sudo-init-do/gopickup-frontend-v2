@@ -58,6 +58,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      GoRoute(
+        path: '/client/cart',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ClientCartScreen(),
+      ),
+
       // Client Shell
       ShellRoute(
         builder: (context, state, child) {
@@ -101,10 +107,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/client/products',
             builder: (context, state) => const ClientProductsScreen(),
-          ),
-          GoRoute(
-            path: '/client/cart',
-            builder: (context, state) => const ClientCartScreen(),
           ),
           GoRoute(
             path: '/client/orders',
