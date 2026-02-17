@@ -374,86 +374,152 @@ class ClientHomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // Recent Order Card
+          // Recent Order Cards
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: Colors.grey.shade100),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 15,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'BuildMart Supplies',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17,
-                            color: Color(0xFF1F2937),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryLight,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            'In Transit',
-                            style: TextStyle(
-                              color: AppColors.primaryDark,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '5 items • Today, 2:30 PM',
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const Text(
-                          '\$458.00',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 18,
-                            color: Color(0xFF1F2937),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+              child: Column(
+                children: [
+                  const _RecentOrderCard(
+                    title: 'BuildMart Supplies',
+                    status: 'In Transit',
+                    items: 5,
+                    time: 'Today, 2:30 PM',
+                    price: 458.00,
+                  ),
+                  const SizedBox(height: 16),
+                  const _RecentOrderCard(
+                    title: 'Steel Works Co.',
+                    status: 'Delivered',
+                    items: 2,
+                    time: 'Yesterday',
+                    price: 1240.00,
+                  ),
+                  const SizedBox(height: 16),
+                  const _RecentOrderCard(
+                    title: 'CementPro Ltd.',
+                    status: 'Processing',
+                    items: 8,
+                    time: 'Feb 9',
+                    price: 2100.00,
+                  ),
+                ],
               ),
             ),
           ),
 
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecentOrderCard extends StatelessWidget {
+  final String title;
+  final String status;
+  final int items;
+  final String time;
+  final double price;
+
+  const _RecentOrderCard({
+    required this.title,
+    required this.status,
+    required this.items,
+    required this.time,
+    required this.price,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color statusColor;
+    Color statusBgColor;
+
+    switch (status.toLowerCase()) {
+      case 'delivered':
+        statusColor = const Color(0xFF059669);
+        statusBgColor = const Color(0xFFECFDF5);
+        break;
+      case 'processing':
+        statusColor = const Color(0xFFD97706);
+        statusBgColor = const Color(0xFFFFFBEB);
+        break;
+      case 'in transit':
+      default:
+        statusColor = AppColors.primaryDark;
+        statusBgColor = AppColors.primaryLight;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: Colors.grey.shade100),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: statusBgColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  status,
+                  style: TextStyle(
+                    color: statusColor,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '$items items • $time',
+                style: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                '\$${price.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
