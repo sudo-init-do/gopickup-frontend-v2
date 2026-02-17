@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../../common/styles/app_colors.dart';
 import '../../client/data/order_repository.dart';
 import '../../../common/models/order.dart';
 
@@ -14,140 +13,260 @@ class ClientOrdersScreen extends ConsumerWidget {
     final orders = ref.watch(ordersProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Orders')),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: orders.length,
-        itemBuilder: (context, index) {
-          return OrderCard(order: orders[index]);
-        },
-      ),
-    );
-  }
-}
-
-class OrderCard extends StatelessWidget {
-  final Order order;
-
-  const OrderCard({super.key, required this.order});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: InkWell(
-        onTap: () {
-          context.push('/client/orders/${order.id}', extra: order);
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    order.id,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    DateFormat('MMM d, yyyy').format(order.placedAt),
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.grey),
-                  ),
-                ],
+      backgroundColor: const Color(0xFFF9FAFB),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(context),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                itemCount: orders.length,
+                itemBuilder: (context, index) {
+                  return _buildOrderCard(context, orders[index]);
+                },
               ),
-              const SizedBox(height: 8),
-              Text(
-                '${order.items.length} items • \$${order.total.toStringAsFixed(2)}',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 16),
-              _OrderTimeline(status: order.status),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
-}
 
-class _OrderTimeline extends StatelessWidget {
-  final OrderStatus status;
-
-  const _OrderTimeline({required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    final steps = [
-      {'label': 'Placed', 'status': null}, // Always done
-      {'label': 'Processing', 'status': OrderStatus.processing},
-      {'label': 'In Transit', 'status': OrderStatus.transit},
-      {'label': 'Delivered', 'status': OrderStatus.delivered},
-    ];
-
-    int currentIndex = 0;
-    if (status == OrderStatus.processing) currentIndex = 1;
-    if (status == OrderStatus.transit) currentIndex = 2;
-    if (status == OrderStatus.delivered) currentIndex = 3;
-
-    return Row(
-      children: List.generate(steps.length, (index) {
-        final isCompleted = index <= currentIndex;
-        final isLast = index == steps.length - 1;
-
-        return Expanded(
-          child: Row(
-            children: [
-              Column(
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: isCompleted ? AppColors.success : Colors.grey[300],
-                      shape: BoxShape.circle,
-                    ),
-                    child: isCompleted
-                        ? const Icon(Icons.check, size: 16, color: Colors.white)
-                        : null,
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 10,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    steps[index]['label'] as String,
+                ],
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_rounded, size: 24),
+                onPressed: () => context.pop(),
+              ),
+            ),
+          ),
+          const Text(
+            'My Orders',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF1F2937),
+              letterSpacing: -0.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderCard(BuildContext context, Order order) {
+    Color badgeColor;
+    Color badgeTextColor;
+    String statusText;
+
+    switch (order.status) {
+      case OrderStatus.transit:
+        badgeColor = const Color(0xFFFFF7ED);
+        badgeTextColor = const Color(0xFFF97316);
+        statusText = 'In Transit';
+        break;
+      case OrderStatus.delivered:
+        badgeColor = const Color(0xFFECFDF5);
+        badgeTextColor = const Color(0xFF10B981);
+        statusText = 'Delivered';
+        break;
+      case OrderStatus.processing:
+        badgeColor = const Color(0xFFF0FDF4);
+        badgeTextColor = const Color(0xFF3B7D23);
+        statusText = 'Processing';
+        break;
+    }
+
+    // In a real app, these would come from the order model/vendor relation
+    final vendorName = order.items.isNotEmpty ? 'BuildMart Supplies' : 'General Vendor';
+
+    return GestureDetector(
+      onTap: () => context.push('/client/orders/${order.id}', extra: order),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(32),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(
+                    Icons.inventory_2_outlined,
+                    color: Color(0xFF3B7D23),
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                order.id,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 18,
+                                  color: Color(0xFF1F2937),
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              Text(
+                                DateFormat('MMM d, yyyy').format(order.placedAt),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: Color(0xFF9CA3AF),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: badgeColor,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              statusText,
+                              style: TextStyle(
+                                color: badgeTextColor,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                vendorName,
+                                style: const TextStyle(
+                                  color: Color(0xFF6B7280),
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                '${order.items.length} items',
+                                style: const TextStyle(
+                                  color: Color(0xFF9CA3AF),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                '\$${order.total.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF1F2937),
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 16,
+                                color: Color(0xFFD1D5DB),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (order.status != OrderStatus.delivered) ...[
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Divider(color: Color(0xFFF3F4F6), height: 1),
+              ),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.access_time_rounded,
+                    size: 18,
+                    color: Color(0xFF3B7D23),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'ETA:',
                     style: TextStyle(
-                      fontSize: 10,
-                      color: isCompleted ? AppColors.primaryDark : Colors.grey,
-                      fontWeight: isCompleted
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                      color: Color(0xFF9CA3AF),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    order.status == OrderStatus.transit ? '2 hours' : 'Tomorrow',
+                    style: const TextStyle(
+                      color: Color(0xFF111827),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ],
               ),
-              if (!isLast)
-                Expanded(
-                  child: Container(
-                    height: 2,
-                    color: index < currentIndex
-                        ? AppColors.success
-                        : Colors.grey[300],
-                    margin: const EdgeInsets.only(
-                      bottom: 14,
-                    ), // Align with circle center (approx)
-                  ),
-                ),
             ],
-          ),
-        );
-      }),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -11,6 +11,7 @@ import '../features/client/presentation/client_products_screen.dart';
 import '../features/client/presentation/client_orders_screen.dart';
 import '../features/client/presentation/client_profile_screen.dart';
 import '../features/client/presentation/client_cart_screen.dart';
+import '../features/client/presentation/client_wallet_screen.dart';
 import '../features/client/presentation/order_detail_screen.dart';
 import '../features/driver/presentation/driver_home_screen.dart';
 import '../features/driver/presentation/driver_earnings_screen.dart';
@@ -98,7 +99,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 unselectedIcon: Icons.account_balance_wallet_outlined,
                 selectedIcon: Icons.account_balance_wallet_outlined,
                 label: 'Wallet',
-                route: '/client/profile', // Keeping current route for now as per design labels
+                route: '/client/wallet',
               ),
             ],
             child: child,
@@ -130,6 +131,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/client/chat',
             builder: (context, state) => const ChatListScreen(),
+          ),
+          GoRoute(
+            path: '/client/wallet',
+            builder: (context, state) => const ClientWalletScreen(),
           ),
           GoRoute(
             path: '/client/profile',
