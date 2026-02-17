@@ -64,13 +64,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             currentLocation: state.uri.toString(),
             items: [
               NavigationItem(
-                icon: Icons.storefront_rounded,
-                label: 'Store',
+                icon: Icons.home_rounded,
+                label: 'Home',
                 route: '/client',
               ),
               NavigationItem(
                 icon: Icons.shopping_bag_rounded,
-                label: 'Shop',
+                label: 'Store',
                 route: '/client/products',
               ),
               NavigationItem(
