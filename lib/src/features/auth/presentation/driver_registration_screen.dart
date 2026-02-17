@@ -25,6 +25,14 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
     super.dispose();
   }
 
+  bool get _isFormValid {
+    if (_currentStep == 0) {
+      return _nameController.text.trim().isNotEmpty && 
+             _addressController.text.trim().isNotEmpty;
+    }
+    return true; // For other steps which are placeholders for now
+  }
+
   void _nextStep() {
     if (_currentStep < 2) {
       _pageController.nextPage(
@@ -128,10 +136,12 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
                 width: double.infinity,
                 height: 60,
                 child: ElevatedButton(
-                  onPressed: _nextStep,
+                  onPressed: _isFormValid ? _nextStep : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primarySage,
+                    backgroundColor: AppColors.primary,
+                    disabledBackgroundColor: AppColors.primary.withOpacity(0.4),
                     foregroundColor: Colors.white,
+                    disabledForegroundColor: Colors.white.withOpacity(0.7),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -259,6 +269,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
         _buildTextField(
           controller: _nameController,
           hintText: 'Enter your full name',
+          onChanged: (value) => setState(() {}),
         ),
         const SizedBox(height: 32),
         // Address Field
@@ -274,6 +285,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
         _buildTextField(
           controller: _addressController,
           hintText: 'Enter your address',
+          onChanged: (value) => setState(() {}),
         ),
       ],
     );
@@ -282,6 +294,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String hintText,
+    ValueChanged<String>? onChanged,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -291,6 +304,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
       ),
       child: TextField(
         controller: controller,
+        onChanged: onChanged,
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         decoration: InputDecoration(
           hintText: hintText,
