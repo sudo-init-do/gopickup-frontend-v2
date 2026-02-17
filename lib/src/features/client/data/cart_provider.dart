@@ -21,8 +21,11 @@ class CartItem {
   }
 }
 
-class CartNotifier extends StateNotifier<Map<String, CartItem>> {
-  CartNotifier() : super({});
+class CartNotifier extends Notifier<Map<String, CartItem>> {
+  @override
+  Map<String, CartItem> build() {
+    return {};
+  }
 
   void addItem(Product product) {
     final current = state;
@@ -62,6 +65,6 @@ class CartNotifier extends StateNotifier<Map<String, CartItem>> {
   int get uniqueItemsCount => state.length;
 }
 
-final cartProvider = StateNotifierProvider<CartNotifier, Map<String, CartItem>>((ref) {
+final cartProvider = NotifierProvider<CartNotifier, Map<String, CartItem>>(() {
   return CartNotifier();
 });
