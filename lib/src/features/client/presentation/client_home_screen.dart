@@ -266,75 +266,82 @@ class ClientHomeScreen extends ConsumerWidget {
 
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
-          // Active Delivery Card
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
-                  borderRadius: BorderRadius.circular(32),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.05),
-                      blurRadius: 15,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.6),
-                        shape: BoxShape.circle,
+              child: InkWell(
+                onTap: () {
+                  // Mocking ORD-001 for navigation
+                  final mockOrder = ref.read(ordersProvider).first;
+                  context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
+                },
+                borderRadius: BorderRadius.circular(32),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.05),
+                        blurRadius: 15,
+                        offset: const Offset(0, 4),
                       ),
-                      child: Icon(
-                        Icons.local_shipping_outlined,
-                        color: AppColors.primary,
-                        size: 26,
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.6),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.local_shipping_outlined,
+                          color: AppColors.primary,
+                          size: 26,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 20),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Active Delivery',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Color(0xFF1F2937),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Active Delivery',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Color(0xFF1F2937),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'BuildMart order arriving in ~25 min',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 13,
-                              height: 1.4,
+                            const SizedBox(height: 6),
+                            Text(
+                              'BuildMart order arriving in ~25 min',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 13,
+                                height: 1.4,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -379,18 +386,24 @@ class ClientHomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // Recent Order Cards
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  const _RecentOrderCard(
-                    title: 'BuildMart Supplies',
-                    status: 'In Transit',
-                    items: 5,
-                    time: 'Today, 2:30 PM',
-                    price: 458.00,
+                  InkWell(
+                    onTap: () {
+                      final mockOrder = ref.read(ordersProvider).first;
+                      context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
+                    },
+                    borderRadius: BorderRadius.circular(28),
+                    child: const _RecentOrderCard(
+                      title: 'BuildMart Supplies',
+                      status: 'In Transit',
+                      items: 5,
+                      time: 'Today, 2:30 PM',
+                      price: 458.00,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   const _RecentOrderCard(

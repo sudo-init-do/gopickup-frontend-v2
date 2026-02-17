@@ -100,8 +100,9 @@ class ClientOrdersScreen extends ConsumerWidget {
     const kLightTextColor = Color(0xFF9CA3AF);
     const kBrandGreen = Color(0xFF3B7D23);
 
-    return GestureDetector(
+    return InkWell(
       onTap: () => context.push('/client/orders/${order.id}', extra: order),
+      borderRadius: BorderRadius.circular(32),
       child: Container(
         margin: const EdgeInsets.only(bottom: 20),
         padding: const EdgeInsets.all(20),
