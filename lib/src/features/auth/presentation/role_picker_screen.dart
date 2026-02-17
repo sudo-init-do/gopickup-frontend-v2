@@ -140,7 +140,7 @@ class _RolePickerScreenState extends State<RolePickerScreen> {
                           if (_selectedRole == 'Client') {
                             context.push('/complete-profile');
                           } else if (_selectedRole == 'Driver') {
-                            context.go('/driver');
+                            context.push('/driver/registration');
                           } else {
                             context.go('/vendor');
                           }
