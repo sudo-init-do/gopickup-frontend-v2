@@ -55,11 +55,12 @@ class ScaffoldWithNavBar extends StatelessWidget {
             context.go(items[index].route);
           },
           backgroundColor: Colors.white,
-          indicatorColor: AppColors.primaryLight,
+          surfaceTintColor: Colors.transparent,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+          height: 80,
           destinations: items.map((item) {
             return NavigationDestination(
-              icon: Icon(item.icon, color: Colors.grey),
-              selectedIcon: Icon(item.icon, color: AppColors.primary),
+              icon: Icon(item.icon),
               label: item.label,
             );
           }).toList(),
