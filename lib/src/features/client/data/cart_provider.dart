@@ -21,58 +21,39 @@ class CartItem {
   }
 }
 
-class CartNotifier extends Notifier<Map<String, CartItem>> {
-  @override
-  Map<String, CartItem> build() {
-    return {};
-  }
+class CartNotifier extends StateNotifier<Map<String, CartItem>> {
+  CartNotifier() : super({});
 
   void addItem(Product product) {
-    final currentState = state;
-    if (currentState.containsKey(product.id)) {
+    final current = state;
+    if (current.containsKey(product.id)) {
       state = {
-        ...currentState,
-        product.id: currentState[product.id]!.copyWith(
-          quantity: currentState[product.id]!.quantity + 1,
+        ...current,
+        product.id: current[product.id]!.copyWith(
+          quantity: current[product.id]!.quantity + 1,
         ),
       };
     } else {
       state = {
-        ...currentState,
+        ...current,
         product.id: CartItem(product: product, quantity: product.moq),
       };
     }
   }
 
   void removeItem(String productId) {
-    final currentState = state;
-    if (!currentState.containsKey(productId)) return;
+    final current = state;
+    if (!current.containsKey(productId)) return;
 
-    final currentItem = currentState[productId]!;
-    if (currentItem.quantity <= currentItem.product.moq) {
-      final newState = Map<String, CartItem>.from(currentState);
+    final item = current[productId]!;
+    if (item.quantity <= item.product.moq) {
+      final newState = Map<String, CartItem>.from(current);
       newState.remove(productId);
       state = newState;
     } else {
       state = {
-        ...currentState,
-        productId: currentItem.copyWith(quantity: currentItem.quantity - 1),
-      };
-    }
-  }
-
-  void updateQuantity(String productId, int quantity) {
-    final currentState = state;
-    if (!currentState.containsKey(productId)) return;
-    
-    if (quantity <= 0) {
-      final newState = Map<String, CartItem>.from(currentState);
-      newState.remove(productId);
-      state = newState;
-    } else {
-      state = {
-        ...currentState,
-        productId: currentState[productId]!.copyWith(quantity: quantity),
+        ...current,
+        productId: item.copyWith(quantity: item.quantity - 1),
       };
     }
   }
@@ -81,6 +62,6 @@ class CartNotifier extends Notifier<Map<String, CartItem>> {
   int get uniqueItemsCount => state.length;
 }
 
-final cartProvider = NotifierProvider<CartNotifier, Map<String, CartItem>>(() {
+final cartProvider = StateNotifierProvider<CartNotifier, Map<String, CartItem>>((ref) {
   return CartNotifier();
 });
