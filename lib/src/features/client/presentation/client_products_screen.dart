@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../client/data/product_repository.dart';
 import '../../../common/models/product.dart';
+import '../data/cart_provider.dart';
 
 class ClientProductsScreen extends StatefulWidget {
   const ClientProductsScreen({super.key});
@@ -189,13 +190,44 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                           color: Color(0xFF1F2937),
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF3B7D23),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 22),
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF3B7D23),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 22),
+                          ),
+                          if (ref.watch(cartProvider).isNotEmpty)
+                            Positioned(
+                              top: -4,
+                              right: -4,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEF4444),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 2),
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 18,
+                                  minHeight: 18,
+                                ),
+                                child: Text(
+                                  '${ref.watch(cartProvider).length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),
@@ -306,12 +338,16 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
   }
 }
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends ConsumerWidget {
   final Product product;
   const ProductCard({super.key, required this.product});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cart = ref.watch(cartProvider);
+    final cartItem = cart[product.id];
+    final isInCart = cartItem != null;
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -352,7 +388,7 @@ class ProductCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'BuildMart Supplies', // Mock vendor
+                        'BuildMart Supplies',
                         style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 4),
@@ -417,28 +453,78 @@ class ProductCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      // Add Button
-                      Container(
-                        width: double.infinity,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3B7D23),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Center(
+                      // Add Button or Quantity Selector
+                      if (!isInCart)
+                        GestureDetector(
+                          onTap: () => ref.read(cartProvider.notifier).addItem(product),
+                          child: Container(
+                            width: double.infinity,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3B7D23),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.add, color: Colors.white, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Add (${product.moq} min)',
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      else
+                        Container(
+                          width: double.infinity,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF3F4F6),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Icon(Icons.add, color: Colors.white, size: 16),
-                              const SizedBox(width: 4),
+                              GestureDetector(
+                                onTap: () => ref.read(cartProvider.notifier).removeItem(product.id),
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.remove, size: 20, color: Color(0xFF1F2937)),
+                                ),
+                              ),
                               Text(
-                                'Add (${product.moq} min)',
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                '${cartItem.quantity}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 16,
+                                  color: Color(0xFF1F2937),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () => ref.read(cartProvider.notifier).addItem(product),
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF3B7D23),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.add, size: 20, color: Colors.white),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -466,3 +552,4 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
+
