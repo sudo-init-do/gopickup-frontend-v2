@@ -70,7 +70,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
               NavigationItem(
                 icon: Icons.shopping_bag_rounded,
-                label: 'Store',
+                label: 'Shop',
                 route: '/client/products',
               ),
               NavigationItem(
