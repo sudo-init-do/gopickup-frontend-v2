@@ -24,7 +24,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(16.0),
         ),
         color: Colors.white,
-        shadowColor: Colors.black.withValues(alpha: 0.05),
+        shadowColor: Colors.black.withOpacity(0.05),
       ),
       dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
@@ -121,6 +121,12 @@ class AppTheme {
         }),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Colors.white,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        elevation: 8,
+      ),
     );
   }
 }
