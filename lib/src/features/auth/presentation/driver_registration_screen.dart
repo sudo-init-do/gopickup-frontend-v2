@@ -131,7 +131,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
                     ),
                     const SizedBox(height: 40),
                     SizedBox(
-                      height: 600,
+                      height: 700,
                       child: PageView(
                         controller: _pageController,
                         physics: const NeverScrollableScrollPhysics(),
@@ -431,7 +431,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
             crossAxisCount: 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            childAspectRatio: 1.2,
+            childAspectRatio: 1.4,
           ),
           itemCount: vehicleTypes.length,
           itemBuilder: (context, index) {
@@ -446,7 +446,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
             );
           },
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: 24),
         Text(
           'Plate Number',
           style: TextStyle(
