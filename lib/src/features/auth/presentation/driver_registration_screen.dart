@@ -131,7 +131,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
                     ),
                     const SizedBox(height: 40),
                     SizedBox(
-                      height: 500,
+                      height: 600,
                       child: PageView(
                         controller: _pageController,
                         physics: const NeverScrollableScrollPhysics(),
@@ -405,10 +405,11 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
 
   Widget _buildVehicleForm(Color darkText, Color midText, Color orange) {
     final vehicleTypes = [
-      {'title': 'Motorcycle', 'subtitle': 'Up to 50kg', 'icon': Icons.motorcycle},
-      {'title': 'Pickup', 'subtitle': 'Up to 500kg', 'icon': Icons.local_shipping},
-      {'title': 'Van', 'subtitle': 'Up to 1 ton', 'icon': Icons.airport_shuttle},
-      {'title': 'Truck', 'subtitle': 'Up to 5 tons', 'icon': Icons.fire_truck},
+      {'title': 'Tricycle', 'subtitle': 'Up to 500kg', 'icon': Icons.electric_rickshaw},
+      {'title': 'Van', 'subtitle': 'Up to 1.5 tons', 'icon': Icons.airport_shuttle},
+      {'title': 'Trucks', 'subtitle': 'Up to 5 tons', 'icon': Icons.local_shipping},
+      {'title': 'Flatbeds', 'subtitle': 'Up to 10 tons', 'icon': Icons.rv_hookup},
+      {'title': 'Trailer', 'subtitle': 'Up to 25 tons', 'icon': Icons.agriculture},
     ];
 
     return Column(
