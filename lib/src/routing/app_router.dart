@@ -155,26 +155,32 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             currentLocation: state.uri.toString(),
             items: [
               NavigationItem(
-                unselectedIcon: Icons.local_shipping_outlined,
-                selectedIcon: Icons.local_shipping_outlined,
+                unselectedIcon: Icons.assignment_outlined,
+                selectedIcon: Icons.assignment_rounded,
                 label: 'Jobs',
                 route: '/driver',
               ),
               NavigationItem(
-                unselectedIcon: Icons.payments_outlined,
-                selectedIcon: Icons.payments_outlined,
+                unselectedIcon: Icons.trending_up_rounded,
+                selectedIcon: Icons.trending_up_rounded,
+                label: 'Bids',
+                route: '/driver/bids',
+              ),
+              NavigationItem(
+                unselectedIcon: Icons.account_balance_wallet_outlined,
+                selectedIcon: Icons.account_balance_wallet_rounded,
                 label: 'Earnings',
                 route: '/driver/earnings',
               ),
               NavigationItem(
                 unselectedIcon: Icons.chat_bubble_outline_rounded,
-                selectedIcon: Icons.chat_bubble_outline_rounded,
+                selectedIcon: Icons.chat_bubble_rounded,
                 label: 'Chat',
                 route: '/driver/chat',
               ),
               NavigationItem(
-                unselectedIcon: Icons.account_circle_outlined,
-                selectedIcon: Icons.account_circle_outlined,
+                unselectedIcon: Icons.person_outline_rounded,
+                selectedIcon: Icons.person_rounded,
                 label: 'Profile',
                 route: '/driver/profile',
               ),
@@ -186,6 +192,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/driver',
             builder: (context, state) => const DriverHomeScreen(),
+          ),
+          GoRoute(
+            path: '/driver/bids',
+            builder: (context, state) => const Scaffold(body: Center(child: Text('My Bids'))), // Placeholder
           ),
           GoRoute(
             path: '/driver/earnings',
