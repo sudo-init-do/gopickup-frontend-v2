@@ -265,15 +265,104 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   }
 
   Widget _buildHistoryJobList(Color darkText, Color midText, Color orange, Color green) {
-    return Center(
+    final jobs = [
+      {
+        'title': 'Steel Pipes Delivery',
+        'date': 'Yesterday, 2:30 PM',
+        'price': '\$145.00',
+        'status': 'Delivered',
+        'from': 'Metal Fab Ltd',
+        'to': 'Skyline Towers Site',
+      },
+      {
+        'title': 'Brick & Mortar Haul',
+        'date': 'Feb 12, 11:15 AM',
+        'price': '\$92.50',
+        'status': 'Delivered',
+        'from': 'BuildMart Depot',
+        'to': 'Quay Side Project',
+      },
+    ];
+
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+      itemCount: jobs.length,
+      itemBuilder: (context, index) {
+        final job = jobs[index];
+        return _buildHistoryJobCard(job, darkText, midText, green);
+      },
+    );
+  }
+
+  Widget _buildHistoryJobCard(Map<String, dynamic> job, Color darkText, Color midText, Color green) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+      ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.history_rounded, size: 64, color: midText.withOpacity(0.2)),
-          const SizedBox(height: 16),
-          Text(
-            'No history yet',
-            style: TextStyle(fontSize: 16, color: midText, fontWeight: FontWeight.w500),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.check_circle_rounded, color: Color(0xFF94A3B8), size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      job['title'],
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: darkText),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      job['date'],
+                      style: TextStyle(fontSize: 14, color: midText, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: green.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  job['status'],
+                  style: TextStyle(color: green, fontSize: 12, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Container(height: 1, color: const Color(0xFFF1F5F9)),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                job['price'],
+                style: TextStyle(fontSize: 20, color: darkText, fontWeight: FontWeight.w900),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  'View Receipt',
+                  style: TextStyle(color: midText, fontWeight: FontWeight.w700, fontSize: 14),
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -15,6 +15,7 @@ import '../features/client/presentation/client_cart_screen.dart';
 import '../features/client/presentation/client_wallet_screen.dart';
 import '../features/client/presentation/order_detail_screen.dart';
 import '../features/driver/presentation/driver_home_screen.dart';
+import '../features/driver/presentation/driver_bids_screen.dart';
 import '../features/driver/presentation/driver_earnings_screen.dart';
 import '../features/driver/presentation/driver_profile_screen.dart';
 import '../features/vendor/presentation/vendor_home_screen.dart';
@@ -195,7 +196,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/driver/bids',
-            builder: (context, state) => const Scaffold(body: Center(child: Text('My Bids'))), // Placeholder
+            builder: (context, state) => const DriverBidsScreen(),
           ),
           GoRoute(
             path: '/driver/earnings',
