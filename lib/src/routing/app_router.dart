@@ -22,6 +22,8 @@ import '../features/driver/presentation/driver_profile_screen.dart';
 import '../features/driver/presentation/submit_bid_screen.dart';
 import '../features/vendor/presentation/vendor_home_screen.dart';
 import '../features/vendor/presentation/vendor_inventory_screen.dart';
+import '../features/vendor/presentation/vendor_orders_screen.dart';
+import '../features/vendor/presentation/vendor_wallet_screen.dart';
 import '../features/vendor/presentation/vendor_profile_screen.dart';
 import '../features/shared/chat/chat_list_screen.dart';
 import '../features/shared/chat/chat_screen.dart';
@@ -234,28 +236,34 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             currentLocation: state.uri.toString(),
             items: [
               NavigationItem(
-                unselectedIcon: Icons.analytics_outlined,
-                selectedIcon: Icons.analytics_outlined,
-                label: 'Sales',
+                unselectedIcon: Icons.storefront_outlined,
+                selectedIcon: Icons.storefront_rounded,
+                label: 'Store',
                 route: '/vendor',
               ),
               NavigationItem(
-                unselectedIcon: Icons.inventory_outlined,
-                selectedIcon: Icons.inventory_outlined,
-                label: 'Inventory',
+                unselectedIcon: Icons.inventory_2_outlined,
+                selectedIcon: Icons.inventory_2_rounded,
+                label: 'Products',
                 route: '/vendor/inventory',
               ),
               NavigationItem(
+                unselectedIcon: Icons.assignment_outlined,
+                selectedIcon: Icons.assignment_rounded,
+                label: 'Orders',
+                route: '/vendor/orders',
+              ),
+              NavigationItem(
                 unselectedIcon: Icons.chat_bubble_outline_rounded,
-                selectedIcon: Icons.chat_bubble_outline_rounded,
+                selectedIcon: Icons.chat_bubble_rounded,
                 label: 'Chat',
                 route: '/vendor/chat',
               ),
               NavigationItem(
-                unselectedIcon: Icons.store_outlined,
-                selectedIcon: Icons.store_outlined,
-                label: 'Profile',
-                route: '/vendor/profile',
+                unselectedIcon: Icons.account_balance_wallet_outlined,
+                selectedIcon: Icons.account_balance_wallet_rounded,
+                label: 'Wallet',
+                route: '/vendor/wallet',
               ),
             ],
             child: child,
@@ -273,6 +281,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/vendor/chat',
             builder: (context, state) => const ChatListScreen(),
+          ),
+          GoRoute(
+            path: '/vendor/orders',
+            builder: (context, state) => const VendorOrdersScreen(),
+          ),
+          GoRoute(
+            path: '/vendor/wallet',
+            builder: (context, state) => const VendorWalletScreen(),
           ),
           GoRoute(
             path: '/vendor/profile',
