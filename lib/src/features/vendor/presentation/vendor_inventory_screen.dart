@@ -33,7 +33,7 @@ class VendorInventoryScreen extends ConsumerWidget {
                     ),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () => context.push('/vendor/inventory/add'),
                     icon: const Icon(Icons.add, size: 18),
                     label: const Text('Add'),
                     style: ElevatedButton.styleFrom(

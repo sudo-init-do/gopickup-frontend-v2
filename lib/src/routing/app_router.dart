@@ -26,6 +26,7 @@ import '../features/vendor/presentation/vendor_orders_screen.dart';
 import '../features/vendor/presentation/vendor_wallet_screen.dart';
 import '../features/vendor/presentation/vendor_profile_screen.dart';
 import '../features/vendor/presentation/vendor_order_detail_screen.dart';
+import '../features/vendor/presentation/add_product_screen.dart';
 import '../features/shared/chat/chat_list_screen.dart';
 import '../features/shared/chat/chat_screen.dart';
 import '../features/shared/presentation/scaffold_with_nav_bar.dart';
@@ -278,6 +279,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/vendor/inventory',
             builder: (context, state) => const VendorInventoryScreen(),
+            routes: [
+              GoRoute(
+                path: 'add',
+                parentNavigatorKey: rootNavigatorKey,
+                builder: (context, state) => const AddProductScreen(),
+              ),
+            ],
           ),
           GoRoute(
             path: '/vendor/chat',
