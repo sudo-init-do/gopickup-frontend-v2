@@ -7,6 +7,7 @@ import '../features/auth/presentation/otp_verification_screen.dart';
 import '../features/auth/presentation/role_picker_screen.dart';
 import '../features/auth/presentation/complete_profile_screen.dart';
 import '../features/auth/presentation/driver_registration_screen.dart';
+import '../features/auth/presentation/vendor_registration_screen.dart';
 import '../features/client/presentation/client_home_screen.dart';
 import '../features/client/presentation/client_products_screen.dart';
 import '../features/client/presentation/client_orders_screen.dart';
@@ -52,6 +53,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/complete-profile',
         builder: (context, state) => const CompleteProfileScreen(),
+      ),
+      GoRoute(
+        path: '/vendor/registration',
+        builder: (context, state) => const VendorRegistrationScreen(),
       ),
       GoRoute(
         path: '/driver/registration',

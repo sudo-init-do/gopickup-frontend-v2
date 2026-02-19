@@ -142,7 +142,7 @@ class _RolePickerScreenState extends State<RolePickerScreen> {
                           } else if (_selectedRole == 'Driver') {
                             context.push('/driver/registration');
                           } else {
-                            context.go('/vendor');
+                            context.push('/vendor/registration');
                           }
                         }
                       : null,
