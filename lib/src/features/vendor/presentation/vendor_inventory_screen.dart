@@ -1,187 +1,293 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../client/data/product_repository.dart';
-import '../../../common/models/product.dart';
-import '../../../common/styles/app_colors.dart';
 
 class VendorInventoryScreen extends ConsumerWidget {
   const VendorInventoryScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final products = ref.watch(productsProvider);
+    const kPurple = Color(0xFFA855F7);
+    const kDarkTextColor = Color(0xFF111827);
+    const kMidTextColor = Color(0xFF64748B);
+    const kLightBorderColor = Color(0xFFF1F5F9);
+    const kBrandGreen = Color(0xFF45A225);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Inventory')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showProductDialog(context);
-        },
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: products.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 16),
-        itemBuilder: (context, index) {
-          return _InventoryItem(product: products[index]);
-        },
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Products',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: kDarkTextColor,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Add'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kBrandGreen,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                      textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Search and Filter Row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF9FAFB),
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: kLightBorderColor, width: 1.5),
+                      ),
+                      child: const TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search products...',
+                          hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 16),
+                          prefixIcon: Icon(Icons.search, color: Color(0xFF94A3B8)),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: kLightBorderColor, width: 1.5),
+                    ),
+                    child: const Icon(Icons.tune_rounded, color: Color(0xFF64748B), size: 24),
+                  ),
+                ],
+              ),
+            ),
+
+            // Filter Tabs
+            const SizedBox(height: 20),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                children: [
+                  _buildFilterTab('All', true, kPurple),
+                  _buildFilterTab('Active', false, kPurple),
+                  _buildFilterTab('Inactive', false, kPurple),
+                  _buildFilterTab('Low Stock', false, kPurple),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+            const Divider(color: kLightBorderColor, height: 1),
+
+            // Products List
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.all(24),
+                children: [
+                  _buildProductCard(
+                    'Portland Cement 50kg',
+                    'Cement',
+                    '\$12.5',
+                    '500',
+                    '10',
+                    '234 sold',
+                    kDarkTextColor,
+                    kMidTextColor,
+                    kLightBorderColor,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildProductCard(
+                    'Rebar Steel 12mm',
+                    'Steel',
+                    '\$8.75',
+                    '1200',
+                    '50',
+                    '156 sold',
+                    kDarkTextColor,
+                    kMidTextColor,
+                    kLightBorderColor,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildProductCard(
+                    'Plywood 3/4" 4x8',
+                    'Wood',
+                    '\$45',
+                    '15',
+                    '5',
+                    '56 sold',
+                    kDarkTextColor,
+                    kMidTextColor,
+                    kLightBorderColor,
+                  ),
+                  const SizedBox(height: 100), // Space for navbar
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  void _showProductDialog(BuildContext context, [Product? product]) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(product == null ? 'Add Product' : 'Edit Product'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: const InputDecoration(labelText: 'Product Name'),
-              controller: TextEditingController(text: product?.name),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: const InputDecoration(labelText: 'Price'),
-                    keyboardType: TextInputType.number,
-                    controller: TextEditingController(
-                      text: product?.price.toString(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextField(
-                    decoration: const InputDecoration(labelText: 'MOQ'),
-                    keyboardType: TextInputType.number,
-                    controller: TextEditingController(
-                      text: product?.moq.toString(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+  Widget _buildFilterTab(String label, bool isActive, Color activeColor) {
+    return Container(
+      margin: const EdgeInsets.only(right: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      decoration: BoxDecoration(
+        color: isActive ? activeColor : const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: isActive ? Colors.white : const Color(0xFF64748B),
+          fontWeight: FontWeight.w700,
+          fontSize: 15,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      ),
+    );
+  }
+
+  Widget _buildProductCard(
+    String title,
+    String category,
+    String price,
+    String stock,
+    String moq,
+    String sold,
+    Color kDarkTextColor,
+    Color kMidTextColor,
+    Color kLightBorderColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: kLightBorderColor, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: kDarkTextColor.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    product == null ? 'Product added' : 'Product updated',
-                  ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              );
-            },
-            child: const Text('Save'),
+                child: const Icon(Icons.inventory_2_outlined, color: Color(0xFF94A3B8), size: 30),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: kDarkTextColor),
+                        ),
+                        const Icon(Icons.more_vert_rounded, color: Color(0xFF94A3B8)),
+                      ],
+                    ),
+                    Text(
+                      category,
+                      style: TextStyle(color: kMidTextColor, fontWeight: FontWeight.w600, fontSize: 14),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Text(
+                          price,
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: kDarkTextColor),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          'Stock: $stock',
+                          style: TextStyle(color: kMidTextColor, fontWeight: FontWeight.w500, fontSize: 14),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          'MOQ: $moq',
+                          style: TextStyle(color: kMidTextColor, fontWeight: FontWeight.w500, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Divider(color: kLightBorderColor, height: 1),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                sold,
+                style: TextStyle(color: kMidTextColor, fontWeight: FontWeight.w600, fontSize: 15),
+              ),
+              Row(
+                children: [
+                  _buildCardAction(Icons.edit_outlined),
+                  const SizedBox(width: 12),
+                  _buildCardAction(Icons.visibility_outlined),
+                ],
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-class _InventoryItem extends StatelessWidget {
-  final Product product;
-
-  const _InventoryItem({required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: Container(
-          width: 50,
-          height: 50,
-          color: Colors.grey[200],
-          child: const Icon(Icons.image, color: Colors.grey),
-        ),
-        title: Text(
-          product.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text('\$${product.price} • MOQ: ${product.moq}'),
-        trailing: IconButton(
-          icon: const Icon(Icons.edit_outlined),
-          onPressed: () {
-            // Find the parent widget to call the dialog method?
-            // Better to pass a callback or use a provider for dialogs.
-            // For simplicity, duplicate the dialog logic or make it static/mixin.
-            // Or just instantiate the dialog here.
-            _showEditDialog(context, product);
-          },
-        ),
+  Widget _buildCardAction(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(12),
       ),
-    );
-  }
-
-  void _showEditDialog(BuildContext context, Product product) {
-    // Reusing the same dialog logic essentially
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Product'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: const InputDecoration(labelText: 'Product Name'),
-              controller: TextEditingController(text: product.name),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    decoration: const InputDecoration(labelText: 'Price'),
-                    keyboardType: TextInputType.number,
-                    controller: TextEditingController(
-                      text: product.price.toString(),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextField(
-                    decoration: const InputDecoration(labelText: 'MOQ'),
-                    keyboardType: TextInputType.number,
-                    controller: TextEditingController(
-                      text: product.moq.toString(),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Product updated')));
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+      child: Icon(icon, color: const Color(0xFF45A225), size: 20),
     );
   }
 }

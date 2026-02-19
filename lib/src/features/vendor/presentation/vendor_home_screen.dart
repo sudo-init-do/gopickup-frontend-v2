@@ -144,7 +144,7 @@ class VendorHomeScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: () => context.go('/vendor/inventory'),
                             icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
                             label: const Text('Add Product'),
                             style: ElevatedButton.styleFrom(
@@ -160,7 +160,7 @@ class VendorHomeScreen extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () => context.go('/vendor/orders'),
                             style: OutlinedButton.styleFrom(
                               backgroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 18),
