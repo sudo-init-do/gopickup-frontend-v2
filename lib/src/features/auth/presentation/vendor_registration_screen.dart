@@ -9,11 +9,18 @@ class VendorRegistrationScreen extends StatefulWidget {
 }
 
 class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
+  int _currentStep = 0; // 0: Store Info, 1: Location, 2: Verification
+  
+  // Store Info Controllers
   final _storeNameController = TextEditingController();
   final _ownerNameController = TextEditingController();
   final _descriptionController = TextEditingController();
   String _selectedCategory = 'Building Materials';
-  bool _isFormValid = false;
+  
+  // Location Controllers
+  final _addressController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _stateController = TextEditingController();
 
   final List<String> _categories = [
     'Building Materials',
@@ -33,18 +40,26 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
   }
 
   void _validateForm() {
-    setState(() {
-      _isFormValid = _storeNameController.text.isNotEmpty &&
-          _ownerNameController.text.isNotEmpty &&
-          _descriptionController.text.isNotEmpty;
-    });
+    setState(() {});
   }
+
+  bool get _isStep1Valid =>
+      _storeNameController.text.isNotEmpty &&
+      _ownerNameController.text.isNotEmpty &&
+      _descriptionController.text.isNotEmpty;
+
+  bool get _isStep2Valid =>
+      _addressController.text.isNotEmpty &&
+      _cityController.text.isNotEmpty;
 
   @override
   void dispose() {
     _storeNameController.dispose();
     _ownerNameController.dispose();
     _descriptionController.dispose();
+    _addressController.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
     super.dispose();
   }
 
@@ -57,153 +72,259 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
     const kGreenButton = Color(0xFFA5C498);
     const kActiveGreen = Color(0xFF45A225);
 
+    bool isCurrentStepValid = _currentStep == 0 ? _isStep1Valid : (_currentStep == 1 ? _isStep2Valid : true);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Vendor Registration',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: kDarkTextColor,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Set up your store and start selling',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: kMidTextColor,
-                ),
-              ),
-              const SizedBox(height: 32),
-              
-              // Progress Chips
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildStepChip('Store Info', Icons.store_mall_directory_rounded, true, kPurple),
-                    const SizedBox(width: 12),
-                    _buildStepChip('Location', Icons.location_on_outlined, false, kPurple),
-                    const SizedBox(width: 12),
-                    _buildStepChip('Verification', Icons.assignment_outlined, false, kPurple),
+                    const Text(
+                      'Vendor Registration',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        color: kDarkTextColor,
+                        letterSpacing: -0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Set up your store and start selling',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: kMidTextColor,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    
+                    // Progress Chips
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          _buildStepChip('Store Info', Icons.store_mall_directory_rounded, _currentStep == 0, kPurple),
+                          const SizedBox(width: 12),
+                          _buildStepChip('Location', Icons.location_on_outlined, _currentStep == 1, kPurple),
+                          const SizedBox(width: 12),
+                          _buildStepChip('Verification', Icons.assignment_outlined, _currentStep == 2, kPurple),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+
+                    if (_currentStep == 0) _buildStoreInfoStep(kPurple, kLightPurpleBg, kDarkTextColor, kMidTextColor),
+                    if (_currentStep == 1) _buildLocationStep(kDarkTextColor, kMidTextColor),
+                    if (_currentStep == 2) _buildVerificationStep(kDarkTextColor, kMidTextColor, kPurple),
                   ],
                 ),
               ),
-              const SizedBox(height: 40),
-
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 110,
-                      height: 110,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF3F4F6).withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.store_outlined, size: 40, color: Color(0xFF475569)),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 4,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: kPurple,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
-
-              _buildInputLabel('Store Name', kDarkTextColor),
-              _buildTextField(_storeNameController, 'Enter store name'),
-              const SizedBox(height: 24),
-
-              _buildInputLabel('Owner Name', kDarkTextColor),
-              _buildTextField(_ownerNameController, 'Enter your full name'),
-              const SizedBox(height: 24),
-
-              _buildInputLabel('Category', kDarkTextColor),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: _categories.map((cat) {
-                  final isSelected = _selectedCategory == cat;
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedCategory = cat),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isSelected ? kLightPurpleBg : const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(24),
-                        border: isSelected ? Border.all(color: kPurple.withOpacity(0.3)) : null,
-                      ),
-                      child: Text(
-                        cat,
-                        style: TextStyle(
-                          color: isSelected ? kPurple : kMidTextColor,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
-
-              _buildInputLabel('Store Description', kDarkTextColor),
-              _buildTextField(_descriptionController, 'Describe your store...', maxLines: 4),
-              
-              const SizedBox(height: 48),
-              
-              SizedBox(
+            ),
+            
+            // Bottom Action Bar
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: SizedBox(
                 width: double.infinity,
                 height: 64,
                 child: ElevatedButton(
-                  onPressed: _isFormValid ? () => context.go('/vendor') : null,
+                  onPressed: isCurrentStepValid ? _handleContinue : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isFormValid ? kActiveGreen : kGreenButton,
+                    backgroundColor: isCurrentStepValid ? kActiveGreen : kGreenButton,
                     disabledBackgroundColor: kGreenButton,
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Continue',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                        _currentStep == 2 ? 'Complete' : 'Continue',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                       ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, size: 22),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_rounded, size: 22),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleContinue() {
+    if (_currentStep < 2) {
+      setState(() => _currentStep++);
+    } else {
+      context.go('/vendor');
+    }
+  }
+
+  Widget _buildStoreInfoStep(Color kPurple, Color kLightPurpleBg, Color kDarkTextColor, Color kMidTextColor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: Stack(
+            children: [
+              Container(
+                width: 110,
+                height: 110,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6).withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(40),
+                ),
+                child: const Center(
+                  child: Icon(Icons.storefront_rounded, size: 40, color: Color(0xFF475569)),
+                ),
+              ),
+              Positioned(
+                bottom: 4,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: kPurple,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2.5),
+                  ),
+                  child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
+                ),
+              ),
             ],
           ),
         ),
+        const SizedBox(height: 32),
+        _buildInputLabel('Store Name', kDarkTextColor),
+        _buildTextField(_storeNameController, 'Enter store name'),
+        const SizedBox(height: 24),
+        _buildInputLabel('Owner Name', kDarkTextColor),
+        _buildTextField(_ownerNameController, 'Enter your full name'),
+        const SizedBox(height: 24),
+        _buildInputLabel('Category', kDarkTextColor),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: _categories.map((cat) {
+            final isSelected = _selectedCategory == cat;
+            return GestureDetector(
+              onTap: () => setState(() => _selectedCategory = cat),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? kLightPurpleBg : const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: isSelected ? kPurple : Colors.transparent,
+                    width: 1.5,
+                  ),
+                ),
+                child: Text(
+                  cat,
+                  style: TextStyle(
+                    color: isSelected ? kPurple : kMidTextColor,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const SizedBox(height: 24),
+        _buildInputLabel('Store Description', kDarkTextColor),
+        _buildTextField(_descriptionController, 'Describe your store...', maxLines: 4),
+      ],
+    );
+  }
+
+  Widget _buildLocationStep(Color kDarkTextColor, Color kMidTextColor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Store Location',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: kDarkTextColor),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Help customers find your physical store',
+          style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+        ),
+        const SizedBox(height: 32),
+        _buildInputLabel('Business Address', kDarkTextColor),
+        _buildTextField(_addressController, 'e.g., 123 Business Way'),
+        const SizedBox(height: 24),
+        _buildInputLabel('City', kDarkTextColor),
+        _buildTextField(_cityController, 'Enter city'),
+        const SizedBox(height: 24),
+        _buildInputLabel('State / Province', kDarkTextColor),
+        _buildTextField(_stateController, 'Enter state'),
+      ],
+    );
+  }
+
+  Widget _buildVerificationStep(Color kDarkTextColor, Color kMidTextColor, Color kPurple) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Verification',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: kDarkTextColor),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Upload documents to verify your business',
+          style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+        ),
+        const SizedBox(height: 32),
+        _buildFileUploadCard('Government ID', 'Upload owner\'s identity document', kPurple),
+        const SizedBox(height: 16),
+        _buildFileUploadCard('Business License', 'Upload your store\'s operating license', kPurple),
+      ],
+    );
+  }
+
+  Widget _buildFileUploadCard(String title, String subtitle, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+            child: Icon(Icons.cloud_upload_outlined, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                Text(subtitle, style: const TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+              ],
+            ),
+          ),
+          const Icon(Icons.add_circle_outline, color: Color(0xFF94A3B8)),
+        ],
       ),
     );
   }
@@ -260,6 +381,7 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
       child: TextField(
         controller: controller,
         maxLines: maxLines,
+        onChanged: (_) => setState(() {}),
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w400, fontSize: 16),
