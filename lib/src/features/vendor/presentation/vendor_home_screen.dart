@@ -17,14 +17,18 @@ class VendorHomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header Section with Custom U-Curve
+            // Header Section with Deeper U-Curve
             ClipPath(
               clipper: HeaderClipper(),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.only(top: 60, left: 24, right: 24, bottom: 60),
+                padding: const EdgeInsets.only(top: 60, left: 24, right: 24, bottom: 80),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFA855F7), // Vibrant Purple
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFFA855F7), Color(0xFF9333EA)],
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -48,8 +52,9 @@ class VendorHomeScreen extends StatelessWidget {
                                 'BuildMart Supplies',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 22,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.5,
                                 ),
                               ),
                               Row(
@@ -86,9 +91,10 @@ class VendorHomeScreen extends StatelessWidget {
                               child: Container(
                                 width: 10,
                                 height: 10,
-                                decoration: const BoxDecoration(
-                                  color: Colors.red,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEF4444),
                                   shape: BoxShape.circle,
+                                  border: Border.all(color: const Color(0xFFA855F7), width: 1.5),
                                 ),
                               ),
                             ),
@@ -101,11 +107,11 @@ class VendorHomeScreen extends StatelessWidget {
                     Row(
                       children: [
                         _buildStatCard('24', 'Products', Icons.inventory_2_outlined),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         _buildStatCard('156', 'Orders', Icons.shopping_cart_outlined),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         _buildStatCard('\$12.4k', 'Revenue', Icons.attach_money_rounded),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         _buildStatCard('2.3k', 'Views', Icons.visibility_outlined),
                       ],
                     ),
@@ -114,7 +120,7 @@ class VendorHomeScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
             // Action Buttons
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -126,10 +132,10 @@ class VendorHomeScreen extends StatelessWidget {
                       icon: const Icon(Icons.add_rounded, size: 24),
                       label: const Text('Add Product'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: kGreenBrand,
+                        backgroundColor: const Color(0xFF45A225),
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                         textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
                       ),
@@ -140,12 +146,13 @@ class VendorHomeScreen extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: () {},
                       style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
                         side: const BorderSide(color: Color(0xFFF1F5F9), width: 1.5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                        textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: kDarkTextColor),
+                        textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
                       ),
-                      child: const Text('View Orders', style: TextStyle(color: kDarkTextColor)),
+                      child: const Text('View Orders', style: TextStyle(color: Color(0xFF111827))),
                     ),
                   ),
                 ],
@@ -155,19 +162,19 @@ class VendorHomeScreen extends StatelessWidget {
             const SizedBox(height: 32),
             // Recent Orders Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     'Recent Orders',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: kDarkTextColor),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF111827)),
                   ),
                   TextButton(
                     onPressed: () {},
                     child: const Text(
                       'View all',
-                      style: TextStyle(color: kPurple, fontWeight: FontWeight.w700),
+                      style: TextStyle(color: Color(0xFFA855F7), fontWeight: FontWeight.w800),
                     ),
                   ),
                 ],
@@ -179,11 +186,11 @@ class VendorHomeScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  _buildOrderCard('ORD-156', 'John Smith', 'Pending', '5 items • 5 mins ago', '\$458.00', const Color(0xFFFFF7ED), const Color(0xFF9A3412)),
+                  _buildOrderCard('ORD-156', 'John Smith', 'Pending', '5 items • 5 mins ago', '\$458.00', const Color(0xFFFEF3C7), const Color(0xFFB45309)),
                   const SizedBox(height: 16),
-                  _buildOrderCard('ORD-155', 'Sarah Johnson', 'Processing', '2 items • 1 hour ago', '\$124.00', const Color(0xFFF0FDF4), const Color(0xFF166534)),
+                  _buildOrderCard('ORD-155', 'Sarah Johnson', 'Processing', '2 items • 1 hour ago', '\$124.00', const Color(0xFFD1FAE5), const Color(0xFF065F46)),
                   const SizedBox(height: 16),
-                  _buildOrderCard('ORD-154', 'Mike Wilson', 'Shipped', '8 items • 3 hours ago', '\$890.00', const Color(0xFFEAF5E9), const Color(0xFF45A225)),
+                  _buildOrderCard('ORD-154', 'Mike Wilson', 'Shipped', '8 items • 3 hours ago', '\$890.00', const Color(0xFFE0F2FE), const Color(0xFF075985)),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -197,24 +204,24 @@ class VendorHomeScreen extends StatelessWidget {
   Widget _buildStatCard(String value, String label, IconData icon) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.15),
+          color: Colors.white.withOpacity(0.12),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
         ),
         child: Column(
           children: [
             Icon(icon, color: Colors.white, size: 20),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             Text(
               value,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20, letterSpacing: -0.5),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               label,
-              style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11, fontWeight: FontWeight.w600),
+              style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11, fontWeight: FontWeight.w700),
             ),
           ],
         ),
@@ -224,15 +231,15 @@ class VendorHomeScreen extends StatelessWidget {
 
   Widget _buildOrderCard(String id, String user, String status, String details, String price, Color tagBg, Color tagText) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+            color: const Color(0xFF111827).withOpacity(0.04),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -250,14 +257,13 @@ class VendorHomeScreen extends StatelessWidget {
                 decoration: BoxDecoration(color: tagBg, borderRadius: BorderRadius.circular(16)),
                 child: Text(
                   status,
-                  style: TextStyle(color: tagText, fontWeight: FontWeight.w800, fontSize: 13),
+                  style: TextStyle(color: tagText, fontWeight: FontWeight.w900, fontSize: 13),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 user,
@@ -265,12 +271,12 @@ class VendorHomeScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(details, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.w500)),
-              Text(price, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF111827))),
+              Text(price, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: Color(0xFF111827))),
             ],
           ),
         ],
@@ -283,8 +289,13 @@ class HeaderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height - 60);
-    path.quadraticBezierTo(size.width / 2, size.height + 20, size.width, size.height - 60);
+    path.lineTo(0, size.height - 80);
+    // Deep U-Shape curve
+    path.cubicTo(
+      size.width * 0.25, size.height + 20, 
+      size.width * 0.75, size.height + 20, 
+      size.width, size.height - 80
+    );
     path.lineTo(size.width, 0);
     path.close();
     return path;
