@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../common/styles/app_colors.dart';
 
 class DriverHomeScreen extends ConsumerStatefulWidget {
@@ -238,7 +239,10 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       itemCount: jobs.length,
       itemBuilder: (context, index) {
         final job = jobs[index];
-        return _buildJobCard(job, darkText, midText, orange, green);
+        return GestureDetector(
+          onTap: () => context.push('/driver/submit-bid', extra: job),
+          child: _buildJobCard(job, darkText, midText, orange, green),
+        );
       },
     );
   }

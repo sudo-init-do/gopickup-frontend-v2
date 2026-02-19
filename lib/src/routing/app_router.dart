@@ -18,6 +18,7 @@ import '../features/driver/presentation/driver_home_screen.dart';
 import '../features/driver/presentation/driver_bids_screen.dart';
 import '../features/driver/presentation/driver_earnings_screen.dart';
 import '../features/driver/presentation/driver_profile_screen.dart';
+import '../features/driver/presentation/submit_bid_screen.dart';
 import '../features/vendor/presentation/vendor_home_screen.dart';
 import '../features/vendor/presentation/vendor_inventory_screen.dart';
 import '../features/vendor/presentation/vendor_profile_screen.dart';
@@ -55,6 +56,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/driver/registration',
         builder: (context, state) => const DriverRegistrationScreen(),
+      ),
+      GoRoute(
+        path: '/driver/submit-bid',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final job = state.extra as Map<String, dynamic>;
+          return SubmitBidScreen(job: job);
+        },
       ),
       GoRoute(
         path: '/chat/:id',
