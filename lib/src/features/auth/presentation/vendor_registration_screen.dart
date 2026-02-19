@@ -37,6 +37,7 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
     _storeNameController.addListener(_validateForm);
     _ownerNameController.addListener(_validateForm);
     _descriptionController.addListener(_validateForm);
+    _addressController.addListener(_validateForm);
   }
 
   void _validateForm() {
@@ -49,8 +50,7 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
       _descriptionController.text.isNotEmpty;
 
   bool get _isStep2Valid =>
-      _addressController.text.isNotEmpty &&
-      _cityController.text.isNotEmpty;
+      _addressController.text.isNotEmpty;
 
   @override
   void dispose() {
@@ -255,24 +255,51 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Store Location',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: kDarkTextColor),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Help customers find your physical store',
-          style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
-        ),
-        const SizedBox(height: 32),
-        _buildInputLabel('Business Address', kDarkTextColor),
-        _buildTextField(_addressController, 'e.g., 123 Business Way'),
+        _buildInputLabel('Store Address', kDarkTextColor),
+        _buildTextField(_addressController, 'Enter full address'),
         const SizedBox(height: 24),
-        _buildInputLabel('City', kDarkTextColor),
-        _buildTextField(_cityController, 'Enter city'),
+        
+        // Pin on map action
+        Row(
+          children: const [
+            Icon(Icons.location_on_rounded, color: Color(0xFFA855F7), size: 20),
+            SizedBox(width: 8),
+            Text(
+              'Pin location on map',
+              style: TextStyle(
+                color: Color(0xFFA855F7),
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 24),
-        _buildInputLabel('State / Province', kDarkTextColor),
-        _buildTextField(_stateController, 'Enter state'),
+
+        // Map Preview
+        Container(
+          width: double.infinity,
+          height: 220,
+          decoration: BoxDecoration(
+            color: const Color(0xFFF3F4F6).withOpacity(0.5),
+            borderRadius: BorderRadius.circular(32),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.location_on_outlined, size: 48, color: Color(0xFF94A3B8)),
+              SizedBox(height: 8),
+              Text(
+                'Map preview',
+                style: TextStyle(
+                  color: Color(0xFF94A3B8),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -330,29 +357,50 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
   }
 
   Widget _buildStepChip(String label, IconData icon, bool isActive, Color activeColor) {
+    bool isCompleted = false;
+    // Determine if step is completed based on current step index
+    if (label == 'Store Info' && _currentStep > 0) isCompleted = true;
+    if (label == 'Location' && _currentStep > 1) isCompleted = true;
+
+    Color bgColor = const Color(0xFFF3F4F6);
+    Color contentColor = const Color(0xFF6B7280);
+    Widget? prefix;
+
+    if (isActive) {
+      bgColor = activeColor;
+      contentColor = Colors.white;
+      prefix = Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 16),
+      );
+    } else if (isCompleted) {
+      bgColor = const Color(0xFFEAF5E9);
+      contentColor = const Color(0xFF45A225);
+      prefix = const Icon(Icons.check, color: Color(0xFF45A225), size: 16);
+    } else {
+      prefix = Icon(icon, color: contentColor, size: 16);
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: isActive ? activeColor : const Color(0xFFF3F4F6),
+        color: bgColor,
         borderRadius: BorderRadius.circular(32),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: isActive ? Colors.white.withOpacity(0.2) : Colors.transparent,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: isActive ? Colors.white : const Color(0xFF6B7280), size: 16),
-          ),
+          prefix,
           const SizedBox(width: 8),
           Text(
             label,
             style: TextStyle(
-              color: isActive ? Colors.white : const Color(0xFF6B7280),
-              fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+              color: contentColor,
+              fontWeight: FontWeight.w700,
               fontSize: 14,
             ),
           ),
