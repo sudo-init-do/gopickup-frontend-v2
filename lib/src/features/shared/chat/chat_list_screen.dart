@@ -25,7 +25,7 @@ class ChatListScreen extends ConsumerWidget {
           children: [
             // Header Section
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+              padding: const EdgeInsets.fromLTRB(28, 36, 28, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -35,36 +35,30 @@ class ChatListScreen extends ConsumerWidget {
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
                       color: kDarkTextColor,
-                      letterSpacing: -1,
+                      letterSpacing: -0.8,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
                   // Search Bar
                   Container(
-                    height: 54,
+                    height: 56,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
-                          blurRadius: 15,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                      border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
                     ),
                     child: TextField(
                       decoration: InputDecoration(
                         hintText: 'Search conversations...',
-                        hintStyle: const TextStyle(
-                          color: kLightTextColor,
+                        hintStyle: TextStyle(
+                          color: kMidTextColor.withOpacity(0.5),
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.search_rounded,
-                          color: kMidTextColor,
-                          size: 24,
+                          color: kMidTextColor.withOpacity(0.5),
+                          size: 26,
                         ),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -77,9 +71,13 @@ class ChatListScreen extends ConsumerWidget {
             
             // Conversations List
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+              child: ListView.separated(
+                padding: EdgeInsets.zero,
                 itemCount: chats.length,
+                separatorBuilder: (context, index) => Container(
+                  height: 1,
+                  color: const Color(0xFFF1F5F9),
+                ),
                 itemBuilder: (context, index) {
                   final chat = chats[index];
                   final otherUser = chat.participants.firstWhere((p) => p.id != 'me');
@@ -147,22 +145,21 @@ class _ChatListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
         child: Row(
           children: [
             // Avatar
             Container(
               width: 56,
               height: 56,
-              decoration: BoxDecoration(
-                color: kBrandGreen.withOpacity(0.08),
+              decoration: const BoxDecoration(
+                color: Color(0xFFF0FDF4),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.person_outline_rounded,
-                color: kBrandGreen,
+                color: Color(0xFF22C55E),
                 size: 28,
               ),
             ),
