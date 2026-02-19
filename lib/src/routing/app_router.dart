@@ -177,8 +177,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 route: '/driver/bids',
               ),
               NavigationItem(
-                unselectedIcon: Icons.account_balance_wallet_outlined,
-                selectedIcon: Icons.account_balance_wallet_rounded,
+                unselectedIcon: Icons.attach_money_rounded,
+                selectedIcon: Icons.attach_money_rounded,
                 label: 'Earnings',
                 route: '/driver/earnings',
               ),

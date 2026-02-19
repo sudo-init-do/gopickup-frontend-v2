@@ -69,7 +69,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
                       children: [
                         Icon(
                           isSelected ? item.selectedIcon : item.unselectedIcon,
-                          color: isSelected ? const Color(0xFF3B7D23) : const Color(0xFF94A3B8),
+                          color: isSelected ? const Color(0xFF45A225) : const Color(0xFF94A3B8),
                           size: 26,
                         ),
                         const SizedBox(height: 6),
@@ -78,7 +78,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                            color: isSelected ? const Color(0xFF3B7D23) : const Color(0xFF94A3B8),
+                            color: isSelected ? const Color(0xFF45A225) : const Color(0xFF94A3B8),
                             letterSpacing: -0.2,
                           ),
                         ),
