@@ -87,16 +87,16 @@ class ScaffoldWithNavBar extends StatelessWidget {
                             ),
                             if (isSelected) 
                               Container(
-                                margin: const EdgeInsets.only(top: 4),
-                                width: 4,
-                                height: 4,
+                                margin: const EdgeInsets.only(top: 6),
+                                width: 5,
+                                height: 5,
                                 decoration: const BoxDecoration(
                                   color: Color(0xFF45A225),
                                   shape: BoxShape.circle,
                                 ),
                               )
                             else
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 11),
                           ],
                         ),
                       ),
