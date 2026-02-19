@@ -17,101 +17,100 @@ class VendorHomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header Section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(top: 60, left: 24, right: 24, bottom: 40),
-              decoration: const BoxDecoration(
-                color: kPurple,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(40),
-                  bottomRight: Radius.circular(40),
+            // Header Section with Custom U-Curve
+            ClipPath(
+              clipper: HeaderClipper(),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(top: 60, left: 24, right: 24, bottom: 60),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFA855F7), // Vibrant Purple
                 ),
-              ),
-              child: Column(
-                children: [
-                  // Store Info Row
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          shape: BoxShape.circle,
+                child: Column(
+                  children: [
+                    // Store Info Row
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.storefront_rounded, color: Colors.white, size: 28),
                         ),
-                        child: const Icon(Icons.storefront_rounded, color: Colors.white, size: 28),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'BuildMart Supplies',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                const Icon(Icons.star_rounded, color: Color(0xFFFFD700), size: 18),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '4.8 (124 reviews)',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'BuildMart Supplies',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
                                 ),
-                              ],
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.star_rounded, color: Color(0xFFFFD700), size: 18),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '4.8 (124 reviews)',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.9),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Notification Icon
+                        Stack(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.notifications_none_rounded, color: Colors.white),
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      // Notification Icon
-                      Stack(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(Icons.notifications_none_rounded, color: Colors.white),
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: Container(
-                              width: 10,
-                              height: 10,
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  // Stats Grid
-                  Row(
-                    children: [
-                      _buildStatCard('24', 'Products', Icons.inventory_2_outlined),
-                      const SizedBox(width: 12),
-                      _buildStatCard('156', 'Orders', Icons.shopping_cart_outlined),
-                      const SizedBox(width: 12),
-                      _buildStatCard('\$12.4k', 'Revenue', Icons.attach_money_rounded),
-                      const SizedBox(width: 12),
-                      _buildStatCard('2.3k', 'Views', Icons.visibility_outlined),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    // Stats Grid
+                    Row(
+                      children: [
+                        _buildStatCard('24', 'Products', Icons.inventory_2_outlined),
+                        const SizedBox(width: 12),
+                        _buildStatCard('156', 'Orders', Icons.shopping_cart_outlined),
+                        const SizedBox(width: 12),
+                        _buildStatCard('\$12.4k', 'Revenue', Icons.attach_money_rounded),
+                        const SizedBox(width: 12),
+                        _buildStatCard('2.3k', 'Views', Icons.visibility_outlined),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -142,7 +141,7 @@ class VendorHomeScreen extends StatelessWidget {
                       onPressed: () {},
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 18),
-                        side: const BorderSide(color: Color(0xFFE5E7EB), width: 1.5),
+                        side: const BorderSide(color: Color(0xFFF1F5F9), width: 1.5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                         textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: kDarkTextColor),
                       ),
@@ -182,9 +181,9 @@ class VendorHomeScreen extends StatelessWidget {
                 children: [
                   _buildOrderCard('ORD-156', 'John Smith', 'Pending', '5 items • 5 mins ago', '\$458.00', const Color(0xFFFFF7ED), const Color(0xFF9A3412)),
                   const SizedBox(height: 16),
-                  _buildOrderCard('ORD-155', 'Sarah Johnson', 'Processing', '2 items • 1 hour ago', '\$124.00', const Color(0xFFEAF5E9), const Color(0xFF45A225)),
+                  _buildOrderCard('ORD-155', 'Sarah Johnson', 'Processing', '2 items • 1 hour ago', '\$124.00', const Color(0xFFF0FDF4), const Color(0xFF166534)),
                   const SizedBox(height: 16),
-                  _buildOrderCard('ORD-154', 'Mike Wilson', 'Shipped', '8 items • 3 hours ago', '\$890.00', const Color(0xFFF0FDF4), const Color(0xFF166534)),
+                  _buildOrderCard('ORD-154', 'Mike Wilson', 'Shipped', '8 items • 3 hours ago', '\$890.00', const Color(0xFFEAF5E9), const Color(0xFF45A225)),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -231,9 +230,9 @@ class VendorHomeScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -270,18 +269,27 @@ class VendorHomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                details,
-                style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.w500),
-              ),
-              Text(
-                price,
-                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF111827)),
-              ),
+              Text(details, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.w500)),
+              Text(price, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF111827))),
             ],
           ),
         ],
       ),
     );
   }
+}
+
+class HeaderClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
+    path.lineTo(0, size.height - 60);
+    path.quadraticBezierTo(size.width / 2, size.height + 20, size.width, size.height - 60);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
