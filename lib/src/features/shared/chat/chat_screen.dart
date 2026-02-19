@@ -42,35 +42,32 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final otherUser = widget.chat.participants.firstWhere((p) => p.id != 'me');
 
-    // Refined color palette
+    // Refined color palette to match mockup
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF6B7280);
-    const kBrandGreen = Color(0xFF388E3C);
-    const kLightBgColor = Color(0xFFF1F5F9);
+    const kBrandGreen = Color(0xFF45A225); // Vibrant green from mockup
+    const kIncomingBg = Color(0xFFF1F5F9);
+    const kChatBg = Color(0xFFF8F9FA);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kChatBg,
       appBar: _buildAppBar(context, otherUser.name, kDarkTextColor, kBrandGreen),
       body: Column(
         children: [
-          _buildOrderHeader(kMidTextColor, kBrandGreen),
           Expanded(
-            child: Container(
-              color: const Color(0xFFFAFAFA),
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                itemCount: _messages.length,
-                itemBuilder: (context, index) {
-                  final message = _messages[index];
-                  return _MessageBubble(
-                    message: message,
-                    kBrandGreen: kBrandGreen,
-                    kDarkTextColor: kDarkTextColor,
-                    kMidTextColor: kMidTextColor,
-                    kLightBgColor: kLightBgColor,
-                  );
-                },
-              ),
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                return _MessageBubble(
+                  message: message,
+                  kBrandGreen: kBrandGreen,
+                  kDarkTextColor: kDarkTextColor,
+                  kMidTextColor: kMidTextColor,
+                  kIncomingBg: kIncomingBg,
+                );
+              },
             ),
           ),
           _ChatInput(
@@ -87,96 +84,90 @@ class _ChatScreenState extends State<ChatScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
+      toolbarHeight: 80,
       centerTitle: false,
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: darkText, size: 24),
-        onPressed: () => Navigator.pop(context),
-      ),
-      titleSpacing: 0,
-      title: Row(
-        children: [
-          Container(
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 12),
+        child: Center(
+          child: Container(
             width: 44,
             height: 44,
             decoration: const BoxDecoration(
-              color: Color(0xFFF0FDF4),
+              color: Color(0xFFF3F4F6),
               shape: BoxShape.circle,
             ),
-            child: Center(
-              child: Text(
-                name[0].toUpperCase(),
-                style: const TextStyle(
-                  color: Color(0xFF22C55E),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back, color: darkText, size: 20),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+        ),
+      ),
+      titleSpacing: 12,
+      title: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: const BoxDecoration(
+              color: Color(0xFFE8F5E9),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: Icon(Icons.person_outline_rounded, color: Color(0xFF4CAF50), size: 28),
             ),
           ),
           const SizedBox(width: 12),
-          Text(
-            name,
-            style: TextStyle(
-              color: darkText,
-              fontSize: 19,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                name,
+                style: TextStyle(
+                  color: darkText,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const Text(
+                'Online',
+                style: TextStyle(
+                  color: Color(0xFF4CAF50),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ],
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.more_vert, color: Color(0xFF94A3B8)),
-          onPressed: () {},
-        ),
+        _buildCircularAction(Icons.phone_outlined),
         const SizedBox(width: 8),
+        _buildCircularAction(Icons.more_vert),
+        const SizedBox(width: 16),
       ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Container(
+          color: const Color(0xFFF1F5F9),
+          height: 1,
+        ),
+      ),
     );
   }
 
-  Widget _buildOrderHeader(Color midText, Color brandGreen) {
+  Widget _buildCircularAction(IconData icon) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        border: Border(
-          bottom: BorderSide(color: Colors.black.withOpacity(0.04)),
-        ),
+      width: 44,
+      height: 44,
+      decoration: const BoxDecoration(
+        color: Color(0xFFF3F4F6),
+        shape: BoxShape.circle,
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.inventory_2_outlined, size: 20, color: Color(0xFF94A3B8)),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Text(
-              'Order #ORD-12345',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF475569),
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {},
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              'View Details',
-              style: TextStyle(
-                color: brandGreen,
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-        ],
-      ),
+      child: Icon(icon, color: const Color(0xFF6B7280), size: 20),
     );
   }
 }
@@ -186,14 +177,14 @@ class _MessageBubble extends StatelessWidget {
   final Color kBrandGreen;
   final Color kDarkTextColor;
   final Color kMidTextColor;
-  final Color kLightBgColor;
+  final Color kIncomingBg;
 
   const _MessageBubble({
     required this.message,
     required this.kBrandGreen,
     required this.kDarkTextColor,
     required this.kMidTextColor,
-    required this.kLightBgColor,
+    required this.kIncomingBg,
   });
 
   @override
@@ -206,32 +197,39 @@ class _MessageBubble extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
-              color: message.isMe ? kBrandGreen : const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(24),
+              color: message.isMe ? kBrandGreen : kIncomingBg,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(24),
+                topRight: const Radius.circular(24),
+                bottomLeft: Radius.circular(message.isMe ? 24 : 0),
+                bottomRight: Radius.circular(message.isMe ? 0 : 24),
+              ),
             ),
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.75,
             ),
-            child: Text(
-              message.content,
-              style: TextStyle(
-                color: message.isMe ? Colors.white : kDarkTextColor.withOpacity(0.9),
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                height: 1.4,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Text(
-              DateFormat('h:mm a').format(message.timestamp),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: kMidTextColor.withOpacity(0.6),
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message.content,
+                  style: TextStyle(
+                    color: message.isMe ? Colors.white : kDarkTextColor.withOpacity(0.9),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  DateFormat('h:mm a').format(message.timestamp),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: message.isMe ? Colors.white.withOpacity(0.8) : kMidTextColor.withOpacity(0.6),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -255,35 +253,26 @@ class _ChatInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(
-        20,
         16,
-        20,
+        16,
+        16,
         MediaQuery.of(context).padding.bottom + 16,
       ),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.04))),
+        border: Border(top: BorderSide(color: Color(0xFFF1F5F9))),
       ),
       child: Row(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF1F5F9),
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.add, color: Color(0xFF64748B), size: 24),
-              onPressed: () {},
-            ),
-          ),
+          _buildInputIcon(Icons.attachment_rounded),
+          const SizedBox(width: 8),
+          _buildInputIcon(Icons.image_outlined),
           const SizedBox(width: 12),
           Expanded(
             child: Container(
               height: 52,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFFFAFAFA),
                 borderRadius: BorderRadius.circular(26),
                 border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
               ),
@@ -293,29 +282,49 @@ class _ChatInput extends StatelessWidget {
                   hintText: 'Type a message...',
                   hintStyle: TextStyle(
                     color: Color(0xFF94A3B8),
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.w500,
                   ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 20),
                 ),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF1E293B),
-                ),
               ),
             ),
           ),
           const SizedBox(width: 12),
-          IconButton(
-            onPressed: onSend,
-            icon: const Icon(Icons.send_rounded),
-            color: kBrandGreen,
-            iconSize: 32,
+          GestureDetector(
+            onTap: onSend,
+            child: Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: kBrandGreen,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: kBrandGreen.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.send_rounded, color: Colors.white, size: 24),
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildInputIcon(IconData icon) {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: const BoxDecoration(
+        color: Color(0xFFF3F4F6),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, color: const Color(0xFF6B7280), size: 20),
     );
   }
 }
