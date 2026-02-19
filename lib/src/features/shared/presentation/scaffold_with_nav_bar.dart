@@ -50,45 +50,72 @@ class ScaffoldWithNavBar extends StatelessWidget {
             ),
           ),
         ),
-        child: SafeArea(
-          child: Container(
-            height: 70,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(items.length, (index) {
-                final item = items[index];
-                final isSelected = selectedIndex == index;
-                
-                return Expanded(
-                  child: GestureDetector(
-                    onTap: () => context.go(item.route),
-                    behavior: HitTestBehavior.opaque,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          isSelected ? item.selectedIcon : item.unselectedIcon,
-                          color: isSelected ? const Color(0xFF45A225) : const Color(0xFF94A3B8),
-                          size: 26,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SafeArea(
+              child: Container(
+                height: 70,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: List.generate(items.length, (index) {
+                    final item = items[index];
+                    final isSelected = selectedIndex == index;
+                    
+                    return Expanded(
+                      child: GestureDetector(
+                        onTap: () => context.go(item.route),
+                        behavior: HitTestBehavior.opaque,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              isSelected ? item.selectedIcon : item.unselectedIcon,
+                              color: isSelected ? const Color(0xFF45A225) : const Color(0xFF94A3B8),
+                              size: 26,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              item.label,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                                color: isSelected ? const Color(0xFF45A225) : const Color(0xFF94A3B8),
+                                letterSpacing: -0.2,
+                              ),
+                            ),
+                            if (isSelected) 
+                              Container(
+                                margin: const EdgeInsets.only(top: 4),
+                                width: 4,
+                                height: 4,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF45A225),
+                                  shape: BoxShape.circle,
+                                ),
+                              )
+                            else
+                              const SizedBox(height: 8),
+                          ],
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          item.label,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                            color: isSelected ? const Color(0xFF45A225) : const Color(0xFF94A3B8),
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
+                      ),
+                    );
+                  }),
+                ),
+              ),
             ),
-          ),
+            // Bottom Indicator pill
+            Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              width: 140,
+              height: 5,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E7EB),
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ],
         ),
       ),
     );

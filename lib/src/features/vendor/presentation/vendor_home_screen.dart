@@ -17,149 +17,168 @@ class VendorHomeScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header Section with Deeper U-Curve
-            ClipPath(
-              clipper: HeaderClipper(),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.only(top: 60, left: 24, right: 24, bottom: 80),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Color(0xFFA855F7), Color(0xFF9333EA)],
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    // Store Info Row
-                    Row(
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                // Purple Header with Curve
+                ClipPath(
+                  clipper: HeaderClipper(),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(top: 60, left: 24, right: 24, bottom: 120),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFFA855F7), Color(0xFF9333EA)],
+                      ),
+                    ),
+                    child: Column(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.storefront_rounded, color: Colors.white, size: 28),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'BuildMart Supplies',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(Icons.star_rounded, color: Color(0xFFFFD700), size: 18),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '4.8 (124 reviews)',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        // Notification Icon
-                        Stack(
+                        // Store Info Row
+                        Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.notifications_none_rounded, color: Colors.white),
+                              child: const Icon(Icons.storefront_rounded, color: Colors.white, size: 28),
                             ),
-                            Positioned(
-                              top: 8,
-                              right: 8,
-                              child: Container(
-                                width: 10,
-                                height: 10,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFEF4444),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: const Color(0xFFA855F7), width: 1.5),
-                                ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'BuildMart Supplies',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.star_rounded, color: Color(0xFFFFD700), size: 18),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '4.8 (124 reviews)',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
+                            // Notification Icon
+                            Stack(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.notifications_none_rounded, color: Colors.white),
+                                ),
+                                Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFEF4444),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: const Color(0xFFA855F7), width: 1.5),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        // Stats Grid
+                        Row(
+                          children: [
+                            _buildStatCard('24', 'Products', Icons.inventory_2_outlined),
+                            const SizedBox(width: 10),
+                            _buildStatCard('156', 'Orders', Icons.shopping_cart_outlined),
+                            const SizedBox(width: 10),
+                            _buildStatCard('\$12.4k', 'Revenue', Icons.attach_money_rounded),
+                            const SizedBox(width: 10),
+                            _buildStatCard('2.3k', 'Views', Icons.visibility_outlined),
                           ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 32),
-                    // Stats Grid
-                    Row(
-                      children: [
-                        _buildStatCard('24', 'Products', Icons.inventory_2_outlined),
-                        const SizedBox(width: 10),
-                        _buildStatCard('156', 'Orders', Icons.shopping_cart_outlined),
-                        const SizedBox(width: 10),
-                        _buildStatCard('\$12.4k', 'Revenue', Icons.attach_money_rounded),
-                        const SizedBox(width: 10),
-                        _buildStatCard('2.3k', 'Views', Icons.visibility_outlined),
+                  ),
+                ),
+                // Floating Action Bar (Overlapping)
+                Positioned(
+                  bottom: -40,
+                  left: 20,
+                  right: 20,
+                  child: Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(32),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 40,
+                          offset: const Offset(0, 15),
+                        ),
                       ],
                     ),
-                  ],
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
+                            label: const Text('Add Product'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF45A225),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                              textStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: -0.2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {},
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              side: const BorderSide(color: Color(0xFFF1F5F9), width: 1.5),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                              textStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: -0.2),
+                            ),
+                            child: const Text('View Orders', style: TextStyle(color: Color(0xFF111827))),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
 
-            const SizedBox(height: 12),
-            // Action Buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.add_rounded, size: 24),
-                      label: const Text('Add Product'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF45A225),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                        textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        side: const BorderSide(color: Color(0xFFF1F5F9), width: 1.5),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                        textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                      ),
-                      child: const Text('View Orders', style: TextStyle(color: Color(0xFF111827))),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 32),
+            const SizedBox(height: 70),
             // Recent Orders Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
@@ -181,6 +200,7 @@ class VendorHomeScreen extends StatelessWidget {
               ),
             ),
 
+
             // Orders List
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -191,7 +211,7 @@ class VendorHomeScreen extends StatelessWidget {
                   _buildOrderCard('ORD-155', 'Sarah Johnson', 'Processing', '2 items • 1 hour ago', '\$124.00', const Color(0xFFD1FAE5), const Color(0xFF065F46)),
                   const SizedBox(height: 16),
                   _buildOrderCard('ORD-154', 'Mike Wilson', 'Shipped', '8 items • 3 hours ago', '\$890.00', const Color(0xFFE0F2FE), const Color(0xFF075985)),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 120), // Bottom padding for navbar
                 ],
               ),
             ),
@@ -289,13 +309,8 @@ class HeaderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
-    path.lineTo(0, size.height - 80);
-    // Deep U-Shape curve
-    path.cubicTo(
-      size.width * 0.25, size.height + 20, 
-      size.width * 0.75, size.height + 20, 
-      size.width, size.height - 80
-    );
+    path.lineTo(0, size.height - 40);
+    path.quadraticBezierTo(size.width / 2, size.height + 20, size.width, size.height - 40);
     path.lineTo(size.width, 0);
     path.close();
     return path;
