@@ -15,31 +15,21 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
   final _amountController = TextEditingController();
   final _timeController = TextEditingController();
   final _messageController = TextEditingController();
-  bool _isFormValid = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _amountController.addListener(_validateForm);
-    _timeController.addListener(_validateForm);
-    _messageController.addListener(_validateForm);
-  }
-
-  void _validateForm() {
-    final isValid = _amountController.text.isNotEmpty &&
-        _timeController.text.isNotEmpty &&
-        _messageController.text.isNotEmpty;
-    if (isValid != _isFormValid) {
-      setState(() => _isFormValid = isValid);
-    }
-  }
 
   void _adjustAmount(int delta) {
-    final current = int.tryParse(_amountController.text) ?? 100;
-    final newValue = current + delta;
-    if (newValue >= 0) {
-      _amountController.text = newValue.toString();
-    }
+    setState(() {
+      final current = int.tryParse(_amountController.text) ?? 100;
+      final newValue = current + delta;
+      if (newValue >= 0) {
+        _amountController.text = newValue.toString();
+      }
+    });
+  }
+
+  bool _checkIfFormValid() {
+    return _amountController.text.trim().isNotEmpty &&
+        _timeController.text.trim().isNotEmpty &&
+        _messageController.text.trim().isNotEmpty;
   }
 
   @override
@@ -56,6 +46,8 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
     const kMidTextColor = Color(0xFF6B7280);
     const kGreenColor = Color(0xFF45A225);
     const kDisabledColor = Color(0xFFA5C498);
+    
+    final isFormValid = _checkIfFormValid();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -94,19 +86,86 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
             const SizedBox(height: 32),
             _buildInputLabel('Your Bid Amount', kDarkTextColor),
             const SizedBox(height: 12),
-            _buildBidAmountInput(kGreenColor),
+            _buildCustomInput(
+              controller: _amountController,
+              hint: 'Enter amount',
+              prefix: Icons.attach_money,
+              activeColor: kGreenColor,
+              keyboardType: TextInputType.number,
+              suffix: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => _adjustAmount(5),
+                    child: const Icon(Icons.keyboard_arrow_up_rounded, color: Color(0xFF94A3B8), size: 18),
+                  ),
+                  GestureDetector(
+                    onTap: () => _adjustAmount(-5),
+                    child: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF94A3B8), size: 18),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 24),
             _buildInputLabel('Estimated Delivery Time', kDarkTextColor),
             const SizedBox(height: 12),
-            _buildDeliveryTimeInput(),
+            _buildCustomInput(
+              controller: _timeController,
+              hint: 'e.g., 45 minutes',
+              prefix: Icons.access_time,
+              activeColor: kGreenColor,
+            ),
             const SizedBox(height: 24),
             _buildInputLabel('Message to Client (Optional)', kDarkTextColor),
             const SizedBox(height: 12),
-            _buildMessageInput(),
+            _buildCustomInput(
+              controller: _messageController,
+              hint: 'Introduce yourself and explain why you\'re the best choice...',
+              activeColor: kGreenColor,
+              maxLines: 4,
+            ),
             const SizedBox(height: 40),
-            _buildSubmitButton(_isFormValid ? kGreenColor : kDisabledColor),
+            _buildSubmitButton(isFormValid ? kGreenColor : kDisabledColor, isFormValid),
             const SizedBox(height: 24),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomInput({
+    required TextEditingController controller,
+    required String hint,
+    IconData? prefix,
+    required Color activeColor,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+    Widget? suffix,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: controller.text.trim().isNotEmpty ? activeColor : const Color(0xFFF1F5F9),
+          width: 1.5,
+        ),
+      ),
+      child: TextField(
+        controller: controller,
+        onChanged: (_) => setState(() {}),
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w400, fontSize: 15),
+          prefixIcon: prefix != null ? Padding(
+            padding: const EdgeInsets.only(left: 20, right: 12),
+            child: Icon(prefix, color: const Color(0xFF94A3B8)),
+          ) : null,
+          suffixIcon: suffix,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(20),
         ),
       ),
     );
@@ -238,101 +297,12 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
     return Text(label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: darkText));
   }
 
-  Widget _buildBidAmountInput(Color activeBorder) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: _amountController.text.isNotEmpty ? activeBorder : const Color(0xFFF1F5F9),
-          width: 1.5,
-        ),
-      ),
-      child: TextField(
-        controller: _amountController,
-        keyboardType: TextInputType.number,
-        onChanged: (_) => setState(() {}),
-        decoration: InputDecoration(
-          hintText: 'Enter amount',
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w400),
-          prefixIcon: const Padding(
-            padding: EdgeInsets.only(left: 20, right: 12),
-            child: Icon(Icons.attach_money, color: Color(0xFF94A3B8)),
-          ),
-          suffixIcon: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () => _adjustAmount(5),
-                child: const Icon(Icons.keyboard_arrow_up_rounded, color: Color(0xFF94A3B8), size: 18),
-              ),
-              GestureDetector(
-                onTap: () => _adjustAmount(-5),
-                child: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF94A3B8), size: 18),
-              ),
-            ],
-          ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 20),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDeliveryTimeInput() {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: _timeController.text.isNotEmpty ? const Color(0xFFF1F5F9) : const Color(0xFFF1F5F9),
-          width: 1.5,
-        ),
-      ),
-      child: TextField(
-        controller: _timeController,
-        onChanged: (_) => setState(() {}),
-        decoration: const InputDecoration(
-          hintText: 'e.g., 45 minutes',
-          hintStyle: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w400),
-          prefixIcon: Padding(
-            padding: EdgeInsets.only(left: 20, right: 12),
-            child: Icon(Icons.access_time, color: Color(0xFF94A3B8)),
-          ),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 20),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMessageInput() {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
-      ),
-      child: TextField(
-        controller: _messageController,
-        onChanged: (_) => setState(() {}),
-        maxLines: 4,
-        decoration: const InputDecoration(
-          hintText: 'Introduce yourself and explain why you\'re the\nbest choice...',
-          hintStyle: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w400, height: 1.5),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.all(20),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSubmitButton(Color bgColor) {
+  Widget _buildSubmitButton(Color bgColor, bool isEnabled) {
     return SizedBox(
       width: double.infinity,
       height: 64,
       child: ElevatedButton(
-        onPressed: _isFormValid
+        onPressed: isEnabled
             ? () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Bid submitted successfully!'), backgroundColor: Color(0xFF45A225)),
