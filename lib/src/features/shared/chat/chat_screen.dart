@@ -42,38 +42,41 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final otherUser = widget.chat.participants.firstWhere((p) => p.id != 'me');
 
-    // Design tokens from high-fidelity components
+    // Refined color palette
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF6B7280);
-    const kLightTextColor = Color(0xFF9CA3AF);
-    const kBrandGreen = Color(0xFF3B7D23);
+    const kBrandGreen = Color(0xFF388E3C);
+    const kLightBgColor = Color(0xFFF1F5F9);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: Colors.white,
       appBar: _buildAppBar(context, otherUser.name, kDarkTextColor, kBrandGreen),
       body: Column(
         children: [
           _buildOrderHeader(kMidTextColor, kBrandGreen),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return _MessageBubble(
-                  message: message,
-                  kBrandGreen: kBrandGreen,
-                  kDarkTextColor: kDarkTextColor,
-                  kMidTextColor: kMidTextColor,
-                );
-              },
+            child: Container(
+              color: const Color(0xFFFAFAFA),
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                itemCount: _messages.length,
+                itemBuilder: (context, index) {
+                  final message = _messages[index];
+                  return _MessageBubble(
+                    message: message,
+                    kBrandGreen: kBrandGreen,
+                    kDarkTextColor: kDarkTextColor,
+                    kMidTextColor: kMidTextColor,
+                    kLightBgColor: kLightBgColor,
+                  );
+                },
+              ),
             ),
           ),
           _ChatInput(
             controller: _controller,
             onSend: _sendMessage,
             kBrandGreen: kBrandGreen,
-            kLightTextColor: kLightTextColor,
           ),
         ],
       ),
@@ -86,25 +89,25 @@ class _ChatScreenState extends State<ChatScreen> {
       elevation: 0,
       centerTitle: false,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_rounded, color: darkText, size: 24),
+        icon: Icon(Icons.arrow_back, color: darkText, size: 24),
         onPressed: () => Navigator.pop(context),
       ),
       titleSpacing: 0,
       title: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: brandGreen.withOpacity(0.08),
+            width: 44,
+            height: 44,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF0FDF4),
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Text(
-                name[0],
-                style: TextStyle(
-                  color: brandGreen,
-                  fontSize: 16,
+                name[0].toUpperCase(),
+                style: const TextStyle(
+                  color: Color(0xFF22C55E),
+                  fontSize: 18,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -115,7 +118,7 @@ class _ChatScreenState extends State<ChatScreen> {
             name,
             style: TextStyle(
               color: darkText,
-              fontSize: 18,
+              fontSize: 19,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.5,
             ),
@@ -124,47 +127,42 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.more_vert_rounded, color: Color(0xFF94A3B8)),
+          icon: const Icon(Icons.more_vert, color: Color(0xFF94A3B8)),
           onPressed: () {},
         ),
+        const SizedBox(width: 8),
       ],
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(1),
-        child: Container(
-          color: Colors.black.withOpacity(0.03),
-          height: 1,
-        ),
-      ),
     );
   }
 
   Widget _buildOrderHeader(Color midText, Color brandGreen) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFF9FAFB),
         border: Border(
-          bottom: BorderSide(color: Colors.black.withOpacity(0.02)),
+          bottom: BorderSide(color: Colors.black.withOpacity(0.04)),
         ),
       ),
       child: Row(
         children: [
-          Icon(Icons.inventory_2_outlined, size: 18, color: midText.withOpacity(0.6)),
-          const SizedBox(width: 8),
-          Text(
-            'Order #ORD-12345',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: midText,
+          const Icon(Icons.inventory_2_outlined, size: 20, color: Color(0xFF94A3B8)),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Text(
+              'Order #ORD-12345',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF475569),
+              ),
             ),
           ),
-          const Spacer(),
           TextButton(
             onPressed: () {},
             style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
@@ -172,7 +170,7 @@ class _ChatScreenState extends State<ChatScreen> {
               'View Details',
               style: TextStyle(
                 color: brandGreen,
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -188,38 +186,28 @@ class _MessageBubble extends StatelessWidget {
   final Color kBrandGreen;
   final Color kDarkTextColor;
   final Color kMidTextColor;
+  final Color kLightBgColor;
 
   const _MessageBubble({
     required this.message,
     required this.kBrandGreen,
     required this.kDarkTextColor,
     required this.kMidTextColor,
+    required this.kLightBgColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 24),
       child: Column(
         crossAxisAlignment: message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
               color: message.isMe ? kBrandGreen : const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(20),
-                topRight: const Radius.circular(20),
-                bottomLeft: Radius.circular(message.isMe ? 20 : 4),
-                bottomRight: Radius.circular(message.isMe ? 4 : 20),
-              ),
-              boxShadow: message.isMe ? [
-                BoxShadow(
-                  color: kBrandGreen.withOpacity(0.12),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                )
-              ] : null,
+              borderRadius: BorderRadius.circular(24),
             ),
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.75,
@@ -227,20 +215,23 @@ class _MessageBubble extends StatelessWidget {
             child: Text(
               message.content,
               style: TextStyle(
-                color: message.isMe ? Colors.white : kDarkTextColor.withOpacity(0.8),
-                fontSize: 15,
+                color: message.isMe ? Colors.white : kDarkTextColor.withOpacity(0.9),
+                fontSize: 16,
                 fontWeight: FontWeight.w500,
                 height: 1.4,
               ),
             ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            DateFormat('h:mm a').format(message.timestamp),
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: kMidTextColor.withOpacity(0.5),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              DateFormat('h:mm a').format(message.timestamp),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: kMidTextColor.withOpacity(0.6),
+              ),
             ),
           ),
         ],
@@ -253,13 +244,11 @@ class _ChatInput extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
   final Color kBrandGreen;
-  final Color kLightTextColor;
 
   const _ChatInput({
     required this.controller,
     required this.onSend,
     required this.kBrandGreen,
-    required this.kLightTextColor,
   });
 
   @override
@@ -273,23 +262,19 @@ class _ChatInput extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 20,
-            offset: const Offset(0, -10),
-          ),
-        ],
+        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.04))),
       ),
       child: Row(
         children: [
           Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF1F5F9),
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: const Icon(Icons.add_rounded, color: Color(0xFF64748B), size: 24),
+              icon: const Icon(Icons.add, color: Color(0xFF64748B), size: 24),
               onPressed: () {},
             ),
           ),
@@ -298,23 +283,24 @@ class _ChatInput extends StatelessWidget {
             child: Container(
               height: 52,
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(26),
+                border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
               ),
               child: TextField(
                 controller: controller,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Type a message...',
                   hintStyle: TextStyle(
-                    color: kLightTextColor.withOpacity(0.7),
-                    fontSize: 15,
+                    color: Color(0xFF94A3B8),
+                    fontSize: 16,
                     fontWeight: FontWeight.w500,
                   ),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 20),
                 ),
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                   color: Color(0xFF1E293B),
                 ),
@@ -322,23 +308,11 @@ class _ChatInput extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          GestureDetector(
-            onTap: onSend,
-            child: Container(
-              width: 52,
-              height: 52,
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
-                shape: BoxShape.circle,
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.send_rounded,
-                  color: Color(0xFF3B7D23),
-                  size: 28,
-                ),
-              ),
-            ),
+          IconButton(
+            onPressed: onSend,
+            icon: const Icon(Icons.send_rounded),
+            color: kBrandGreen,
+            iconSize: 32,
           ),
         ],
       ),
