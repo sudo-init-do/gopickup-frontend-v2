@@ -22,6 +22,9 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
   final _cityController = TextEditingController();
   final _stateController = TextEditingController();
 
+  // Verification Controllers
+  final _registrationController = TextEditingController();
+
   final List<String> _categories = [
     'Building Materials',
     'Electrical Supplies',
@@ -38,6 +41,7 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
     _ownerNameController.addListener(_validateForm);
     _descriptionController.addListener(_validateForm);
     _addressController.addListener(_validateForm);
+    _registrationController.addListener(_validateForm);
   }
 
   void _validateForm() {
@@ -52,6 +56,9 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
   bool get _isStep2Valid =>
       _addressController.text.isNotEmpty;
 
+  bool get _isStep3Valid =>
+      _registrationController.text.isNotEmpty;
+
   @override
   void dispose() {
     _storeNameController.dispose();
@@ -60,6 +67,7 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
     _addressController.dispose();
     _cityController.dispose();
     _stateController.dispose();
+    _registrationController.dispose();
     super.dispose();
   }
 
@@ -72,7 +80,9 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
     const kGreenButton = Color(0xFFA5C498);
     const kActiveGreen = Color(0xFF45A225);
 
-    bool isCurrentStepValid = _currentStep == 0 ? _isStep1Valid : (_currentStep == 1 ? _isStep2Valid : true);
+    bool isCurrentStepValid = _currentStep == 0
+        ? _isStep1Valid
+        : (_currentStep == 1 ? _isStep2Valid : _isStep3Valid);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -147,7 +157,7 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _currentStep == 2 ? 'Complete' : 'Continue',
+                        _currentStep == 2 ? 'Complete Setup' : 'Continue',
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                       ),
                       const SizedBox(width: 8),
@@ -308,19 +318,76 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Verification',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: kDarkTextColor),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Upload documents to verify your business',
-          style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+        // Business Verification Header Card
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: kPurple.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(Icons.business_rounded, color: kPurple, size: 28),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Business Verification',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF111827),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Verify your business to start selling',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: kMidTextColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 32),
-        _buildFileUploadCard('Government ID', 'Upload owner\'s identity document', kPurple),
-        const SizedBox(height: 16),
-        _buildFileUploadCard('Business License', 'Upload your store\'s operating license', kPurple),
+
+        _buildInputLabel('Business Registration Number', kDarkTextColor),
+        _buildTextField(_registrationController, 'Enter registration number'),
+        const SizedBox(height: 32),
+
+        // Note section
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF7ED),
+            borderRadius: BorderRadius.circular(32),
+          ),
+          child: const Text(
+            'Note: Verification may take 1-2 business days. You can still set up your store while waiting.',
+            style: TextStyle(
+              color: Color(0xFF9A3412),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+            ),
+          ),
+        ),
       ],
     );
   }
