@@ -19,191 +19,232 @@ class VendorWalletScreen extends StatelessWidget {
             // Header
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
                     'Wallet',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w900,
-                      color: kDarkTextColor,
+                      color: Color(0xFF111827),
                       letterSpacing: -0.5,
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF3F4F6),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(Icons.more_horiz_rounded, color: kDarkTextColor),
-                  ),
-                ],
-              ),
-            ),
-
-            // Main Wallet Card
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF111827), Color(0xFF374151)],
-                ),
-                borderRadius: BorderRadius.circular(32),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF111827).withOpacity(0.25),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Total Balance',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            '\$12,450.00',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: -1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: kBrandGreen,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          ),
-                          child: const Text(
-                            'Withdraw',
-                            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            side: BorderSide(color: Colors.white.withOpacity(0.2), width: 1.5),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          ),
-                          child: const Text(
-                            'Top Up',
-                            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 32),
-
-            // Transactions Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Transactions',
+                  SizedBox(height: 4),
+                  Text(
+                    'Manage your earnings',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: kDarkTextColor,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      'See All',
-                      style: TextStyle(
-                        color: kPurple,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 14,
-                      ),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF64748B),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 8),
-
-            // Transactions List
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 children: [
+                  // Main Wallet Card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: kPurple,
+                      borderRadius: BorderRadius.circular(32),
+                      boxShadow: [
+                        BoxShadow(
+                          color: kPurple.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Available Balance',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          '\$4,850.00',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 36,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -1,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '+ \$890.00 pending',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () {},
+                            icon: const Icon(Icons.south_west_rounded, size: 18),
+                            label: const Text('Withdraw to Bank'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                              textStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Bank Account Section
+                  const Text(
+                    'Bank Account',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(32),
+                      border: Border.all(color: kLightBorderColor, width: 1.5),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF3E8FF),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(Icons.account_balance_rounded, color: Color(0xFFA855F7), size: 24),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'First National Bank',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF111827),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '•••• 4532',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF64748B),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDCFCE7),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Text(
+                            'Verified',
+                            style: TextStyle(
+                              color: Color(0xFF16A34A),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // Transactions Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Transactions',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          color: kDarkTextColor,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          'View all',
+                          style: TextStyle(
+                            color: kPurple,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Transactions List
                   _buildTransactionItem(
-                    'Order #156 Payment',
-                    'Feb 7, 2026',
+                    'Order Payment - ORD-156',
+                    'Today, 10:30 AM',
                     '+\$458.00',
                     true,
                     kBrandGreen,
                     kDarkTextColor,
                     kMidTextColor,
                     kLightBorderColor,
+                    const Color(0xFFDCFCE7),
                   ),
                   const SizedBox(height: 16),
                   _buildTransactionItem(
-                    'Withdrawal to Bank',
+                    'Payout to Bank',
                     'Feb 5, 2026',
-                    '-\$2,500.00',
+                    '\$2000.00',
                     false,
                     kDarkTextColor,
                     kDarkTextColor,
                     kMidTextColor,
                     kLightBorderColor,
+                    const Color(0xFFF1F5F9),
+                    isWithdrawal: true,
                   ),
                   const SizedBox(height: 16),
                   _buildTransactionItem(
-                    'Order #154 Payment',
+                    'Order Payment - ORD-156',
                     'Feb 4, 2026',
                     '+\$825.00',
                     true,
@@ -211,19 +252,9 @@ class VendorWalletScreen extends StatelessWidget {
                     kDarkTextColor,
                     kMidTextColor,
                     kLightBorderColor,
+                    const Color(0xFFDCFCE7),
                   ),
-                  const SizedBox(height: 16),
-                  _buildTransactionItem(
-                    'Service Fee',
-                    'Feb 1, 2026',
-                    '-\$12.50',
-                    false,
-                    kDarkTextColor,
-                    kDarkTextColor,
-                    kMidTextColor,
-                    kLightBorderColor,
-                  ),
-                  const SizedBox(height: 100), // Bottom padding
+                  const SizedBox(height: 120), // Bottom padding
                 ],
               ),
             ),
@@ -242,31 +273,27 @@ class VendorWalletScreen extends StatelessWidget {
     Color titleColor,
     Color subtitleColor,
     Color borderColor,
-  ) {
+    Color iconBgColor, {
+    bool isWithdrawal = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(32),
         border: Border.all(color: borderColor, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: titleColor.withOpacity(0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: isCredit ? const Color(0xFFF0FDF4) : const Color(0xFFF9FAFB),
+              color: iconBgColor,
               shape: BoxShape.circle,
             ),
             child: Icon(
-              isCredit ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+              isCredit ? Icons.south_west_rounded : Icons.north_east_rounded,
               color: isCredit ? amountColor : const Color(0xFF64748B),
               size: 20,
             ),
@@ -288,7 +315,7 @@ class VendorWalletScreen extends StatelessWidget {
                 Text(
                   date,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: subtitleColor,
                   ),
@@ -299,9 +326,9 @@ class VendorWalletScreen extends StatelessWidget {
           Text(
             amount,
             style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-              color: isCredit ? amountColor : titleColor,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: isWithdrawal ? titleColor : amountColor,
             ),
           ),
         ],
