@@ -14,40 +14,41 @@ class VendorWalletScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
+        child: ListView(
+          padding: const EdgeInsets.all(24),
           children: [
             // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Wallet',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF111827),
-                      letterSpacing: -0.5,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Wallet',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF111827),
+                        letterSpacing: -1,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Manage your earnings',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF64748B),
+                    SizedBox(height: 8),
+                    Text(
+                      'Manage your earnings',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF64748B),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
+            const SizedBox(height: 24),
 
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                children: [
+                  // Main Wallet Card
                   // Main Wallet Card
                   Container(
                     width: double.infinity,
@@ -256,10 +257,6 @@ class VendorWalletScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 120), // Bottom padding
                 ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
