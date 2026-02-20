@@ -235,11 +235,11 @@ class VendorWalletScreen extends StatelessWidget {
                     'Feb 5, 2026',
                     '\$2000.00',
                     false,
-                    kDarkTextColor,
+                    kBrandGreen, // Icon color: Green
                     kDarkTextColor,
                     kMidTextColor,
                     kLightBorderColor,
-                    const Color(0xFFF1F5F9),
+                    const Color(0xFFDCFCE7), // Icon Bg: Light Green
                     isWithdrawal: true,
                   ),
                   const SizedBox(height: 16),
@@ -294,7 +294,7 @@ class VendorWalletScreen extends StatelessWidget {
             ),
             child: Icon(
               isCredit ? Icons.south_west_rounded : Icons.north_east_rounded,
-              color: isCredit ? amountColor : const Color(0xFF64748B),
+              color: amountColor,
               size: 20,
             ),
           ),
