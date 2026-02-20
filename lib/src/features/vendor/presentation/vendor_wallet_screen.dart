@@ -257,8 +257,9 @@ class VendorWalletScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 120), // Bottom padding
                 ],
-      ),
-    );
+              ),
+            ),
+          );
   }
 
   Widget _buildTransactionItem(
