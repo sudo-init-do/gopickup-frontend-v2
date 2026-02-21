@@ -14,10 +14,16 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   bool _isFormValid = false;
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
   void _validateForm() {
     setState(() {
-      // Simple email validation
-      _isFormValid = _emailController.text.contains('@') && _emailController.text.contains('.');
+      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+      _isFormValid = emailRegex.hasMatch(_emailController.text);
     });
   }
 

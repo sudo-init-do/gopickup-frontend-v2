@@ -6,11 +6,6 @@ class VendorHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const kPurple = Color(0xFFA855F7);
-    const kDarkPurple = Color(0xFF9333EA);
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
-    const kGreenBrand = Color(0xFF45A225);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),

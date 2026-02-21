@@ -73,27 +73,9 @@ class ClientOrdersScreen extends ConsumerWidget {
   }
 
   Widget _buildOrderCard(BuildContext context, Order order) {
-    Color badgeColor;
-    Color badgeTextColor;
-    String statusText;
-
-    switch (order.status) {
-      case OrderStatus.transit:
-        badgeColor = const Color(0xFFFEF3C7);
-        badgeTextColor = const Color(0xFF92400E);
-        statusText = 'In Transit';
-        break;
-      case OrderStatus.delivered:
-        badgeColor = const Color(0xFFDCFCE7);
-        badgeTextColor = const Color(0xFF166534);
-        statusText = 'Delivered';
-        break;
-      case OrderStatus.processing:
-        badgeColor = const Color(0xFFF0FDF4);
-        badgeTextColor = const Color(0xFF15803D);
-        statusText = 'Processing';
-        break;
-    }
+    final badgeColor = order.status.backgroundColor;
+    final badgeTextColor = order.status.color;
+    final statusText = order.status.displayName;
 
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF6B7280);

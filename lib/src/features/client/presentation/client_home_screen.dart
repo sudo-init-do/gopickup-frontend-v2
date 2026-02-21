@@ -272,9 +272,11 @@ class ClientHomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () {
-                  // Mocking ORD-001 for navigation
-                  final mockOrder = ref.read(ordersProvider).first;
-                  context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
+                  final orders = ref.read(ordersProvider);
+                  if (orders.isNotEmpty) {
+                    final mockOrder = orders.first;
+                    context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
+                  }
                 },
                 borderRadius: BorderRadius.circular(32),
                 child: Container(
@@ -393,9 +395,12 @@ class ClientHomeScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   InkWell(
-                    onTap: () {
-                      final mockOrder = ref.read(ordersProvider).first;
-                      context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
+                  onTap: () {
+                      final orders = ref.read(ordersProvider);
+                      if (orders.isNotEmpty) {
+                        final mockOrder = orders.first;
+                        context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
+                      }
                     },
                     borderRadius: BorderRadius.circular(28),
                     child: const _RecentOrderCard(
@@ -570,6 +575,13 @@ class _FloatingSearchBar extends StatelessWidget {
       ),
       child: TextField(
         textAlignVertical: TextAlignVertical.center,
+        onSubmitted: (value) {
+          if (value.isNotEmpty) {
+            context.go('/client/products?q=$value');
+          } else {
+            context.go('/client/products');
+          }
+        },
         decoration: InputDecoration(
           hintText: 'Search materials, vendors...',
           hintStyle: TextStyle(

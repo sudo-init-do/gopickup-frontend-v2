@@ -5,9 +5,11 @@ import '../../../common/styles/app_colors.dart';
 import '../../client/data/product_repository.dart';
 import '../../../common/models/product.dart';
 import '../data/cart_provider.dart';
+import '../../../common/constants/app_constants.dart';
 
 class ClientProductsScreen extends StatefulWidget {
-  const ClientProductsScreen({super.key});
+  final String? initialSearchQuery;
+  const ClientProductsScreen({super.key, this.initialSearchQuery});
 
   @override
   State<ClientProductsScreen> createState() => _ClientProductsScreenState();
@@ -17,7 +19,14 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
   bool _hasAddress = false;
   String _selectedCategory = 'All';
   String _searchQuery = '';
-  final TextEditingController _searchController = TextEditingController();
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchQuery = widget.initialSearchQuery ?? '';
+    _searchController = TextEditingController(text: _searchQuery);
+  }
 
   @override
   void dispose() {
@@ -322,14 +331,7 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
-                    children: [
-                      'All',
-                      'Cement',
-                      'Steel',
-                      'Wood',
-                      'Blocks',
-                      'Sand',
-                    ].map((category) {
+                    children: AppConstants.productCategories.map((category) {
                       return _buildCategoryChip(category, _selectedCategory == category);
                     }).toList(),
                   ),

@@ -61,8 +61,13 @@ class CartNotifier extends Notifier<Map<String, CartItem>> {
     }
   }
 
+  void clear() {
+    state = {};
+  }
+
   int get totalItems => state.values.fold(0, (sum, item) => sum + item.quantity);
   int get uniqueItemsCount => state.length;
+  double get totalPrice => state.values.fold(0.0, (sum, item) => sum + (item.product.price * item.quantity));
 }
 
 final cartProvider = NotifierProvider<CartNotifier, Map<String, CartItem>>(() {

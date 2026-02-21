@@ -136,7 +136,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/client/products',
-            builder: (context, state) => const ClientProductsScreen(),
+            builder: (context, state) {
+              final query = state.uri.queryParameters['q'];
+              return ClientProductsScreen(initialSearchQuery: query);
+            },
           ),
           GoRoute(
             path: '/client/orders',
