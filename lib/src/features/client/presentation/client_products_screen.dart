@@ -15,6 +15,15 @@ class ClientProductsScreen extends StatefulWidget {
 
 class _ClientProductsScreenState extends State<ClientProductsScreen> {
   bool _hasAddress = false;
+  String _selectedCategory = 'All';
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +164,16 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
   Widget _buildProductList(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
-        final products = ref.watch(productsProvider);
+        var products = ref.watch(productsProvider);
+
+        // Apply filtering
+        if (_selectedCategory != 'All') {
+          products = products.where((p) => p.category == _selectedCategory).toList();
+        }
+        if (_searchQuery.isNotEmpty) {
+          products = products.where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+        }
+
         return Scaffold(
           backgroundColor: const Color(0xFFF9FAFB),
           body: SafeArea(
@@ -255,9 +273,26 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: TextField(
+                                  controller: _searchController,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _searchQuery = value;
+                                    });
+                                  },
                                   decoration: InputDecoration(
                                     hintText: 'Search products...',
                                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
+                                    suffixIcon: _searchQuery.isNotEmpty
+                                        ? IconButton(
+                                            icon: const Icon(Icons.clear, size: 20),
+                                            onPressed: () {
+                                              setState(() {
+                                                _searchController.clear();
+                                                _searchQuery = '';
+                                              });
+                                            },
+                                          )
+                                        : null,
                                     border: InputBorder.none,
                                     enabledBorder: InputBorder.none,
                                     focusedBorder: InputBorder.none,
@@ -288,12 +323,15 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      _buildCategoryChip('All', true),
-                      _buildCategoryChip('Cement', false),
-                      _buildCategoryChip('Steel', false),
-                      _buildCategoryChip('Wood', false),
-                      _buildCategoryChip('Blocks', false),
-                    ],
+                      'All',
+                      'Cement',
+                      'Steel',
+                      'Wood',
+                      'Blocks',
+                      'Sand',
+                    ].map((category) {
+                      return _buildCategoryChip(category, _selectedCategory == category);
+                    }).toList(),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -322,20 +360,27 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
   }
 
   Widget _buildCategoryChip(String label, bool isSelected) {
-    return Container(
-      margin: const EdgeInsets.only(right: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF3B7D23) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isSelected ? Colors.transparent : const Color(0xFFF3F4F6)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? Colors.white : const Color(0xFF4B5563),
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedCategory = label;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF3B7D23) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isSelected ? Colors.transparent : const Color(0xFFF3F4F6)),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : const Color(0xFF4B5563),
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
         ),
       ),
     );

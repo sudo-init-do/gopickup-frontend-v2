@@ -4,6 +4,7 @@ class Product {
   final double price;
   final int moq;
   final String vendorId;
+  final String category;
   final String imageUrl;
 
   Product({
@@ -12,6 +13,7 @@ class Product {
     required this.price,
     required this.moq,
     required this.vendorId,
+    required this.category,
     required this.imageUrl,
   });
 }

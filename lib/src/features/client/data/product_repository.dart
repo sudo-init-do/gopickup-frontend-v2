@@ -9,6 +9,7 @@ class ProductRepository {
       price: 8.50,
       moq: 10,
       vendorId: 'v1',
+      category: 'Cement',
       imageUrl: 'https://via.placeholder.com/150',
     ),
     Product(
@@ -17,6 +18,7 @@ class ProductRepository {
       price: 12.00,
       moq: 50,
       vendorId: 'v1',
+      category: 'Steel',
       imageUrl: 'https://via.placeholder.com/150',
     ),
     Product(
@@ -25,6 +27,7 @@ class ProductRepository {
       price: 250.00,
       moq: 1,
       vendorId: 'v2',
+      category: 'Blocks',
       imageUrl: 'https://via.placeholder.com/150',
     ),
     Product(
@@ -33,6 +36,7 @@ class ProductRepository {
       price: 45.00,
       moq: 5,
       vendorId: 'v2',
+      category: 'Sand',
       imageUrl: 'https://via.placeholder.com/150',
     ),
     Product(
@@ -41,6 +45,7 @@ class ProductRepository {
       price: 35.00,
       moq: 10,
       vendorId: 'v3',
+      category: 'Wood',
       imageUrl: 'https://via.placeholder.com/150',
     ),
   ];
