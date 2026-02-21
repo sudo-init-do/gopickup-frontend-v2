@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
+      fontFamily: 'Inter',
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
@@ -17,7 +17,6 @@ class AppTheme {
         onPrimary: AppColors.onPrimary,
       ),
       scaffoldBackgroundColor: AppColors.surface,
-      textTheme: GoogleFonts.interTextTheme(),
       cardTheme: CardThemeData(
         elevation: 1.0,
         shape: RoundedRectangleBorder(
