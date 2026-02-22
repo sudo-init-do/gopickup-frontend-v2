@@ -78,7 +78,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: isOnline ? [
                   BoxShadow(
-                    color: green.withOpacity(0.3),
+                    color: green.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   )
@@ -123,7 +123,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -339,7 +339,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: green.withOpacity(0.1),
+                  color: green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -383,7 +383,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -396,7 +396,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: green.withOpacity(0.1),
+                  color: green.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(job['icon'] as IconData, color: green, size: 24),
@@ -485,7 +485,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: orange.withOpacity(0.1),
+                  color: orange.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Icons.inventory_2_outlined, color: orange, size: 24),

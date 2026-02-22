@@ -10,7 +10,7 @@ class ClientOrdersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final orders = ref.watch(ordersProvider);
+    final ordersAsync = ref.watch(ordersProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
@@ -19,12 +19,16 @@ class ClientOrdersScreen extends ConsumerWidget {
           children: [
             _buildHeader(context),
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  return _buildOrderCard(context, orders[index]);
-                },
+              child: ordersAsync.when(
+                data: (orders) => ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                  itemCount: orders.length,
+                  itemBuilder: (context, index) {
+                    return _buildOrderCard(context, orders[index]);
+                  },
+                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, stack) => Center(child: Text('Error: $err')),
               ),
             ),
           ],

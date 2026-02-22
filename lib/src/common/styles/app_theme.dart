@@ -23,7 +23,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(16.0),
         ),
         color: Colors.white,
-        shadowColor: Colors.black.withOpacity(0.05),
+        shadowColor: Colors.black.withValues(alpha: 0.05),
       ),
       dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
@@ -91,7 +91,7 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
-        indicatorColor: AppColors.primaryLight.withOpacity(0.7),
+        indicatorColor: AppColors.primaryLight.withValues(alpha: 0.7),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const TextStyle(

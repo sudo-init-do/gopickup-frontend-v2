@@ -1,68 +1,40 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../common/api/api_client.dart';
+import '../../../common/api/api_providers.dart';
 import '../../../common/models/product.dart';
 
 class ProductRepository {
-  final List<Product> _products = [
-    Product(
-      id: '1',
-      name: 'Portland Cement (50kg)',
-      price: 8.50,
-      moq: 10,
-      vendorId: 'v1',
-      category: 'Cement',
-      imageUrl: 'https://via.placeholder.com/150',
-    ),
-    Product(
-      id: '2',
-      name: 'Steel Rebar (12mm)',
-      price: 12.00,
-      moq: 50,
-      vendorId: 'v1',
-      category: 'Steel',
-      imageUrl: 'https://via.placeholder.com/150',
-    ),
-    Product(
-      id: '3',
-      name: 'Red Bricks (1000 pcs)',
-      price: 250.00,
-      moq: 1,
-      vendorId: 'v2',
-      category: 'Blocks',
-      imageUrl: 'https://via.placeholder.com/150',
-    ),
-    Product(
-      id: '4',
-      name: 'Construction Sand (1 Ton)',
-      price: 45.00,
-      moq: 5,
-      vendorId: 'v2',
-      category: 'Sand',
-      imageUrl: 'https://via.placeholder.com/150',
-    ),
-    Product(
-      id: '5',
-      name: 'Plywood Sheet (18mm)',
-      price: 35.00,
-      moq: 10,
-      vendorId: 'v3',
-      category: 'Wood',
-      imageUrl: 'https://via.placeholder.com/150',
-    ),
-  ];
+  final ApiClient _apiClient;
 
-  List<Product> getProducts() {
-    return _products;
+  ProductRepository(this._apiClient);
+
+  Future<List<Product>> getProducts({String? category, String? query}) async {
+    try {
+      final response = await _apiClient.get('/products', queryParameters: {
+        if (category != null && category != 'All') 'category': category,
+        if (query != null && query.isNotEmpty) 'q': query,
+      });
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data['items'];
+        return data.map((json) => Product.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      rethrow;
+    }
   }
 
-  Product getProduct(String id) {
-    return _products.firstWhere((p) => p.id == id);
+  Future<Product> getProduct(String id) async {
+    final response = await _apiClient.get('/products/$id');
+    return Product.fromJson(response.data);
   }
 }
 
 final productRepositoryProvider = Provider<ProductRepository>((ref) {
-  return ProductRepository();
+  return ProductRepository(ref.watch(apiClientProvider));
 });
 
-final productsProvider = Provider<List<Product>>((ref) {
+final productsProvider = FutureProvider<List<Product>>((ref) {
   return ref.watch(productRepositoryProvider).getProducts();
 });

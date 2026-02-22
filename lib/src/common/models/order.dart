@@ -43,6 +43,13 @@ class OrderItem {
   final int quantity;
 
   OrderItem({required this.product, required this.quantity});
+
+  factory OrderItem.fromJson(Map<String, dynamic> json) {
+    return OrderItem(
+      product: Product.fromJson(json['product']),
+      quantity: json['quantity'],
+    );
+  }
 }
 
 class Order {
@@ -61,6 +68,22 @@ class Order {
     required this.clientId,
     this.driverId = '',
   });
+
+  factory Order.fromJson(Map<String, dynamic> json) {
+    return Order(
+      id: json['id'],
+      status: OrderStatus.values.firstWhere(
+        (e) => e.toString().contains(json['status']),
+        orElse: () => OrderStatus.processing,
+      ),
+      items: (json['items'] as List)
+          .map((i) => OrderItem.fromJson(i))
+          .toList(),
+      placedAt: DateTime.parse(json['placed_at']),
+      clientId: json['client_id'],
+      driverId: json['driver_id'] ?? '',
+    );
+  }
 
   double get total =>
       items.fold(0, (sum, item) => sum + (item.product.price * item.quantity));

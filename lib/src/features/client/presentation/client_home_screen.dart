@@ -11,7 +11,6 @@ class ClientHomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final products = ref.watch(productsProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA), // Slightly off-white background
@@ -57,7 +56,7 @@ class ClientHomeScreen extends ConsumerWidget {
                         width: 200,
                         height: 200,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -94,7 +93,7 @@ class ClientHomeScreen extends ConsumerWidget {
                                         Text(
                                           'GOOD MORNING',
                                           style: TextStyle(
-                                            color: Colors.white.withOpacity(0.9),
+                                            color: Colors.white.withValues(alpha: 0.9),
                                             fontSize: 13,
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 1.2,
@@ -121,7 +120,7 @@ class ClientHomeScreen extends ConsumerWidget {
                                 ),
                                 Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.15),
+                                    color: Colors.white.withValues(alpha: 0.15),
                                     shape: BoxShape.circle,
                                   ),
                                   child: IconButton(
@@ -144,10 +143,10 @@ class ClientHomeScreen extends ConsumerWidget {
                                 vertical: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.15),
+                                color: Colors.white.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(28),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.withValues(alpha: 0.2),
                                   width: 1.5,
                                 ),
                               ),
@@ -272,7 +271,7 @@ class ClientHomeScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: InkWell(
                 onTap: () {
-                  final orders = ref.read(ordersProvider);
+                  final orders = ref.read(ordersProvider).asData?.value ?? [];
                   if (orders.isNotEmpty) {
                     final mockOrder = orders.first;
                     context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
@@ -286,7 +285,7 @@ class ClientHomeScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(32),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.05),
+                        color: AppColors.primary.withValues(alpha: 0.05),
                         blurRadius: 15,
                         offset: const Offset(0, 4),
                       ),
@@ -297,7 +296,7 @@ class ClientHomeScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -396,7 +395,7 @@ class ClientHomeScreen extends ConsumerWidget {
                 children: [
                   InkWell(
                   onTap: () {
-                      final orders = ref.read(ordersProvider);
+                      final orders = ref.read(ordersProvider).asData?.value ?? [];
                       if (orders.isNotEmpty) {
                         final mockOrder = orders.first;
                         context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
@@ -483,7 +482,7 @@ class _RecentOrderCard extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade100),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -562,12 +561,12 @@ class _FloatingSearchBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, 12),
           ),
@@ -605,7 +604,7 @@ class _FloatingSearchBar extends StatelessWidget {
                 Container(
                   height: 24,
                   width: 1,
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                 ),
                 const SizedBox(width: 4),
                 IconButton(

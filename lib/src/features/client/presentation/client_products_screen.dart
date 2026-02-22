@@ -56,7 +56,7 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight.withOpacity(0.5),
+                  color: AppColors.primaryLight.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -98,7 +98,7 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                   border: Border.all(color: const Color(0xFFF3F4F6)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 15,
                       offset: const Offset(0, 4),
                     ),
@@ -173,22 +173,14 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
   Widget _buildProductList(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
-        var products = ref.watch(productsProvider);
-
-        // Apply filtering
-        if (_selectedCategory != 'All') {
-          products = products.where((p) => p.category == _selectedCategory).toList();
-        }
-        if (_searchQuery.isNotEmpty) {
-          products = products.where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
-        }
+        final productsAsync = ref.watch(productsProvider);
 
         return Scaffold(
           backgroundColor: const Color(0xFFF9FAFB),
           body: SafeArea(
             child: Column(
               children: [
-                // Custom App Bar
+                // Custom App Bar (Keep as is)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   child: Row(
@@ -200,7 +192,7 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withValues(alpha: 0.04),
                               blurRadius: 10,
                             ),
                           ],
@@ -339,18 +331,36 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                 const SizedBox(height: 20),
                 // Product Grid
                 Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.58,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      return ProductCard(product: products[index]);
+                  child: productsAsync.when(
+                    data: (productsList) {
+                      var filteredProducts = productsList;
+                      if (_selectedCategory != 'All') {
+                        filteredProducts = filteredProducts.where((p) => p.category == _selectedCategory).toList();
+                      }
+                      if (_searchQuery.isNotEmpty) {
+                        filteredProducts = filteredProducts.where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+                      }
+
+                      if (filteredProducts.isEmpty) {
+                        return const Center(child: Text('No products found'));
+                      }
+
+                      return GridView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.58,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                        ),
+                        itemCount: filteredProducts.length,
+                        itemBuilder: (context, index) {
+                          return ProductCard(product: filteredProducts[index]);
+                        },
+                      );
                     },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (err, stack) => Center(child: Text('Error: $err')),
                   ),
                 ),
               ],
