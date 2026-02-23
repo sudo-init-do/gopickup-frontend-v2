@@ -73,30 +73,34 @@ class VendorHomeScreen extends StatelessWidget {
                               ),
                             ),
                             // Notification Icon
-                            Stack(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.2),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(Icons.notifications_none_rounded, color: Colors.white),
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
+                            InkWell(
+                              onTap: () => context.push('/notifications'),
+                              borderRadius: BorderRadius.circular(30),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFFEF4444),
+                                      color: Colors.white.withValues(alpha: 0.2),
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: const Color(0xFFA855F7), width: 1.5),
+                                    ),
+                                    child: const Icon(Icons.notifications_none_rounded, color: Colors.white),
+                                  ),
+                                  Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: Container(
+                                      width: 10,
+                                      height: 10,
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFEF4444),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(color: const Color(0xFFA855F7), width: 1.5),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ],
                         ),

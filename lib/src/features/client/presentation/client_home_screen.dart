@@ -129,7 +129,7 @@ class ClientHomeScreen extends ConsumerWidget {
                                       color: Colors.white,
                                       size: 26,
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () => context.push('/notifications'),
                                     padding: const EdgeInsets.all(10),
                                   ),
                                 ),
@@ -246,11 +246,15 @@ class ClientHomeScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  _QuickActionCard(
-                    icon: Icons.inventory_2_outlined,
-                    color: const Color(0xFFF59E0B),
-                    title: 'Post a Load',
-                    subtitle: 'Find drivers',
+                  InkWell(
+                    onTap: () => context.push('/client/create-job'),
+                    borderRadius: BorderRadius.circular(28),
+                    child: _QuickActionCard(
+                      icon: Icons.inventory_2_outlined,
+                      color: const Color(0xFFF59E0B),
+                      title: 'Post a Load',
+                      subtitle: 'Find drivers',
+                    ),
                   ),
                   const SizedBox(width: 16),
                   _QuickActionCard(

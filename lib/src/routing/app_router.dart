@@ -15,6 +15,7 @@ import '../features/client/presentation/client_profile_screen.dart';
 import '../features/client/presentation/client_cart_screen.dart';
 import '../features/client/presentation/client_wallet_screen.dart';
 import '../features/client/presentation/order_detail_screen.dart';
+import '../features/client/presentation/create_job_screen.dart';
 import '../features/driver/presentation/driver_home_screen.dart';
 import '../features/driver/presentation/driver_bids_screen.dart';
 import '../features/driver/presentation/driver_earnings_screen.dart';
@@ -30,6 +31,8 @@ import '../features/vendor/presentation/add_product_screen.dart';
 import '../features/shared/chat/chat_list_screen.dart';
 import '../features/shared/chat/chat_screen.dart';
 import '../features/shared/presentation/scaffold_with_nav_bar.dart';
+import '../features/shared/presentation/notifications_screen.dart';
+import '../features/shared/presentation/settings_screen.dart';
 import '../common/models/order.dart';
 import '../common/models/chat.dart';
 
@@ -87,6 +90,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/client/cart',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const ClientCartScreen(),
+      ),
+      GoRoute(
+        path: '/client/create-job',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const CreateJobScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const NotificationsScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const SettingsScreen(),
       ),
 
       // Client Shell
