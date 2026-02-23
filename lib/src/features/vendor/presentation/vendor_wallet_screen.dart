@@ -77,7 +77,7 @@ class VendorWalletScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          '\$4,850.00',
+                          '₦4,850.00',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 36,
@@ -87,7 +87,7 @@ class VendorWalletScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '+ \$890.00 pending',
+                          '+ ₦890.00 pending',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 15,
@@ -222,7 +222,7 @@ class VendorWalletScreen extends StatelessWidget {
                   _buildTransactionItem(
                     'Order Payment - ORD-156',
                     'Today, 10:30 AM',
-                    '+\$458.00',
+                    '+₦458.00',
                     true,
                     kBrandGreen,
                     kDarkTextColor,
@@ -234,7 +234,7 @@ class VendorWalletScreen extends StatelessWidget {
                   _buildTransactionItem(
                     'Payout to Bank',
                     'Feb 5, 2026',
-                    '\$2000.00',
+                    '₦2000.00',
                     false,
                     kBrandGreen, // Icon color: Green
                     kDarkTextColor,
@@ -247,7 +247,7 @@ class VendorWalletScreen extends StatelessWidget {
                   _buildTransactionItem(
                     'Order Payment - ORD-156',
                     'Feb 4, 2026',
-                    '+\$825.00',
+                    '+₦825.00',
                     true,
                     kBrandGreen,
                     kDarkTextColor,

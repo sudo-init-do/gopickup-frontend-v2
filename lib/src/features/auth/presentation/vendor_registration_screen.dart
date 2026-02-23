@@ -32,6 +32,7 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
     'Hardware',
     'Paint & Finishes',
     'Lumber',
+    'Quarry Materials',
   ];
 
   @override

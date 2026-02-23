@@ -244,9 +244,9 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: midText),
         ),
         const SizedBox(height: 16),
-        _buildOtherBidItem('Mike T.', '4.8', '\$100', '45 mins', darkText, midText),
+        _buildOtherBidItem('Mike T.', '4.8', '₦100', '45 mins', darkText, midText),
         const SizedBox(height: 12),
-        _buildOtherBidItem('Sarah L.', '4.6', '\$95', '50 mins', darkText, midText),
+        _buildOtherBidItem('Sarah L.', '4.6', '₦95', '50 mins', darkText, midText),
       ],
     );
   }

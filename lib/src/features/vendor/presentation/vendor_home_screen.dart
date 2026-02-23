@@ -112,7 +112,7 @@ class VendorHomeScreen extends StatelessWidget {
                             const SizedBox(width: 10),
                             _buildStatCard('156', 'Orders', Icons.shopping_cart_outlined),
                             const SizedBox(width: 10),
-                            _buildStatCard('\$12.4k', 'Revenue', Icons.attach_money_rounded),
+                            _buildStatCard('₦12.4k', 'Revenue', Icons.attach_money_rounded),
                             const SizedBox(width: 10),
                             _buildStatCard('2.3k', 'Views', Icons.visibility_outlined),
                           ],
@@ -207,17 +207,17 @@ class VendorHomeScreen extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () => context.push('/vendor/orders/ORD-156'),
-                    child: _buildOrderCard('ORD-156', 'John Smith', 'Pending', '5 items • 5 mins ago', '\$458.00', const Color(0xFFFEF3C7), const Color(0xFFB45309)),
+                    child: _buildOrderCard('ORD-156', 'John Smith', 'Pending', '5 items • 5 mins ago', '₦458.00', const Color(0xFFFEF3C7), const Color(0xFFB45309)),
                   ),
                   const SizedBox(height: 16),
                   GestureDetector(
                     onTap: () => context.push('/vendor/orders/ORD-155'),
-                    child: _buildOrderCard('ORD-155', 'Sarah Johnson', 'Processing', '2 items • 1 hour ago', '\$124.00', const Color(0xFFD1FAE5), const Color(0xFF065F46)),
+                    child: _buildOrderCard('ORD-155', 'Sarah Johnson', 'Processing', '2 items • 1 hour ago', '₦124.00', const Color(0xFFD1FAE5), const Color(0xFF065F46)),
                   ),
                   const SizedBox(height: 16),
                   GestureDetector(
                     onTap: () => context.push('/vendor/orders/ORD-154'),
-                    child: _buildOrderCard('ORD-154', 'Mike Wilson', 'Shipped', '8 items • 3 hours ago', '\$890.00', const Color(0xFFE0F2FE), const Color(0xFF075985)),
+                    child: _buildOrderCard('ORD-154', 'Mike Wilson', 'Shipped', '8 items • 3 hours ago', '₦890.00', const Color(0xFFE0F2FE), const Color(0xFF075985)),
                   ),
                   const SizedBox(height: 120), // Bottom padding for navbar
                 ],

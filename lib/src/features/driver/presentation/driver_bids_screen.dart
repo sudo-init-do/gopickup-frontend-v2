@@ -119,8 +119,8 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
         'status': 'Pending',
         'from': '123 Warehouse Rd',
         'to': '456 Construction Site',
-        'yourBid': '\$95',
-        'budget': '\$80 - \$120',
+        'yourBid': '₦95',
+        'budget': '₦80 - ₦120',
       },
       {
         'title': 'Steel Bars Transport',
@@ -128,8 +128,8 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
         'status': 'Pending',
         'from': 'Steel Works Factory',
         'to': 'Metro Build Project',
-        'yourBid': '\$175',
-        'budget': '\$150 - \$200',
+        'yourBid': '₦175',
+        'budget': '₦150 - ₦200',
       },
     ];
 

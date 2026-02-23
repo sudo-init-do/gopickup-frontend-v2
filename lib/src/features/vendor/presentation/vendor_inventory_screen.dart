@@ -114,7 +114,7 @@ class VendorInventoryScreen extends ConsumerWidget {
                   _buildProductCard(
                     'Portland Cement 50kg',
                     'Cement',
-                    '\$12.5',
+                    '₦12.5',
                     '500',
                     '10',
                     '234 sold',
@@ -126,7 +126,7 @@ class VendorInventoryScreen extends ConsumerWidget {
                   _buildProductCard(
                     'Rebar Steel 12mm',
                     'Steel',
-                    '\$8.75',
+                    '₦8.75',
                     '1200',
                     '50',
                     '156 sold',
@@ -138,7 +138,7 @@ class VendorInventoryScreen extends ConsumerWidget {
                   _buildProductCard(
                     'Plywood 3/4" 4x8',
                     'Wood',
-                    '\$45',
+                    '₦45',
                     '15',
                     '5',
                     '56 sold',

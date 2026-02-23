@@ -486,7 +486,7 @@ class ProductCard extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '\$${product.price}',
+                            '₦${product.price}',
                             style: const TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 18,

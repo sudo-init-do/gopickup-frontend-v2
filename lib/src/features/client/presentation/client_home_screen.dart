@@ -538,7 +538,7 @@ class _RecentOrderCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${price.toStringAsFixed(2)}',
+                '₦${price.toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,

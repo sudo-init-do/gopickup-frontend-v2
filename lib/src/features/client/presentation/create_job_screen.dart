@@ -123,7 +123,7 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSectionLabel('Budget (\$)', kDarkTextColor),
+                      _buildSectionLabel('Budget (₦)', kDarkTextColor),
                       const SizedBox(height: 12),
                       _buildTextField(TextEditingController(), 'Optional', Icons.attach_money_outlined, keyboardType: TextInputType.number),
                     ],

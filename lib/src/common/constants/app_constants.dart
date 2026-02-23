@@ -6,6 +6,7 @@ class AppConstants {
     'Wood',
     'Blocks',
     'Sand',
+    'Quarry Materials',
     'Other',
   ];
 

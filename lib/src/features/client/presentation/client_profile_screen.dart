@@ -141,7 +141,7 @@ class ClientProfileScreen extends StatelessWidget {
                         _buildDivider(),
                         _buildStatItem('156', 'Total Orders', kStatTextColor),
                         _buildDivider(),
-                        _buildStatItem('\$4.8k', 'Spent', kBrandGreen),
+                        _buildStatItem('₦4.8k', 'Spent', kBrandGreen),
                       ],
                     ),
                   ),

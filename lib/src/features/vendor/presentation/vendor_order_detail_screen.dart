@@ -172,9 +172,9 @@ class VendorOrderDetailScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildOrderItem('Portland Cement 50kg', '\$12.5 x 20', '\$250.00'),
+                  _buildOrderItem('Portland Cement 50kg', '₦12.5 x 20', '₦250.00'),
                   Divider(color: kLightBorderColor, height: 1, indent: 24, endIndent: 24),
-                  _buildOrderItem('Rebar Steel 12mm', '\$8.75 x 50', '\$437.50'),
+                  _buildOrderItem('Rebar Steel 12mm', '₦8.75 x 50', '₦437.50'),
                 ],
               ),
             ),
@@ -190,9 +190,9 @@ class VendorOrderDetailScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildSummaryRow('Subtotal', '\$687.50'),
+                  _buildSummaryRow('Subtotal', '₦687.50'),
                   const SizedBox(height: 16),
-                  _buildSummaryRow('Delivery', '\$50.00'),
+                  _buildSummaryRow('Delivery', '₦50.00'),
                   const SizedBox(height: 16),
                   Divider(color: kLightBorderColor, height: 1),
                   const SizedBox(height: 16),
@@ -208,7 +208,7 @@ class VendorOrderDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const Text(
-                        '\$737.50',
+                        '₦737.50',
                         style: TextStyle(
                           color: kDarkTextColor,
                           fontWeight: FontWeight.w900,

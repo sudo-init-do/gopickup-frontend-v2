@@ -198,7 +198,7 @@ class ClientOrdersScreen extends ConsumerWidget {
                           Row(
                             children: [
                               Text(
-                                '\$${order.total.toStringAsFixed(2)}',
+                                '₦${order.total.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,

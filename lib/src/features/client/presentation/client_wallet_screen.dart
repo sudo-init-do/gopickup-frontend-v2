@@ -121,7 +121,7 @@ class ClientWalletScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            '\$2,450.00',
+            '₦2,450.00',
             style: TextStyle(
               color: Colors.white,
               fontSize: 40,
@@ -284,25 +284,25 @@ class ClientWalletScreen extends StatelessWidget {
       {
         'title': 'Order Payment - ORD-001',
         'date': 'Feb 6, 2026',
-        'amount': '\$458.00',
+        'amount': '₦458.00',
         'isCredit': false,
       },
       {
         'title': 'Wallet Top-up',
         'date': 'Feb 5, 2026',
-        'amount': '+\$1000.00',
+        'amount': '+₦1000.00',
         'isCredit': true,
       },
       {
         'title': 'Order Payment - ORD-002',
         'date': 'Feb 4, 2026',
-        'amount': '\$1240.00',
+        'amount': '₦1240.00',
         'isCredit': false,
       },
       {
         'title': 'Refund - ORD-099',
         'date': 'Feb 3, 2026',
-        'amount': '+\$125.00',
+        'amount': '+₦125.00',
         'isCredit': true,
       },
     ];

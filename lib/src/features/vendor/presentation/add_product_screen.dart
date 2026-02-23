@@ -16,6 +16,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     'Wood',
     'Paint',
     'Electrical',
+    'Quarry Materials',
     'Plumbing',
     'Hardware'
   ];
@@ -144,7 +145,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSectionLabel('Price (\$)', kDarkTextColor),
+                      _buildSectionLabel('Price (₦)', kDarkTextColor),
                       const SizedBox(height: 12),
                       _buildTextField('0.00'),
                     ],

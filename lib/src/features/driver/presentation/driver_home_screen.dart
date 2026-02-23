@@ -210,7 +210,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         'to': '456 Construction Site',
         'dist': '12.5 km',
         'weight': '2,500 kg',
-        'price': '\$80 - \$120',
+        'price': '₦80 - ₦120',
       },
       {
         'title': 'Steel Bars Transport',
@@ -220,7 +220,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         'to': 'Metro Build Project',
         'dist': '25 km',
         'weight': '5,000 kg',
-        'price': '\$150 - \$200',
+        'price': '₦150 - ₦200',
       },
       {
         'title': 'Lumber Haul',
@@ -230,7 +230,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         'to': 'Suburban Housing Dev',
         'dist': '18 km',
         'weight': '3,500 kg',
-        'price': '\$110 - \$160',
+        'price': '₦110 - ₦160',
       },
     ];
 
@@ -252,7 +252,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       {
         'title': 'Paint Supplies',
         'status': 'In Progress',
-        'price': '\$65',
+        'price': '₦65',
         'eta': '25 mins',
         'icon': Icons.local_shipping,
       },
@@ -273,7 +273,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       {
         'title': 'Steel Pipes Delivery',
         'date': 'Yesterday, 2:30 PM',
-        'price': '\$145.00',
+        'price': '₦145.00',
         'status': 'Delivered',
         'from': 'Metal Fab Ltd',
         'to': 'Skyline Towers Site',
@@ -281,7 +281,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       {
         'title': 'Brick & Mortar Haul',
         'date': 'Feb 12, 11:15 AM',
-        'price': '\$92.50',
+        'price': '₦92.50',
         'status': 'Delivered',
         'from': 'BuildMart Depot',
         'to': 'Quay Side Project',

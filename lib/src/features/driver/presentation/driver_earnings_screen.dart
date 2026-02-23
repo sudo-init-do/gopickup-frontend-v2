@@ -86,7 +86,7 @@ class DriverEarningsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            '\$1,245.00',
+            '₦1,245.00',
             style: TextStyle(
               color: Colors.white,
               fontSize: 42,
@@ -141,11 +141,11 @@ class DriverEarningsScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
       child: Row(
         children: [
-          _buildStatCard('Today', '\$125', '+15%', green, true),
+          _buildStatCard('Today', '₦125', '+15%', green, true),
           const SizedBox(width: 16),
-          _buildStatCard('This Week', '\$680', '+8%', green, true),
+          _buildStatCard('This Week', '₦680', '+8%', green, true),
           const SizedBox(width: 16),
-          _buildStatCard('This Month', '\$2,450', '-3%', red, false),
+          _buildStatCard('This Month', '₦2,450', '-3%', red, false),
         ],
       ),
     );
@@ -235,11 +235,11 @@ class DriverEarningsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        _buildTransactionItem('Cement Delivery - ORD-001', 'Today, 3:45 PM', '+\$95.00', green, true),
-        _buildTransactionItem('Steel Transport - ORD-002', 'Today, 11:20 AM', '+\$175.00', green, true),
-        _buildTransactionItem('Weekly Payout', 'Yesterday', '\$500.00', darkText, false),
-        _buildTransactionItem('Paint Supplies - ORD-003', 'Yesterday', '+\$65.00', green, true),
-        _buildTransactionItem('Completion Bonus', '2 days ago', '+\$25.00', green, true, isBonus: true),
+        _buildTransactionItem('Cement Delivery - ORD-001', 'Today, 3:45 PM', '+₦95.00', green, true),
+        _buildTransactionItem('Steel Transport - ORD-002', 'Today, 11:20 AM', '+₦175.00', green, true),
+        _buildTransactionItem('Weekly Payout', 'Yesterday', '₦500.00', darkText, false),
+        _buildTransactionItem('Paint Supplies - ORD-003', 'Yesterday', '+₦65.00', green, true),
+        _buildTransactionItem('Completion Bonus', '2 days ago', '+₦25.00', green, true, isBonus: true),
         const SizedBox(height: 32),
       ],
     );

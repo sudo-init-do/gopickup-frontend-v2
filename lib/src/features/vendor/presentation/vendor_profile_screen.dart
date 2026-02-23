@@ -147,7 +147,7 @@ class VendorProfileScreen extends StatelessWidget {
                         _buildDivider(),
                         _buildStatItem('2.4k', 'Products', kStatTextColor),
                         _buildDivider(),
-                        _buildStatItem('\$24.5k', 'Revenue', kBrandGreen),
+                        _buildStatItem('₦24.5k', 'Revenue', kBrandGreen),
                       ],
                     ),
                   ),

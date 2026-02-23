@@ -139,7 +139,7 @@ class ClientCartScreen extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      '\$${subtotal.toStringAsFixed(2)}',
+                      '₦${subtotal.toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
@@ -291,7 +291,7 @@ class ClientCartScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '\$${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                      '₦${(item.product.price * item.quantity).toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 16,

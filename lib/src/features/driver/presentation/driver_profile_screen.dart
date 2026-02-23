@@ -140,7 +140,7 @@ class DriverProfileScreen extends StatelessWidget {
                         _buildDivider(),
                         _buildStatItem('98%', 'Completion', kStatTextColor),
                         _buildDivider(),
-                        _buildStatItem('\$12.4k', 'Earned', kBrandGreen),
+                        _buildStatItem('₦12.4k', 'Earned', kBrandGreen),
                       ],
                     ),
                   ),
