@@ -260,7 +260,7 @@ class ClientHomeScreen extends ConsumerWidget {
                   _QuickActionCard(
                     icon: Icons.local_shipping_outlined,
                     color: const Color(0xFF8B5CF6),
-                    title: 'Book Pickup',
+                    title: 'Book a truck',
                     subtitle: 'Schedule now',
                   ),
                 ],
