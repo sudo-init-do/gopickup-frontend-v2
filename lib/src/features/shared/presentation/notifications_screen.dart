@@ -28,14 +28,14 @@ class NotificationsScreen extends StatelessWidget {
       },
       {
         'title': 'New Bid Received',
-        'message': 'A driver has submitted a bid of $120.00 for your delivery job.',
+        'message': 'A driver has submitted a bid of \$120.00 for your delivery job.',
         'time': DateTime.now().subtract(const Duration(days: 1)),
         'type': 'bid',
         'isRead': true,
       },
       {
         'title': 'Payment Confirmed',
-        'message': 'Your wallet top-up of $1,000.00 has been successful.',
+        'message': 'Your wallet top-up of \$1,000.00 has been successful.',
         'time': DateTime.now().subtract(const Duration(days: 2)),
         'type': 'wallet',
         'isRead': true,

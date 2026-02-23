@@ -27,9 +27,9 @@ class SettingsScreen extends StatelessWidget {
                   
                   const SizedBox(height: 24),
                   _buildSectionHeader('PREFERENCES'),
-                  _buildToggleItem(Icons.notifications_none_rounded, 'Push Notifications', true, brandGreen),
-                  _buildToggleItem(Icons.dark_mode_outlined, 'Dark Mode', false, brandGreen),
-                  _buildToggleItem(Icons.location_on_outlined, 'Location Services', true, brandGreen),
+                  _buildToggleItem(Icons.notifications_none_rounded, 'Push Notifications', true, kBrandGreen),
+                  _buildToggleItem(Icons.dark_mode_outlined, 'Dark Mode', false, kBrandGreen),
+                  _buildToggleItem(Icons.location_on_outlined, 'Location Services', true, kBrandGreen),
 
                   const SizedBox(height: 24),
                   _buildSectionHeader('SUPPORT'),
