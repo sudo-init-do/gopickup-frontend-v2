@@ -39,6 +39,7 @@ func main() {
 	productHandler := handlers.NewProductHandler(db)
 	walletHandler := handlers.NewWalletHandler(db)
 	jobHandler := handlers.NewJobHandler(db)
+	orderHandler := handlers.NewOrderHandler(db)
 
 	r := gin.Default()
 
@@ -95,6 +96,15 @@ func main() {
 		{
 			jobs.GET("/available", middleware.RoleMiddleware("driver"), jobHandler.GetAvailableJobs)
 			jobs.POST("/:id/bid", middleware.RoleMiddleware("driver"), jobHandler.SubmitBid)
+		}
+
+		// Order Routes
+		orders := v1.Group("/orders")
+		orders.Use(middleware.AuthMiddleware())
+		{
+			orders.GET("", orderHandler.GetUserOrders)
+			orders.POST("/checkout", orderHandler.CreateOrder)
+			orders.PATCH("/:id/status", orderHandler.UpdateStatus)
 		}
 	}
 
