@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"gopickup-backend/internal/handlers"
+	"gopickup-backend/internal/middleware"
 	"gopickup-backend/internal/models"
 
 	"github.com/gin-contrib/cors"
@@ -28,11 +29,16 @@ func main() {
 		&models.Product{},
 		&models.Order{},
 		&models.OrderItem{},
+		&models.Wallet{},
+		&models.Transaction{},
+		&models.Bid{},
 	)
 
 	// Initialize Handlers
 	authHandler := handlers.NewAuthHandler(db)
 	productHandler := handlers.NewProductHandler(db)
+	walletHandler := handlers.NewWalletHandler(db)
+	jobHandler := handlers.NewJobHandler(db)
 
 	r := gin.Default()
 
@@ -54,12 +60,42 @@ func main() {
 			auth.POST("/register", authHandler.Register)
 			auth.POST("/login", authHandler.Login)
 			auth.POST("/verify-otp", authHandler.VerifyOTP)
+
+			// Protected Auth Routes
+			protectedAuth := auth.Group("")
+			protectedAuth.Use(middleware.AuthMiddleware())
+			{
+				protectedAuth.POST("/onboarding/complete", authHandler.CompleteOnboarding)
+			}
 		}
 
 		// Products
 		v1.GET("/products", productHandler.GetProducts)
 		v1.GET("/products/:id", productHandler.GetProduct)
-		v1.POST("/products", productHandler.CreateProduct) // TODO: Add auth middleware
+
+		// Protected Vendor Routes
+		vendorGroup := v1.Group("/vendor")
+		vendorGroup.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("vendor"))
+		{
+			vendorGroup.POST("/products", productHandler.CreateProduct)
+		}
+
+		// Wallet Routes
+		wallet := v1.Group("/wallet")
+		wallet.Use(middleware.AuthMiddleware())
+		{
+			wallet.GET("/balance", walletHandler.GetBalance)
+			wallet.GET("/transactions", walletHandler.GetTransactions)
+			wallet.POST("/topup", walletHandler.TopUp)
+		}
+
+		// Job/Delivery Routes
+		jobs := v1.Group("/jobs")
+		jobs.Use(middleware.AuthMiddleware())
+		{
+			jobs.GET("/available", middleware.RoleMiddleware("driver"), jobHandler.GetAvailableJobs)
+			jobs.POST("/:id/bid", middleware.RoleMiddleware("driver"), jobHandler.SubmitBid)
+		}
 	}
 
 	log.Println("Server starting on :8080...")

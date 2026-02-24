@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	jwt "github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -125,4 +126,44 @@ func (h *AuthHandler) VerifyOTP(c *gin.Context) {
 	h.DB.Save(&user)
 
 	c.JSON(http.StatusOK, gin.H{"message": "OTP verified successfully"})
+}
+
+func (h *AuthHandler) CompleteOnboarding(c *gin.Context) {
+	userID, _ := c.Get("user_id")
+	userRole, _ := c.Get("role")
+
+	var user models.User
+	if err := h.DB.First(&user, "id = ?", userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	switch models.Role(userRole.(string)) {
+	case models.RoleClient:
+		var profile models.ClientProfile
+		if err := c.ShouldBindJSON(&profile); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		profile.UserID = userID.(uuid.UUID)
+		h.DB.Save(&profile)
+	case models.RoleDriver:
+		var profile models.DriverProfile
+		if err := c.ShouldBindJSON(&profile); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		profile.UserID = userID.(uuid.UUID)
+		h.DB.Save(&profile)
+	case models.RoleVendor:
+		var profile models.VendorProfile
+		if err := c.ShouldBindJSON(&profile); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		profile.UserID = userID.(uuid.UUID)
+		h.DB.Save(&profile)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Onboarding completed successfully"})
 }

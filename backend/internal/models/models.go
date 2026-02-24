@@ -16,14 +16,14 @@ const (
 )
 
 type User struct {
-	ID           uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
-	Email        string         `gorm:"uniqueIndex;not null" json:"email"`
-	Password     string         `gorm:"not null" json:"-"`
-	Role         Role           `gorm:"type:varchar(20);not null" json:"role"`
-	IsVerified   bool           `gorm:"default:false" json:"is_verified"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
-	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
+	ID         uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
+	Email      string         `gorm:"uniqueIndex;not null" json:"email"`
+	Password   string         `gorm:"not null" json:"-"`
+	Role       Role           `gorm:"type:varchar(20);not null" json:"role"`
+	IsVerified bool           `gorm:"default:false" json:"is_verified"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 
 	// Profile relations
 	ClientProfile *ClientProfile `json:"client_profile,omitempty"`
@@ -106,4 +106,33 @@ type OrderItem struct {
 	ProductID uuid.UUID `gorm:"type:uuid;not null" json:"product_id"`
 	Quantity  int       `gorm:"not null" json:"quantity"`
 	Price     float64   `gorm:"not null" json:"price"`
+}
+
+type Wallet struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	UserID    uuid.UUID `gorm:"type:uuid;uniqueIndex;not null" json:"user_id"`
+	Balance   float64   `gorm:"default:0" json:"balance"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Transaction struct {
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	WalletID  uint      `gorm:"not null" json:"wallet_id"`
+	Amount    float64   `gorm:"not null" json:"amount"`
+	Type      string    `json:"type"` // "credit" or "debit"
+	Reference string    `json:"reference"`
+	Status    string    `json:"status"` // "pending", "success", "failed"
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type Bid struct {
+	ID                    uint      `gorm:"primaryKey" json:"id"`
+	OrderID               uuid.UUID `gorm:"type:uuid;not null" json:"order_id"`
+	DriverID              uuid.UUID `gorm:"type:uuid;not null" json:"driver_id"`
+	Amount                float64   `gorm:"not null" json:"amount"`
+	EstimatedPickupTime   string    `json:"estimated_pickup_time"`
+	EstimatedDeliveryTime string    `json:"estimated_delivery_time"`
+	Status                string    `gorm:"default:'pending'" json:"status"` // "pending", "accepted", "rejected"
+	CreatedAt             time.Time `json:"created_at"`
 }
