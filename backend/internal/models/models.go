@@ -136,3 +136,29 @@ type Bid struct {
 	Status                string    `gorm:"default:'pending'" json:"status"` // "pending", "accepted", "rejected"
 	CreatedAt             time.Time `json:"created_at"`
 }
+
+type Conversation struct {
+	ID        uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
+	User1ID   uuid.UUID      `gorm:"type:uuid;not null" json:"user1_id"`
+	User2ID   uuid.UUID      `gorm:"type:uuid;not null" json:"user2_id"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Messages  []Message      `json:"messages,omitempty"`
+}
+
+func (c *Conversation) BeforeCreate(tx *gorm.DB) (err error) {
+	if c.ID == uuid.Nil {
+		c.ID = uuid.New()
+	}
+	return
+}
+
+type Message struct {
+	ID             uint           `gorm:"primaryKey" json:"id"`
+	ConversationID uuid.UUID      `gorm:"type:uuid;not null;index" json:"conversation_id"`
+	SenderID       uuid.UUID      `gorm:"type:uuid;not null" json:"sender_id"`
+	Content        string         `gorm:"not null" json:"content"`
+	CreatedAt      time.Time      `json:"created_at"`
+	DeletedAt      gorm.DeletedAt `gorm:"index" json:"-"`
+}

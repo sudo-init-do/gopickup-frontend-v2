@@ -6,7 +6,7 @@ class ApiClient {
   late final Dio dio;
   final storage = const FlutterSecureStorage();
 
-  ApiClient({required String baseUrl, bool useMock = true}) {
+  ApiClient({required String baseUrl, bool useMock = false}) {
     dio = Dio(BaseOptions(
       baseUrl: baseUrl,
       connectTimeout: const Duration(seconds: 15),

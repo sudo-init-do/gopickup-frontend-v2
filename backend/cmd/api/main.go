@@ -32,6 +32,8 @@ func main() {
 		&models.Wallet{},
 		&models.Transaction{},
 		&models.Bid{},
+		&models.Conversation{},
+		&models.Message{},
 	)
 
 	// Initialize Handlers
@@ -40,6 +42,9 @@ func main() {
 	walletHandler := handlers.NewWalletHandler(db)
 	jobHandler := handlers.NewJobHandler(db)
 	orderHandler := handlers.NewOrderHandler(db)
+	vendorHandler := handlers.NewVendorHandler(db)
+	socketHandler := handlers.NewSocketHandler()
+	chatHandler := handlers.NewChatHandler(db, socketHandler)
 
 	r := gin.Default()
 
@@ -78,6 +83,7 @@ func main() {
 		vendorGroup := v1.Group("/vendor")
 		vendorGroup.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("vendor"))
 		{
+			vendorGroup.GET("/dashboard", vendorHandler.GetDashboard)
 			vendorGroup.POST("/products", productHandler.CreateProduct)
 		}
 
@@ -98,6 +104,15 @@ func main() {
 			jobs.POST("/:id/bid", middleware.RoleMiddleware("driver"), jobHandler.SubmitBid)
 		}
 
+		// Chat Routes
+		chat := v1.Group("/chats")
+		chat.Use(middleware.AuthMiddleware())
+		{
+			chat.GET("", chatHandler.GetChats)
+			chat.GET("/:id/messages", chatHandler.GetMessages)
+			chat.POST("/message", chatHandler.SendMessage)
+		}
+
 		// Order Routes
 		orders := v1.Group("/orders")
 		orders.Use(middleware.AuthMiddleware())
@@ -106,6 +121,9 @@ func main() {
 			orders.POST("/checkout", orderHandler.CreateOrder)
 			orders.PATCH("/:id/status", orderHandler.UpdateStatus)
 		}
+
+		// WebSocket
+		v1.GET("/socket", socketHandler.HandleWebSocket)
 	}
 
 	log.Println("Server starting on :8080...")
