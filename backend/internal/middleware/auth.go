@@ -10,10 +10,10 @@ import (
 	"github.com/google/uuid"
 )
 
-var jwtKey = []byte("your_secret_key") // Match the one in auth handler
-
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		jwtKey := []byte(secret)
+
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})

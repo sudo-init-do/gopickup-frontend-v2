@@ -1,8 +1,16 @@
+import 'package:flutter/foundation.dart';
+
 class AppConfig {
-  static const String baseUrl = 'https://api.gopickup.com/api/v1'; // Production
-  static const String devBaseUrl = 'http://localhost:8080/api/v1'; // Local Dev
-  
-  static bool get isDev => true; // Toggle this for testing
-  
-  static String get activeBaseUrl => isDev ? devBaseUrl : baseUrl;
+  static const String devBaseUrl = 'http://localhost:8080/api/v1';
+  static const String prodBaseUrl = 'http://api.gopickup.com/api/v1'; // Change this to your real domain
+
+  static String get baseUrl {
+    if (kIsWeb) {
+      // In Docker/Production, if serving from the same host, we can use relative path
+      // or the specific production domain.
+      return kDebugMode ? devBaseUrl : '/api/v1'; 
+    }
+    return kDebugMode ? devBaseUrl : prodBaseUrl;
+  }
 }
+

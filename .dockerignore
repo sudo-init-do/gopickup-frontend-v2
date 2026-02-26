@@ -2,7 +2,7 @@
 .dart_tool
 .idea
 .vscode
-build
+# build (removed so Docker can copy the web build)
 ios
 android
 macos

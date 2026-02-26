@@ -14,11 +14,12 @@ import (
 )
 
 type AuthHandler struct {
-	DB *gorm.DB
+	DB        *gorm.DB
+	JWTSecret string
 }
 
-func NewAuthHandler(db *gorm.DB) *AuthHandler {
-	return &AuthHandler{DB: db}
+func NewAuthHandler(db *gorm.DB, secret string) *AuthHandler {
+	return &AuthHandler{DB: db, JWTSecret: secret}
 }
 
 type RegisterRequest struct {
@@ -62,8 +63,6 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-var jwtKey = []byte("your_secret_key") // Use environment variables in production!
-
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -89,7 +88,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		"exp":     time.Now().Add(time.Hour * 72).Unix(),
 	})
 
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString([]byte(h.JWTSecret))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create token"})
 		return
