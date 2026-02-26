@@ -21,6 +21,7 @@ type User struct {
 	Password   string         `gorm:"not null" json:"-"`
 	Role       Role           `gorm:"type:varchar(20);not null" json:"role"`
 	IsVerified bool           `gorm:"default:false" json:"is_verified"`
+	OTP        string         `gorm:"type:varchar(6)" json:"-"`
 	CreatedAt  time.Time      `json:"created_at"`
 	UpdatedAt  time.Time      `json:"updated_at"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`

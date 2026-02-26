@@ -47,7 +47,7 @@ class AuthRepository {
     try {
       final response = await _apiClient.post('/auth/verify-otp', data: {
         'email': email,
-        'otp': otp,
+        'code': otp,
       });
       return response.statusCode == 200;
     } catch (e) {

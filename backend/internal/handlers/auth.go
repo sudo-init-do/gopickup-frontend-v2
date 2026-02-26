@@ -45,6 +45,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		Email:    req.Email,
 		Password: string(hashedPassword),
 		Role:     req.Role,
+		OTP:      "123456", // HARDCODED for MVP/Dev. In prod, generate random 6 digits and send via email/SMS
 	}
 
 	if err := h.DB.Create(&user).Error; err != nil {
@@ -53,7 +54,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "Registration successful. Please verify your OTP.",
+		"message": "Registration successful. Use OTP '123456' to verify your account.",
 		"userId":  user.ID,
 	})
 }
@@ -76,12 +77,18 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
+	if !user.IsVerified {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Account not verified. Please verify your OTP first."})
+		return
+	}
+
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
 
-	// Create JWT token
+	// ... [Existing JWT creation logic remains the same]
+	// [Truncated for readability, assuming it follows after login check]
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": user.ID,
 		"role":    user.Role,
@@ -105,7 +112,6 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 func (h *AuthHandler) VerifyOTP(c *gin.Context) {
-	// Mock OTP verification for now
 	var req struct {
 		Email string `json:"email" binding:"required"`
 		Code  string `json:"code" binding:"required"`
@@ -121,10 +127,21 @@ func (h *AuthHandler) VerifyOTP(c *gin.Context) {
 		return
 	}
 
+	if user.IsVerified {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User already verified"})
+		return
+	}
+
+	if req.Code != user.OTP {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid OTP code"})
+		return
+	}
+
 	user.IsVerified = true
+	user.OTP = "" // Clear OTP after success
 	h.DB.Save(&user)
 
-	c.JSON(http.StatusOK, gin.H{"message": "OTP verified successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "OTP verified successfully. You can now login."})
 }
 
 func (h *AuthHandler) CompleteOnboarding(c *gin.Context) {

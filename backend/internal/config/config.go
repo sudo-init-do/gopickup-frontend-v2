@@ -8,10 +8,12 @@ import (
 )
 
 type Config struct {
-	Port      string
-	DBURL     string
-	JWTSecret string
-	GinMode   string
+	Port           string
+	DBURL          string
+	JWTSecret      string
+	GinMode        string
+	Env            string
+	AllowedOrigins string
 }
 
 func LoadConfig() *Config {
@@ -21,10 +23,12 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
-		Port:      getEnv("PORT", "8080"),
-		DBURL:     getEnv("DB_URL", "gopickup.db"),
-		JWTSecret: getEnv("JWT_SECRET", "super-secret-production-key-change-me"),
-		GinMode:   getEnv("GIN_MODE", "debug"),
+		Port:           getEnv("PORT", "8080"),
+		DBURL:          getEnv("DB_URL", "gopickup.db"),
+		JWTSecret:      getEnv("JWT_SECRET", "super-secret-production-key-change-me"),
+		GinMode:        getEnv("GIN_MODE", "debug"),
+		Env:            getEnv("ENV", "development"),
+		AllowedOrigins: getEnv("ALLOWED_ORIGINS", "*"),
 	}
 }
 

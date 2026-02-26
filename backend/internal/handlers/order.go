@@ -138,12 +138,46 @@ func (h *OrderHandler) GetUserOrders(c *gin.Context) {
 
 func (h *OrderHandler) UpdateStatus(c *gin.Context) {
 	orderID := c.Param("id")
+	userID, _ := c.Get("user_id")
+	role, _ := c.Get("role")
+
 	var req struct {
 		Status string `json:"status" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Authorization Check (Prevention of IDOR)
+	var order models.Order
+	if err := h.DB.Preload("Items.Product").First(&order, "id = ?", orderID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Order not found"})
+		return
+	}
+
+	authorized := false
+	if role == string(models.RoleClient) && order.ClientID == userID.(uuid.UUID) {
+		// Clients can only cancel orders if they are pending
+		if req.Status == "cancelled" && order.Status == "pending" {
+			authorized = true
+		}
+	} else if role == string(models.RoleDriver) && order.DriverID != nil && *order.DriverID == userID.(uuid.UUID) {
+		// Assigned drivers can update status during delivery
+		authorized = true
+	} else if role == string(models.RoleVendor) {
+		// Vendors can only update status if the order belongs to them
+		for _, item := range order.Items {
+			if item.Product.VendorID == userID.(uuid.UUID) {
+				authorized = true
+				break
+			}
+		}
+	}
+
+	if !authorized {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to update this order"})
 		return
 	}
 

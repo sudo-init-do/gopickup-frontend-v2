@@ -54,8 +54,13 @@ class WalletRepository {
 
   Future<bool> topUp(double amount) async {
     try {
+      // For demo purposes, we generate a fake successful payment reference.
+      // In a real app, this would come from the Paystack/Flutterwave SDK after a successful transaction.
+      final fakeRef = 'PAY-${DateTime.now().millisecondsSinceEpoch}';
+      
       final response = await _apiClient.post('/wallet/topup', data: {
         'amount': amount,
+        'payment_reference': fakeRef,
       });
       return response.statusCode == 200;
     } catch (e) {

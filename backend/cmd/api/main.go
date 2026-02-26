@@ -64,13 +64,16 @@ func main() {
 
 	r := gin.Default()
 
-	// CORS Setup
+	// CORS Setup - Secure
+	allowedOriginsList := strings.Split(cfg.AllowedOrigins, ",")
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // TODO: Restrict in extreme production
+		AllowOrigins:     allowedOriginsList,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
+		MaxAge:           12 * 3600, // Cache preflight requests for 12 hours
 	}))
 
 	// API Routes V1
