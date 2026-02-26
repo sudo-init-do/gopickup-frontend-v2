@@ -113,7 +113,7 @@ func (h *OrderHandler) GetUserOrders(c *gin.Context) {
 	role, _ := c.Get("role")
 
 	var orders []models.Order
-	query := h.DB.Preload("Items")
+	query := h.DB.Preload("Items.Product")
 
 	if role == string(models.RoleClient) {
 		query = query.Where("client_id = ?", userID)

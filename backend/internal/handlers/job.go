@@ -21,7 +21,7 @@ func NewJobHandler(db *gorm.DB) *JobHandler {
 func (h *JobHandler) GetAvailableJobs(c *gin.Context) {
 	var orders []models.Order
 	// In a real app, we'd filter by driver location/service area
-	if err := h.DB.Preload("Items").Where("status = ?", "searching_driver").Find(&orders).Error; err != nil {
+	if err := h.DB.Preload("Items.Product").Where("status = ?", "searching_driver").Find(&orders).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not fetch jobs"})
 		return
 	}

@@ -79,9 +79,10 @@ class Order {
       items: (json['items'] as List)
           .map((i) => OrderItem.fromJson(i))
           .toList(),
-      placedAt: DateTime.parse(json['placed_at']),
+      placedAt: DateTime.parse(json['created_at']),
       clientId: json['client_id'],
       driverId: json['driver_id'] ?? '',
+
     );
   }
 

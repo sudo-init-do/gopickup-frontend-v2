@@ -21,7 +21,7 @@ func NewProductHandler(db *gorm.DB) *ProductHandler {
 
 func (h *ProductHandler) GetProducts(c *gin.Context) {
 	var products []models.Product
-	query := h.DB.Model(&models.Product{})
+	query := h.DB.Model(&models.Product{}).Preload("Vendor")
 
 	// Apply filters
 	if q := c.Query("q"); q != "" {

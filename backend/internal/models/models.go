@@ -66,18 +66,20 @@ type VendorProfile struct {
 }
 
 type Product struct {
-	ID          uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
-	VendorID    uuid.UUID      `gorm:"type:uuid;not null" json:"vendor_id"`
-	Name        string         `gorm:"not null" json:"name"`
-	Description string         `json:"description"`
-	Price       float64        `gorm:"not null" json:"price"`
-	Category    string         `gorm:"not null" json:"category"`
-	MOQ         int            `gorm:"default:1" json:"moq"`
-	Stock       int            `gorm:"default:0" json:"stock"`
-	ImageURL    string         `json:"image_url"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
+	ID          uuid.UUID     `gorm:"type:uuid;primaryKey" json:"id"`
+	VendorID    uuid.UUID     `gorm:"type:uuid;not null" json:"vendor_id"`
+	Name        string        `gorm:"not null" json:"name"`
+	Description string        `json:"description"`
+	Price       float64       `gorm:"not null" json:"price"`
+	Category    string        `gorm:"not null" json:"category"`
+	MOQ         int           `gorm:"default:1" json:"moq"`
+	Stock       int           `gorm:"default:0" json:"stock"`
+	ImageURL    string        `json:"image_url"`
+	Vendor      VendorProfile `gorm:"foreignKey:VendorID;references:UserID" json:"vendor"`
+
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
 func (p *Product) BeforeCreate(tx *gorm.DB) (err error) {
@@ -104,6 +106,7 @@ type OrderItem struct {
 	ID        uint      `gorm:"primaryKey" json:"id"`
 	OrderID   uuid.UUID `gorm:"type:uuid;not null" json:"order_id"`
 	ProductID uuid.UUID `gorm:"type:uuid;not null" json:"product_id"`
+	Product   Product   `json:"product"`
 	Quantity  int       `gorm:"not null" json:"quantity"`
 	Price     float64   `gorm:"not null" json:"price"`
 }

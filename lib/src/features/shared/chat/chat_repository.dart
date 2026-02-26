@@ -1,93 +1,60 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../../common/api/api_client.dart';
+import '../../../common/api/api_providers.dart';
 import '../../../common/models/chat.dart';
-import '../../../common/models/user.dart';
 
 class ChatRepository {
-  final List<Chat> _chats = [
-    Chat(
-      id: 'chat-1',
-      participants: [
-        User(id: 'me', name: 'Me', role: UserRole.client),
-        User(
-          id: 'v1',
-          name: 'BuildMart Supplies',
-          role: UserRole.vendor,
-          avatarUrl: '',
-        ),
-      ],
-      messages: [
-        Message(
-          id: 'm1',
-          senderId: 'v1',
-          content: 'Your order has been shipped!',
-          timestamp: DateTime.now().subtract(const Duration(minutes: 2)),
-          isMe: false,
-        ),
-      ],
-      lastMessage: 'Your order has been shipped!',
-      lastUpdated: DateTime.now().subtract(const Duration(minutes: 2)),
-    ),
-    Chat(
-      id: 'chat-2',
-      participants: [
-        User(id: 'me', name: 'Me', role: UserRole.client),
-        User(
-          id: 'd1',
-          name: 'John Driver',
-          role: UserRole.driver,
-          avatarUrl: '',
-        ),
-      ],
-      messages: [
-        Message(
-          id: 'm1',
-          senderId: 'd1',
-          content: "I'll be there in 15 minutes",
-          timestamp: DateTime.now().subtract(const Duration(hours: 1)),
-          isMe: false,
-        ),
-      ],
-      lastMessage: "I'll be there in 15 minutes",
-      lastUpdated: DateTime.now().subtract(const Duration(hours: 1)),
-    ),
-    Chat(
-      id: 'chat-3',
-      participants: [
-        User(id: 'me', name: 'Me', role: UserRole.client),
-        User(
-          id: 'v2',
-          name: 'Steel Works Co.',
-          role: UserRole.vendor,
-          avatarUrl: '',
-        ),
-      ],
-      messages: [
-        Message(
-          id: 'm1',
-          senderId: 'v2',
-          content: 'Thank you for your order!',
-          timestamp: DateTime.now().subtract(const Duration(days: 1)),
-          isMe: false,
-        ),
-      ],
-      lastMessage: 'Thank you for your order!',
-      lastUpdated: DateTime.now().subtract(const Duration(days: 1)),
-    ),
-  ];
+  final ApiClient _apiClient;
+  final _storage = const FlutterSecureStorage();
 
-  List<Chat> getChats() {
-    return _chats;
+  ChatRepository(this._apiClient);
+
+  Future<String?> _getCurrentUserId() async {
+    // We might want to store user_id in secure storage upon login
+    // For now, let's assume it's there or we provide it
+    return await _storage.read(key: 'user_id');
   }
 
-  Chat getChat(String id) {
-    return _chats.firstWhere((c) => c.id == id);
+  Future<List<Chat>> getChats() async {
+    try {
+      final userId = await _getCurrentUserId() ?? '';
+      final response = await _apiClient.get('/chats');
+      final List<dynamic> data = response.data;
+      return data.map((json) => Chat.fromJson(json, userId)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<Chat?> getChat(String id) async {
+    try {
+      final userId = await _getCurrentUserId() ?? '';
+      final response = await _apiClient.get('/chats/$id/messages');
+      // Backend returns a conversation object which we can parse as Chat
+      return Chat.fromJson(response.data, userId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<bool> sendMessage(String conversationId, String content) async {
+    try {
+      final response = await _apiClient.post('/chats/message', data: {
+        'conversation_id': conversationId,
+        'content': content,
+      });
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
   }
 }
 
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
-  return ChatRepository();
+  return ChatRepository(ref.watch(apiClientProvider));
 });
 
-final chatsProvider = Provider<List<Chat>>((ref) {
+final chatsProvider = FutureProvider<List<Chat>>((ref) {
   return ref.watch(chatRepositoryProvider).getChats();
 });
+
