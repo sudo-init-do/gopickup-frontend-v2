@@ -449,9 +449,10 @@ class ProductCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'BuildMart Supplies',
+                        product.vendorName,
                         style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.w500),
                       ),
+
                       const SizedBox(height: 4),
                       Text(
                         product.name,

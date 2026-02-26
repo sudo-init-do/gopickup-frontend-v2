@@ -1,15 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/vendor_repository.dart';
+import '../../../common/models/order.dart';
+import 'package:intl/intl.dart';
 
-class VendorOrdersScreen extends StatelessWidget {
+class VendorOrdersScreen extends ConsumerWidget {
   const VendorOrdersScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     const kPurple = Color(0xFFA855F7);
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF64748B);
     const kLightBorderColor = Color(0xFFF1F5F9);
+
+    final ordersAsync = ref.watch(vendorOrdersProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -76,71 +80,44 @@ class VendorOrdersScreen extends StatelessWidget {
 
             // Orders List
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(24),
-                children: [
-                  _buildOrderCard(
-                    context,
-                    'ORD-156',
-                    'John Smith',
-                    '20x Portland Cement 50kg\n50x Rebar Steel 12mm',
-                    'Feb 7, 2026 • 10:30 AM',
-                    '₦458.00',
-                    'Pending',
-                    const Color(0xFFFFF7ED),
-                    const Color(0xFFF59E0B),
-                    kDarkTextColor,
-                    kMidTextColor,
-                    kLightBorderColor,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildOrderCard(
-                    context,
-                    'ORD-155',
-                    'Sarah Johnson',
-                    '5x Interior Paint White 5gal',
-                    'Feb 7, 2026 • 9:15 AM',
-                    '₦449.95',
-                    'Processing',
-                    const Color(0xFFF0FDF4),
-                    const Color(0xFF22C55E),
-                    kDarkTextColor,
-                    kMidTextColor,
-                    kLightBorderColor,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildOrderCard(
-                    context,
-                    'ORD-154',
-                    'Mike Wilson',
-                    '10x Plywood 3/4" 4x8\n30x Portland Cement 50kg',
-                    'Feb 6, 2026 • 3:45 PM',
-                    '₦825.00',
-                    'Shipped',
-                    const Color(0xFFFFF7ED),
-                    const Color(0xFFEA580C),
-                    kDarkTextColor,
-                    kMidTextColor,
-                    kLightBorderColor,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildOrderCard(
-                    context,
-                    'ORD-153',
-                    'Emily Davis',
-                    '100x Rebar Steel 12mm',
-                    'Feb 5, 2026 • 11:20 AM',
-                    '₦875.00',
-                    'Delivered',
-                    const Color(0xFFF0FDF4),
-                    const Color(0xFF15803D),
-                    kDarkTextColor,
-                    kMidTextColor,
-                    kLightBorderColor,
-                    isDelivered: true,
-                  ),
-                  const SizedBox(height: 100), // Space for navbar
-                ],
+              child: ordersAsync.when(
+                data: (orders) {
+                  if (orders.isEmpty) {
+                    return const Center(child: Text('No orders found'));
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () async => ref.invalidate(vendorOrdersProvider),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(24),
+                      itemCount: orders.length,
+                      itemBuilder: (context, index) {
+                        final order = orders[index];
+                        final itemsDescription = order.items.map((i) => '${i.quantity}x ${i.product.name}').join('\n');
+                        
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: _buildOrderCard(
+                            context,
+                            order,
+                            order.shortId,
+                            'Client: ${order.clientId.substring(0, 8)}',
+                            itemsDescription,
+                            DateFormat('MMM d, yyyy • h:mm a').format(order.placedAt),
+                            '₦${order.total.toStringAsFixed(2)}',
+                            order.status.displayName,
+                            order.status.backgroundColor,
+                            order.status.color,
+                            kDarkTextColor,
+                            kMidTextColor,
+                            kLightBorderColor,
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, _) => Center(child: Text('Error: $err')),
               ),
             ),
           ],
@@ -148,6 +125,7 @@ class VendorOrdersScreen extends StatelessWidget {
       ),
     );
   }
+
 
   Widget _buildFilterTab(String label, bool isActive, Color activeColor) {
     return Container(
@@ -170,6 +148,7 @@ class VendorOrdersScreen extends StatelessWidget {
 
   Widget _buildOrderCard(
     BuildContext context,
+    Order order,
     String id,
     String customer,
     String items,
@@ -180,11 +159,10 @@ class VendorOrdersScreen extends StatelessWidget {
     Color tagColor,
     Color kDarkTextColor,
     Color kMidTextColor,
-    Color kLightBorderColor, {
-    bool isDelivered = false,
-  }) {
+    Color kLightBorderColor,
+  ) {
     return GestureDetector(
-      onTap: () => context.push('/vendor/orders/$id'),
+      onTap: () => context.push('/vendor/orders/${order.id}', extra: order),
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -222,9 +200,9 @@ class VendorOrdersScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Icon(
-                        isDelivered
+                        order.status == OrderStatus.delivered
                             ? Icons.check_circle_outline_rounded
-                            : (status == 'Pending' ? Icons.access_time_rounded : Icons.inventory_2_outlined),
+                            : (order.status == OrderStatus.pending ? Icons.access_time_rounded : Icons.inventory_2_outlined),
                         size: 14,
                         color: tagColor,
                       ),
@@ -296,4 +274,5 @@ class VendorOrdersScreen extends StatelessWidget {
       ),
     );
   }
+
 }

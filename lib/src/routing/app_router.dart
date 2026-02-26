@@ -320,8 +320,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: ':id',
                 parentNavigatorKey: rootNavigatorKey,
                 builder: (context, state) {
-                  final id = state.pathParameters['id'] ?? '';
-                  return VendorOrderDetailScreen(orderId: id);
+                  final order = state.extra as Order;
+                  return VendorOrderDetailScreen(order: order);
                 },
               ),
             ],

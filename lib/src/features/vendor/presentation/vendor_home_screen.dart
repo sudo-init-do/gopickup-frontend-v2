@@ -1,11 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../data/vendor_repository.dart';
+import '../../../common/models/order.dart';
+import '../../client/data/wallet_repository.dart';
 
-class VendorHomeScreen extends StatelessWidget {
+class VendorHomeScreen extends ConsumerWidget {
   const VendorHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ordersAsync = ref.watch(vendorOrdersProvider);
+    final balanceAsync = ref.watch(balanceProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
@@ -36,7 +41,7 @@ class VendorHomeScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
+                                color: Colors.white.withOpacity(0.2),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(Icons.storefront_rounded, color: Colors.white, size: 28),
@@ -62,42 +67,12 @@ class VendorHomeScreen extends StatelessWidget {
                                       Text(
                                         '4.8 (124 reviews)',
                                         style: TextStyle(
-                                          color: Colors.white.withValues(alpha: 0.9),
+                                          color: Colors.white.withOpacity(0.9),
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                     ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Notification Icon
-                            InkWell(
-                              onTap: () => context.push('/notifications'),
-                              borderRadius: BorderRadius.circular(30),
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.2),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.notifications_none_rounded, color: Colors.white),
-                                  ),
-                                  Positioned(
-                                    top: 8,
-                                    right: 8,
-                                    child: Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFEF4444),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(color: const Color(0xFFA855F7), width: 1.5),
-                                      ),
-                                    ),
                                   ),
                                 ],
                               ),
@@ -108,11 +83,23 @@ class VendorHomeScreen extends StatelessWidget {
                         // Stats Grid
                         Row(
                           children: [
-                            _buildStatCard('24', 'Products', Icons.inventory_2_outlined),
+                            ref.watch(vendorInventoryProvider).when(
+                              data: (products) => _buildStatCard('${products.length}', 'Products', Icons.inventory_2_outlined),
+                              loading: () => _buildStatCard('...', 'Products', Icons.inventory_2_outlined),
+                              error: (_, __) => _buildStatCard('0', 'Products', Icons.inventory_2_outlined),
+                            ),
                             const SizedBox(width: 10),
-                            _buildStatCard('156', 'Orders', Icons.shopping_cart_outlined),
+                            ordersAsync.when(
+                              data: (orders) => _buildStatCard('${orders.length}', 'Orders', Icons.shopping_cart_outlined),
+                              loading: () => _buildStatCard('...', 'Orders', Icons.shopping_cart_outlined),
+                              error: (_, __) => _buildStatCard('0', 'Orders', Icons.shopping_cart_outlined),
+                            ),
                             const SizedBox(width: 10),
-                            _buildStatCard('₦12.4k', 'Revenue', Icons.attach_money_rounded),
+                            balanceAsync.when(
+                              data: (balance) => _buildStatCard('₦${(balance / 1000).toStringAsFixed(1)}k', 'Revenue', Icons.attach_money_rounded),
+                              loading: () => _buildStatCard('...', 'Revenue', Icons.attach_money_rounded),
+                              error: (_, __) => _buildStatCard('₦0', 'Revenue', Icons.attach_money_rounded),
+                            ),
                             const SizedBox(width: 10),
                             _buildStatCard('2.3k', 'Views', Icons.visibility_outlined),
                           ],
@@ -133,7 +120,7 @@ class VendorHomeScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(32),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.12),
+                          color: Colors.black.withOpacity(0.12),
                           blurRadius: 40,
                           offset: const Offset(0, 15),
                         ),
@@ -143,7 +130,7 @@ class VendorHomeScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () => context.go('/vendor/inventory'),
+                            onPressed: () => context.push('/vendor/inventory/add'),
                             icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
                             label: const Text('Add Product'),
                             style: ElevatedButton.styleFrom(
@@ -189,7 +176,7 @@ class VendorHomeScreen extends StatelessWidget {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF111827)),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () => context.go('/vendor/orders'),
                     child: const Text(
                       'View all',
                       style: TextStyle(color: Color(0xFFA855F7), fontWeight: FontWeight.w800),
@@ -203,26 +190,29 @@ class VendorHomeScreen extends StatelessWidget {
             // Orders List
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: () => context.push('/vendor/orders/ORD-156'),
-                    child: _buildOrderCard('ORD-156', 'John Smith', 'Pending', '5 items • 5 mins ago', '₦458.00', const Color(0xFFFEF3C7), const Color(0xFFB45309)),
-                  ),
-                  const SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: () => context.push('/vendor/orders/ORD-155'),
-                    child: _buildOrderCard('ORD-155', 'Sarah Johnson', 'Processing', '2 items • 1 hour ago', '₦124.00', const Color(0xFFD1FAE5), const Color(0xFF065F46)),
-                  ),
-                  const SizedBox(height: 16),
-                  GestureDetector(
-                    onTap: () => context.push('/vendor/orders/ORD-154'),
-                    child: _buildOrderCard('ORD-154', 'Mike Wilson', 'Shipped', '8 items • 3 hours ago', '₦890.00', const Color(0xFFE0F2FE), const Color(0xFF075985)),
-                  ),
-                  const SizedBox(height: 120), // Bottom padding for navbar
-                ],
+              child: ordersAsync.when(
+                data: (orders) {
+                  if (orders.isEmpty) {
+                    return const Center(child: Padding(
+                      padding: EdgeInsets.all(40),
+                      child: Text('No orders yet'),
+                    ));
+                  }
+                  return Column(
+                    children: orders.take(5).map((order) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: GestureDetector(
+                        onTap: () => context.push('/vendor/orders/${order.id}', extra: order),
+                        child: _buildOrderCard(order),
+                      ),
+                    )).toList(),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, _) => Center(child: Text('Error: $err')),
               ),
             ),
+            const SizedBox(height: 120),
           ],
         ),
       ),
@@ -234,9 +224,9 @@ class VendorHomeScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.12),
+          color: Colors.white.withOpacity(0.12),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
         ),
         child: Column(
           children: [
@@ -244,12 +234,12 @@ class VendorHomeScreen extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               value,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20, letterSpacing: -0.5),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: -0.5),
             ),
             const SizedBox(height: 2),
             Text(
               label,
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 11, fontWeight: FontWeight.w700),
+              style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11, fontWeight: FontWeight.w700),
             ),
           ],
         ),
@@ -257,7 +247,11 @@ class VendorHomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderCard(String id, String user, String status, String details, String price, Color tagBg, Color tagText) {
+  Widget _buildOrderCard(Order order) {
+    final statusText = order.status.displayName;
+    final tagBg = order.status.backgroundColor;
+    final tagText = order.status.color;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -265,7 +259,7 @@ class VendorHomeScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF111827).withValues(alpha: 0.04),
+            color: const Color(0xFF111827).withOpacity(0.04),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -277,14 +271,14 @@ class VendorHomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                id,
+                order.shortId,
                 style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF111827)),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(color: tagBg, borderRadius: BorderRadius.circular(16)),
                 child: Text(
-                  status,
+                  statusText,
                   style: TextStyle(color: tagText, fontWeight: FontWeight.w900, fontSize: 13),
                 ),
               ),
@@ -294,7 +288,7 @@ class VendorHomeScreen extends StatelessWidget {
           Row(
             children: [
               Text(
-                user,
+                'Client ID: ${order.clientId.substring(0, 8)}',
                 style: const TextStyle(color: Color(0xFF6B7280), fontWeight: FontWeight.w600, fontSize: 15),
               ),
             ],
@@ -303,8 +297,8 @@ class VendorHomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(details, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.w500)),
-              Text(price, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: Color(0xFF111827))),
+              Text('${order.items.length} items', style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.w500)),
+              Text('₦${order.total.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: Color(0xFF111827))),
             ],
           ),
         ],
@@ -312,6 +306,7 @@ class VendorHomeScreen extends StatelessWidget {
     );
   }
 }
+
 
 class HeaderClipper extends CustomClipper<Path> {
   @override

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../data/cart_provider.dart';
+import '../data/order_repository.dart';
+
 import '../../../common/styles/app_colors.dart';
 
 class ClientCartScreen extends ConsumerWidget {
@@ -154,26 +156,66 @@ class ClientCartScreen extends ConsumerWidget {
               SizedBox(
                 width: double.infinity,
                 height: 64,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B7D23),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    'Proceed to Checkout',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
+                child: Consumer(
+                  builder: (context, ref, _) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        final repository = ref.read(orderRepositoryProvider);
+                        final cartItems = cart.values.map((item) => {
+                          'product_id': item.product.id,
+                          'quantity': item.quantity,
+                        }).toList();
+
+                        // Show loading
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => const Center(child: CircularProgressIndicator()),
+                        );
+
+                        final order = await repository.createOrder(
+                          items: cartItems,
+                          deliveryAddress: "Selected Address", // In real app, use actual address
+                          paymentMethod: "wallet",
+                        );
+
+                        if (context.mounted) {
+                          Navigator.pop(context); // Close loading
+
+                          if (order != null) {
+                            ref.read(cartProvider.notifier).clear();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Order placed successfully!')),
+                            );
+                            context.go('/client/orders');
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Failed to place order. Check balance?')),
+                            );
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3B7D23),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Proceed to Checkout',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
+
             ],
           ),
         ),
@@ -265,9 +307,10 @@ class ClientCartScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'BuildMart Supplies',
+                      item.product.vendorName,
                       style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.w500),
                     ),
+
                     GestureDetector(
                       onTap: () {
                         // Delete logic

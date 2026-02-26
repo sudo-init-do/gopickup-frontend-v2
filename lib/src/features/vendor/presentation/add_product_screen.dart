@@ -1,14 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/vendor_repository.dart';
 
-class AddProductScreen extends StatefulWidget {
+class AddProductScreen extends ConsumerStatefulWidget {
   const AddProductScreen({super.key});
 
   @override
-  State<AddProductScreen> createState() => _AddProductScreenState();
+  ConsumerState<AddProductScreen> createState() => _AddProductScreenState();
 }
 
-class _AddProductScreenState extends State<AddProductScreen> {
+class _AddProductScreenState extends ConsumerState<AddProductScreen> {
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _stockController = TextEditingController();
+  int _moq = 1;
+
   String _selectedCategory = 'Cement';
   final List<String> _categories = [
     'Cement',
@@ -22,11 +28,20 @@ class _AddProductScreenState extends State<AddProductScreen> {
   ];
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _priceController.dispose();
+    _stockController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF64748B);
     const kLightBorderColor = Color(0xFFF1F5F9);
-    const kBrandGreen = Color(0xFFA5C498); // Muted green as seen in the mockup button
+    const kBrandGreen = Color(0xFF45A225);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -59,10 +74,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
             fontSize: 22,
           ),
         ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(color: kLightBorderColor, height: 1),
-        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -79,14 +90,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 border: Border.all(
                   color: const Color(0xFFE5E7EB),
                   width: 1.5,
-                  style: BorderStyle.solid, // Note: Flutter doesn't natively do dashed easily without a package, using solid for now
                 ),
               ),
-              child: Column(
+              child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.add, color: Color(0xFF94A3B8), size: 28),
-                  const SizedBox(height: 4),
+                  Icon(Icons.add, color: Color(0xFF94A3B8), size: 28),
+                  SizedBox(height: 4),
                   Text(
                     'Add',
                     style: TextStyle(
@@ -102,12 +112,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
             _buildSectionLabel('Product Name', kDarkTextColor),
             const SizedBox(height: 12),
-            _buildTextField('Enter product name'),
+            _buildTextField(_nameController, 'Enter product name'),
             const SizedBox(height: 32),
 
             _buildSectionLabel('Description', kDarkTextColor),
             const SizedBox(height: 12),
-            _buildTextField('Describe your product...', maxLines: 4),
+            _buildTextField(_descriptionController, 'Describe your product...', maxLines: 4),
             const SizedBox(height: 32),
 
             _buildSectionLabel('Category', kDarkTextColor),
@@ -147,7 +157,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     children: [
                       _buildSectionLabel('Price (₦)', kDarkTextColor),
                       const SizedBox(height: 12),
-                      _buildTextField('0.00'),
+                      _buildTextField(_priceController, '0.00', keyboardType: TextInputType.number),
                     ],
                   ),
                 ),
@@ -158,7 +168,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     children: [
                       _buildSectionLabel('Stock', kDarkTextColor),
                       const SizedBox(height: 12),
-                      _buildTextField('0'),
+                      _buildTextField(_stockController, '0', keyboardType: TextInputType.number),
                     ],
                   ),
                 ),
@@ -169,7 +179,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             _buildSectionLabel('Minimum Order Quantity (MOQ)', kDarkTextColor),
             const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
@@ -178,11 +188,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    '1',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kDarkTextColor),
+                  Text(
+                    '$_moq',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kDarkTextColor),
                   ),
-                  const Icon(Icons.unfold_more_rounded, color: Color(0xFF94A3B8)),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => setState(() => _moq = _moq > 1 ? _moq - 1 : 1),
+                        icon: const Icon(Icons.remove, size: 20),
+                      ),
+                      IconButton(
+                        onPressed: () => setState(() => _moq++),
+                        icon: const Icon(Icons.add, size: 20),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -191,7 +212,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
               'Customers must order at least this quantity',
               style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13, fontWeight: FontWeight.w500),
             ),
-            const SizedBox(height: 100),
+            const SizedBox(height: 120),
           ],
         ),
       ),
@@ -206,7 +227,50 @@ class _AddProductScreenState extends State<AddProductScreen> {
             width: double.infinity,
             height: 60,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                final name = _nameController.text.trim();
+                final desc = _descriptionController.text.trim();
+                final price = double.tryParse(_priceController.text) ?? 0;
+                final stock = int.tryParse(_stockController.text) ?? 0;
+
+                if (name.isEmpty || price <= 0 || stock <= 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please fill all required fields')),
+                  );
+                  return;
+                }
+
+                // Show loading
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => const Center(child: CircularProgressIndicator()),
+                );
+
+                final success = await ref.read(vendorRepositoryProvider).addProduct(
+                  name: name,
+                  description: desc,
+                  category: _selectedCategory,
+                  price: price,
+                  stock: stock,
+                  moq: _moq,
+                );
+
+                if (context.mounted) {
+                  Navigator.pop(context); // Close loading
+
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Product added successfully!'), backgroundColor: Color(0xFF45A225)),
+                    );
+                    context.pop();
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to add product.'), backgroundColor: Colors.red),
+                    );
+                  }
+                }
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: kBrandGreen,
                 foregroundColor: Colors.white,
@@ -235,7 +299,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-  Widget _buildTextField(String hint, {int maxLines = 1}) {
+  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1, TextInputType? keyboardType}) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFFAFAFA),
@@ -243,7 +307,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
         border: Border.all(color: const Color(0xFFF3F4F6), width: 1.5),
       ),
       child: TextField(
+        controller: controller,
         maxLines: maxLines,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hint,
           hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w500, fontSize: 15),
@@ -254,3 +320,4 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 }
+

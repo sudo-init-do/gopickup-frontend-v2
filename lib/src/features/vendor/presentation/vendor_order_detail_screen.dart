@@ -1,16 +1,19 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../../../common/models/order.dart';
+import '../data/vendor_repository.dart';
 
-class VendorOrderDetailScreen extends StatelessWidget {
-  final String orderId;
+class VendorOrderDetailScreen extends ConsumerWidget {
+  final Order order;
 
   const VendorOrderDetailScreen({
     super.key,
-    required this.orderId,
+    required this.order,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF64748B);
     const kLightBorderColor = Color(0xFFF1F5F9);
@@ -30,8 +33,8 @@ class VendorOrderDetailScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(24),
               child: Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF9FAFB),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF9FAFB),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.arrow_back, color: kDarkTextColor, size: 20),
@@ -43,26 +46,22 @@ class VendorOrderDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              orderId,
+              order.shortId,
               style: const TextStyle(
                 color: kDarkTextColor,
                 fontWeight: FontWeight.w900,
                 fontSize: 20,
               ),
             ),
-            const Text(
-              'Feb 7, 2026 • 10:30 AM',
-              style: TextStyle(
+            Text(
+              DateFormat('MMM d, yyyy • h:mm a').format(order.placedAt),
+              style: const TextStyle(
                 color: kMidTextColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ],
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(color: kLightBorderColor, height: 1),
         ),
       ),
       body: SingleChildScrollView(
@@ -83,19 +82,23 @@ class VendorOrderDetailScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF7ED),
+                      color: order.status.backgroundColor,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.access_time_filled_rounded, color: Color(0xFFF59E0B), size: 24),
+                    child: Icon(
+                      order.status == OrderStatus.pending ? Icons.access_time_filled_rounded : Icons.inventory_2_rounded,
+                      color: order.status.color,
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Pending Confirmation',
-                          style: TextStyle(
+                        Text(
+                          order.status.displayName,
+                          style: const TextStyle(
                             color: kDarkTextColor,
                             fontWeight: FontWeight.w800,
                             fontSize: 18,
@@ -103,8 +106,8 @@ class VendorOrderDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Waiting for your action',
-                          style: TextStyle(
+                          order.status == OrderStatus.pending ? 'Waiting for your action' : 'Order is being processed',
+                          style: const TextStyle(
                             color: kMidTextColor,
                             fontWeight: FontWeight.w500,
                             fontSize: 15,
@@ -119,7 +122,7 @@ class VendorOrderDetailScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // Customer Section
-            _buildSectionHeader('Customer'),
+            _buildSectionHeader('Customer Information'),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
@@ -131,9 +134,9 @@ class VendorOrderDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'John Smith',
-                    style: TextStyle(
+                  Text(
+                    'Client ID: ${order.clientId.substring(0, 8)}',
+                    style: const TextStyle(
                       color: kDarkTextColor,
                       fontWeight: FontWeight.w800,
                       fontSize: 18,
@@ -141,16 +144,7 @@ class VendorOrderDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    '+1 234 567 890',
-                    style: TextStyle(
-                      color: kMidTextColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    '123 Construction Ave, Building Site, City',
+                    'Address details could go here if available',
                     style: TextStyle(
                       color: kMidTextColor,
                       fontWeight: FontWeight.w500,
@@ -171,11 +165,17 @@ class VendorOrderDetailScreen extends StatelessWidget {
                 border: Border.all(color: kLightBorderColor, width: 1.5),
               ),
               child: Column(
-                children: [
-                  _buildOrderItem('Portland Cement 50kg', '₦12.5 x 20', '₦250.00'),
-                  Divider(color: kLightBorderColor, height: 1, indent: 24, endIndent: 24),
-                  _buildOrderItem('Rebar Steel 12mm', '₦8.75 x 50', '₦437.50'),
-                ],
+                children: order.items.map((item) => Column(
+                  children: [
+                    _buildOrderItem(
+                      item.product.name,
+                      '₦${item.product.price.toStringAsFixed(2)} x ${item.quantity}',
+                      '₦${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                    ),
+                    if (order.items.indexOf(item) != order.items.length - 1)
+                      const Divider(color: kLightBorderColor, height: 1, indent: 24, endIndent: 24),
+                  ],
+                )).toList(),
               ),
             ),
             const SizedBox(height: 24),
@@ -190,26 +190,20 @@ class VendorOrderDetailScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildSummaryRow('Subtotal', '₦687.50'),
-                  const SizedBox(height: 16),
-                  _buildSummaryRow('Delivery', '₦50.00'),
-                  const SizedBox(height: 16),
-                  Divider(color: kLightBorderColor, height: 1),
-                  const SizedBox(height: 16),
-                  Row(
+                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        'Total',
+                        'Total Amount',
                         style: TextStyle(
                           color: kDarkTextColor,
                           fontWeight: FontWeight.w800,
                           fontSize: 18,
                         ),
                       ),
-                      const Text(
-                        '₦737.50',
-                        style: TextStyle(
+                      Text(
+                        '₦${order.total.toStringAsFixed(2)}',
+                        style: const TextStyle(
                           color: kDarkTextColor,
                           fontWeight: FontWeight.w900,
                           fontSize: 22,
@@ -220,11 +214,11 @@ class VendorOrderDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 120), // Padding for footer buttons
+            const SizedBox(height: 120),
           ],
         ),
       ),
-      bottomSheet: Container(
+      bottomSheet: order.status == OrderStatus.pending ? Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -235,7 +229,9 @@ class VendorOrderDetailScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    // Implement Reject/Cancel
+                  },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     side: const BorderSide(color: kLightBorderColor, width: 1.5),
@@ -254,7 +250,30 @@ class VendorOrderDetailScreen extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                     // Show loading
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const Center(child: CircularProgressIndicator()),
+                    );
+
+                    final success = await ref.read(vendorRepositoryProvider).updateOrderStatus(
+                      order.id,
+                      'searching_driver',
+                    );
+
+                    if (context.mounted) {
+                      Navigator.pop(context); // Close loading
+                      if (success) {
+                        ref.invalidate(vendorOrdersProvider);
+                        context.pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Order accepted successfully!')),
+                        );
+                      }
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kBrandGreen,
                     foregroundColor: Colors.white,
@@ -274,9 +293,68 @@ class VendorOrderDetailScreen extends StatelessWidget {
             ],
           ),
         ),
+      ) : null,
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, bottom: 12),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Color(0xFF64748B),
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+        ),
       ),
     );
   }
+
+  Widget _buildOrderItem(String name, String breakdown, String price) {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    color: Color(0xFF111827),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  breakdown,
+                  style: const TextStyle(
+                    color: Color(0xFF94A3B8),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            price,
+            style: const TextStyle(
+              color: Color(0xFF111827),
+              fontWeight: FontWeight.w800,
+              fontSize: 17,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
   Widget _buildSectionHeader(String title) {
     return Padding(

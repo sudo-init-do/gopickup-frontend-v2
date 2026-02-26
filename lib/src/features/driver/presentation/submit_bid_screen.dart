@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../common/models/order.dart';
+import '../data/job_repository.dart';
 
 class SubmitBidScreen extends ConsumerStatefulWidget {
-  final Map<String, dynamic> job;
+  final Order job;
 
   const SubmitBidScreen({super.key, required this.job});
 
@@ -15,6 +17,13 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
   final _amountController = TextEditingController();
   final _timeController = TextEditingController();
   final _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Default bid amount could be based on order total or some calculation
+    _amountController.text = (widget.job.total * 0.1).toInt().toString();
+  }
 
   void _adjustAmount(int delta) {
     setState(() {
@@ -28,8 +37,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
 
   bool _checkIfFormValid() {
     return _amountController.text.trim().isNotEmpty &&
-        _timeController.text.trim().isNotEmpty &&
-        _messageController.text.trim().isNotEmpty;
+        _timeController.text.trim().isNotEmpty;
   }
 
   @override
@@ -82,9 +90,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
           children: [
             _buildJobSummary(widget.job, kDarkTextColor, kMidTextColor),
             const SizedBox(height: 32),
-            _buildOtherBidsSection(kMidTextColor, kDarkTextColor),
-            const SizedBox(height: 32),
-            _buildInputLabel('Your Bid Amount', kDarkTextColor),
+            _buildInputLabel('Your Bid Amount (₦)', kDarkTextColor),
             const SizedBox(height: 12),
             _buildCustomInput(
               controller: _amountController,
@@ -96,11 +102,11 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: () => _adjustAmount(5),
+                    onTap: () => _adjustAmount(100),
                     child: const Icon(Icons.keyboard_arrow_up_rounded, color: Color(0xFF94A3B8), size: 18),
                   ),
                   GestureDetector(
-                    onTap: () => _adjustAmount(-5),
+                    onTap: () => _adjustAmount(-100),
                     child: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF94A3B8), size: 18),
                   ),
                 ],
@@ -171,7 +177,11 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
     );
   }
 
-  Widget _buildJobSummary(Map<String, dynamic> job, Color darkText, Color midText) {
+  Widget _buildJobSummary(Order job, Color darkText, Color midText) {
+    final title = job.items.isNotEmpty ? job.items.first.product.name : 'Bulk Delivery';
+    final from = job.items.isNotEmpty ? job.items.first.product.vendorName : 'Vendor Depot';
+    final to = job.id.substring(0, 8);
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -190,13 +200,18 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            job['title'],
+            title,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: darkText),
           ),
+          const SizedBox(height: 2),
+          Text(
+            job.shortId,
+            style: TextStyle(fontSize: 14, color: midText, fontWeight: FontWeight.w500),
+          ),
           const SizedBox(height: 20),
-          _buildLocationRow(Icons.location_on_outlined, job['from'], Colors.green),
+          _buildLocationRow(Icons.location_on_outlined, from, Colors.green),
           const SizedBox(height: 12),
-          _buildLocationRow(Icons.location_on_outlined, job['to'], Colors.red),
+          _buildLocationRow(Icons.location_on_outlined, 'Near $to', Colors.red),
           const SizedBox(height: 20),
           Container(height: 1, color: const Color(0xFFF1F5F9)),
           const SizedBox(height: 20),
@@ -204,11 +219,11 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${job['dist']}   ${job['weight']}',
+                '${job.items.length} items',
                 style: TextStyle(color: midText, fontSize: 16, fontWeight: FontWeight.w600),
               ),
               Text(
-                job['price'],
+                '₦${job.total.toStringAsFixed(2)}',
                 style: TextStyle(color: darkText, fontSize: 18, fontWeight: FontWeight.w800),
               ),
             ],
@@ -235,64 +250,6 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
     );
   }
 
-  Widget _buildOtherBidsSection(Color midText, Color darkText) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Other Bids',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: midText),
-        ),
-        const SizedBox(height: 16),
-        _buildOtherBidItem('Mike T.', '4.8', '₦100', '45 mins', darkText, midText),
-        const SizedBox(height: 12),
-        _buildOtherBidItem('Sarah L.', '4.6', '₦95', '50 mins', darkText, midText),
-      ],
-    );
-  }
-
-  Widget _buildOtherBidItem(String name, String rating, String amount, String time, Color darkText, Color midText) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-            child: const Icon(Icons.person_outline, size: 20, color: Color(0xFF94A3B8)),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: darkText)),
-                Row(
-                  children: [
-                    const Icon(Icons.star, size: 14, color: Colors.orange),
-                    const SizedBox(width: 4),
-                    Text(rating, style: TextStyle(color: midText, fontSize: 14, fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(amount, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: darkText)),
-              Text(time, style: TextStyle(color: midText, fontSize: 12, fontWeight: FontWeight.w500)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildInputLabel(String label, Color darkText) {
     return Text(label, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: darkText));
   }
@@ -303,11 +260,35 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
       height: 64,
       child: ElevatedButton(
         onPressed: isEnabled
-            ? () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Bid submitted successfully!'), backgroundColor: Color(0xFF45A225)),
+            ? () async {
+                final amount = double.tryParse(_amountController.text) ?? 0;
+                
+                // Show loading
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => const Center(child: CircularProgressIndicator()),
                 );
-                context.pop();
+
+                final success = await ref.read(jobRepositoryProvider).submitBid(
+                  widget.job.id,
+                  amount,
+                );
+
+                if (context.mounted) {
+                  Navigator.pop(context); // Close loading
+
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Bid submitted successfully!'), backgroundColor: Color(0xFF45A225)),
+                    );
+                    context.go('/driver');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to submit bid.'), backgroundColor: Colors.red),
+                    );
+                  }
+                }
               }
             : null,
         style: ElevatedButton.styleFrom(
@@ -332,3 +313,4 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
     );
   }
 }
+

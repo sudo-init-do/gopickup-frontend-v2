@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import '../data/vendor_repository.dart';
+import '../../../common/models/product.dart';
 
 class VendorInventoryScreen extends ConsumerWidget {
   const VendorInventoryScreen({super.key});
@@ -12,6 +11,8 @@ class VendorInventoryScreen extends ConsumerWidget {
     const kMidTextColor = Color(0xFF64748B);
     const kLightBorderColor = Color(0xFFF1F5F9);
     const kBrandGreen = Color(0xFF45A225);
+
+    final inventoryAsync = ref.watch(vendorInventoryProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -108,46 +109,38 @@ class VendorInventoryScreen extends ConsumerWidget {
 
             // Products List
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(24),
-                children: [
-                  _buildProductCard(
-                    'Portland Cement 50kg',
-                    'Cement',
-                    '₦12.5',
-                    '500',
-                    '10',
-                    '234 sold',
-                    kDarkTextColor,
-                    kMidTextColor,
-                    kLightBorderColor,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildProductCard(
-                    'Rebar Steel 12mm',
-                    'Steel',
-                    '₦8.75',
-                    '1200',
-                    '50',
-                    '156 sold',
-                    kDarkTextColor,
-                    kMidTextColor,
-                    kLightBorderColor,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildProductCard(
-                    'Plywood 3/4" 4x8',
-                    'Wood',
-                    '₦45',
-                    '15',
-                    '5',
-                    '56 sold',
-                    kDarkTextColor,
-                    kMidTextColor,
-                    kLightBorderColor,
-                  ),
-                  const SizedBox(height: 100), // Space for navbar
-                ],
+              child: inventoryAsync.when(
+                data: (products) {
+                  if (products.isEmpty) {
+                    return const Center(child: Text('No products in inventory'));
+                  }
+                  return RefreshIndicator(
+                    onRefresh: () async => ref.invalidate(vendorInventoryProvider),
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(24),
+                      itemCount: products.length,
+                      itemBuilder: (context, index) {
+                        final product = products[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: _buildProductCard(
+                            product.name,
+                            product.category,
+                            '₦${product.price.toStringAsFixed(2)}',
+                            '${product.id.toString() == 'dummy' ? 0 : 100}', // Mock soldier for now or use real data if available
+                            '${product.moq}',
+                            '0 sold', // Mock sold for now
+                            kDarkTextColor,
+                            kMidTextColor,
+                            kLightBorderColor,
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, _) => Center(child: Text('Error: $err')),
               ),
             ),
           ],
@@ -155,6 +148,7 @@ class VendorInventoryScreen extends ConsumerWidget {
       ),
     );
   }
+
 
   Widget _buildFilterTab(String label, bool isActive, Color activeColor) {
     return Container(

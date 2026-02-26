@@ -133,7 +133,7 @@ class ClientOrdersScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                order.id,
+                                order.shortId,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w900,
                                   fontSize: 18,
@@ -141,6 +141,7 @@ class ClientOrdersScreen extends ConsumerWidget {
                                   letterSpacing: -0.5,
                                 ),
                               ),
+
                               const SizedBox(height: 2),
                               Text(
                                 DateFormat('MMM d, yyyy').format(order.placedAt),
@@ -174,20 +175,20 @@ class ClientOrdersScreen extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          const Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'BuildMart Supplies',
-                                style: TextStyle(
+                                order.items.isNotEmpty ? order.items.first.product.vendorName : 'Unknown Vendor',
+                                style: const TextStyle(
                                   color: kMidTextColor,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               Text(
-                                '5 items',
-                                style: TextStyle(
+                                '${order.items.length} item${order.items.length != 1 ? 's' : ''}',
+                                style: const TextStyle(
                                   color: kLightTextColor,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -195,6 +196,7 @@ class ClientOrdersScreen extends ConsumerWidget {
                               ),
                             ],
                           ),
+
                           Row(
                             children: [
                               Text(

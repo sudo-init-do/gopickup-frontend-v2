@@ -1,11 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../data/wallet_repository.dart';
 
-class ClientWalletScreen extends StatelessWidget {
+class ClientWalletScreen extends ConsumerWidget {
   const ClientWalletScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final balanceAsync = ref.watch(balanceProvider);
+    final transactionsAsync = ref.watch(transactionsProvider);
+
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF6B7280);
     const kLightTextColor = Color(0xFF9CA3AF);
@@ -23,7 +28,11 @@ class ClientWalletScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildBalanceCard(kBrandGreen),
+                    balanceAsync.when(
+                      data: (balance) => _buildBalanceCard(context, ref, balance, kBrandGreen),
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Center(child: Text('Error: $err')),
+                    ),
                     const SizedBox(height: 32),
                     _buildSectionHeader('Payment Methods', kMidTextColor),
                     const SizedBox(height: 16),
@@ -31,7 +40,11 @@ class ClientWalletScreen extends StatelessWidget {
                     const SizedBox(height: 32),
                     _buildSectionHeader('Recent Transactions', kMidTextColor),
                     const SizedBox(height: 16),
-                    _buildTransactionList(kDarkTextColor, kMidTextColor, kLightTextColor, kBrandGreen),
+                    transactionsAsync.when(
+                      data: (txs) => _buildTransactionList(txs, kDarkTextColor, kMidTextColor, kLightTextColor, kBrandGreen),
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (err, stack) => Center(child: Text('Error: $err')),
+                    ),
                   ],
                 ),
               ),
@@ -44,7 +57,7 @@ class ClientWalletScreen extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context, Color darkText) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -93,7 +106,7 @@ class ClientWalletScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBalanceCard(Color brandGreen) {
+  Widget _buildBalanceCard(BuildContext context, WidgetRef ref, double balance, Color brandGreen) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -120,9 +133,9 @@ class ClientWalletScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            '₦2,450.00',
-            style: TextStyle(
+          Text(
+            '₦${balance.toStringAsFixed(2)}',
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 40,
               fontWeight: FontWeight.w900,
@@ -133,10 +146,25 @@ class ClientWalletScreen extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _buildActionBtn(
-                  icon: Icons.add_rounded,
-                  label: 'Top Up',
-                  bgColor: Colors.white.withOpacity(0.2),
+                child: InkWell(
+                  onTap: () async {
+                    // Quick top up for demo
+                    final success = await ref.read(walletRepositoryProvider).topUp(1000);
+                    if (success) {
+                      ref.invalidate(balanceProvider);
+                      ref.invalidate(transactionsProvider);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Top up successful! Added ₦1,000.00')),
+                        );
+                      }
+                    }
+                  },
+                  child: _buildActionBtn(
+                    icon: Icons.add_rounded,
+                    label: 'Top Up',
+                    bgColor: Colors.white.withOpacity(0.2),
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -250,66 +278,23 @@ class ClientWalletScreen extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.black.withOpacity(0.03), width: 1.5),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.add_rounded, color: lightText, size: 24),
-              const SizedBox(width: 12),
-              Text(
-                'Add payment method',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: lightText.withOpacity(0.7),
-                ),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
 
-  Widget _buildTransactionList(Color darkText, Color midText, Color lightText, Color brandGreen) {
-    final transactions = [
-      {
-        'title': 'Order Payment - ORD-001',
-        'date': 'Feb 6, 2026',
-        'amount': '₦458.00',
-        'isCredit': false,
-      },
-      {
-        'title': 'Wallet Top-up',
-        'date': 'Feb 5, 2026',
-        'amount': '+₦1000.00',
-        'isCredit': true,
-      },
-      {
-        'title': 'Order Payment - ORD-002',
-        'date': 'Feb 4, 2026',
-        'amount': '₦1240.00',
-        'isCredit': false,
-      },
-      {
-        'title': 'Refund - ORD-099',
-        'date': 'Feb 3, 2026',
-        'amount': '+₦125.00',
-        'isCredit': true,
-      },
-    ];
+  Widget _buildTransactionList(List<WalletTransaction> transactions, Color darkText, Color midText, Color lightText, Color brandGreen) {
+    if (transactions.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: Text('No transactions yet', style: TextStyle(color: midText)),
+        ),
+      );
+    }
 
     return Column(
       children: transactions.map((tx) {
-        final isCredit = tx['isCredit'] as bool;
+        final isCredit = tx.type == 'credit';
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
           padding: const EdgeInsets.all(20),
@@ -344,7 +329,7 @@ class ClientWalletScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      tx['title'] as String,
+                      tx.reference,
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
@@ -354,7 +339,7 @@ class ClientWalletScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      tx['date'] as String,
+                      DateFormat('MMM d, yyyy • HH:mm').format(tx.createdAt),
                       style: TextStyle(
                         fontSize: 13,
                         color: lightText,
@@ -365,7 +350,7 @@ class ClientWalletScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                tx['amount'] as String,
+                '${isCredit ? '+' : ''}₦${tx.amount.toStringAsFixed(2)}',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w900,
@@ -380,3 +365,4 @@ class ClientWalletScreen extends StatelessWidget {
     );
   }
 }
+

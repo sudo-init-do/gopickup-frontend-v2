@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../driver/data/job_repository.dart';
+import '../../../common/models/order.dart';
+
 
 class DriverHomeScreen extends ConsumerStatefulWidget {
   const DriverHomeScreen({super.key});
@@ -201,51 +204,39 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   }
 
   Widget _buildAvailableJobList(Color darkText, Color midText, Color orange, Color green) {
-    final jobs = [
-      {
-        'title': 'Cement Delivery',
-        'time': '15 mins ago',
-        'bids': 3,
-        'from': '123 Warehouse Rd',
-        'to': '456 Construction Site',
-        'dist': '12.5 km',
-        'weight': '2,500 kg',
-        'price': '₦80 - ₦120',
-      },
-      {
-        'title': 'Steel Bars Transport',
-        'time': '1 hour ago',
-        'bids': 7,
-        'from': 'Steel Works Factory',
-        'to': 'Metro Build Project',
-        'dist': '25 km',
-        'weight': '5,000 kg',
-        'price': '₦150 - ₦200',
-      },
-      {
-        'title': 'Lumber Haul',
-        'time': '2 hours ago',
-        'bids': 2,
-        'from': 'Lumber King Depot',
-        'to': 'Suburban Housing Dev',
-        'dist': '18 km',
-        'weight': '3,500 kg',
-        'price': '₦110 - ₦160',
-      },
-    ];
+    final availableJobsAsync = ref.watch(availableJobsProvider);
 
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-      itemCount: jobs.length,
-      itemBuilder: (context, index) {
-        final job = jobs[index];
-        return GestureDetector(
-          onTap: () => context.push('/driver/submit-bid', extra: job),
-          child: _buildJobCard(job, darkText, midText, orange, green),
+    return availableJobsAsync.when(
+      data: (jobs) {
+        if (jobs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.local_shipping_outlined, size: 64, color: midText.withOpacity(0.5)),
+                const SizedBox(height: 16),
+                Text('No available jobs at the moment', style: TextStyle(color: midText, fontSize: 16)),
+              ],
+            ),
+          );
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          itemCount: jobs.length,
+          itemBuilder: (context, index) {
+            final job = jobs[index];
+            return GestureDetector(
+              onTap: () => context.push('/driver/submit-bid', extra: job),
+              child: _buildJobCard(job, darkText, midText, orange, green),
+            );
+          },
         );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text('Error: $err')),
     );
   }
+
 
   Widget _buildAssignedJobList(Color darkText, Color midText, Color orange, Color green) {
     final jobs = [
@@ -462,7 +453,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildJobCard(Map<String, dynamic> job, Color darkText, Color midText, Color orange, Color green) {
+  Widget _buildJobCard(Order job, Color darkText, Color midText, Color orange, Color green) {
+    // For title, use the first product name or a generic title
+    final title = job.items.isNotEmpty ? job.items.first.product.name : 'Bulk Delivery';
+    final from = job.items.isNotEmpty ? job.items.first.product.vendorName : 'Vendor Depot';
+    final to = job.id.substring(0, 8); // Just a placeholder for destination address for now
+
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
@@ -496,7 +492,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      job['title'],
+                      title,
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
@@ -505,7 +501,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      job['time'],
+                      job.shortId,
                       style: TextStyle(
                         fontSize: 14,
                         color: midText,
@@ -515,27 +511,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: green.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${job['bids']} bids',
-                  style: TextStyle(
-                    color: green,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 20),
-          _buildLocationRow(Icons.location_on_outlined, 'From:', job['from'], Colors.green),
+          _buildLocationRow(Icons.location_on_outlined, 'From:', from, Colors.green),
           const SizedBox(height: 12),
-          _buildLocationRow(Icons.location_on, 'To:', job['to'], Colors.red),
+          _buildLocationRow(Icons.location_on, 'To:', 'Near $to', Colors.red),
           const SizedBox(height: 20),
           Container(height: 1, color: const Color(0xFFF1F5F9)),
           const SizedBox(height: 20),
@@ -543,7 +524,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${job['dist']} • ${job['weight']}',
+                '${job.items.length} items',
                 style: TextStyle(
                   color: midText,
                   fontSize: 15,
@@ -553,7 +534,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               Row(
                 children: [
                   Text(
-                    job['price'],
+                    '₦${job.total.toStringAsFixed(2)}',
                     style: TextStyle(
                       color: darkText,
                       fontSize: 18,
@@ -571,6 +552,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       ),
     );
   }
+
 
   Widget _buildLocationRow(IconData icon, String label, String value, Color iconColor) {
     return Row(

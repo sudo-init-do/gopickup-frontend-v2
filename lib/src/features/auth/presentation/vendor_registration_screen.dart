@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../auth/data/auth_repository.dart';
 
-class VendorRegistrationScreen extends StatefulWidget {
+class VendorRegistrationScreen extends ConsumerStatefulWidget {
   const VendorRegistrationScreen({super.key});
 
   @override
-  State<VendorRegistrationScreen> createState() => _VendorRegistrationScreenState();
+  ConsumerState<VendorRegistrationScreen> createState() => _VendorRegistrationScreenState();
 }
 
-class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
+class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScreen> {
   int _currentStep = 0; // 0: Store Info, 1: Location, 2: Verification
   
   // Store Info Controllers
@@ -174,13 +174,42 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
     );
   }
 
-  void _handleContinue() {
+  void _handleContinue() async {
     if (_currentStep < 2) {
       setState(() => _currentStep++);
     } else {
-      context.go('/vendor');
+      // Complete Onboarding
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final success = await ref.read(authRepositoryProvider).completeOnboarding(
+        fullName: _ownerNameController.text.trim(),
+        role: 'vendor',
+        vendorData: {
+          'store_name': _storeNameController.text.trim(),
+          'store_description': _descriptionController.text.trim(),
+          'business_category': _selectedCategory,
+          'store_address': _addressController.text.trim(),
+          'registration_number': _registrationController.text.trim(),
+        },
+      );
+
+      if (mounted) {
+        Navigator.pop(context); // Close loading
+        if (success) {
+          context.go('/vendor');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to complete setup. Please try again.')),
+          );
+        }
+      }
     }
   }
+
 
   Widget _buildStoreInfoStep(Color kPurple, Color kLightPurpleBg, Color kDarkTextColor, Color kMidTextColor) {
     return Column(
