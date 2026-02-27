@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../common/models/chat.dart';
+import '../../../common/models/user.dart';
 
 class ChatScreen extends StatefulWidget {
   final Chat chat;
@@ -40,10 +41,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final otherUser = widget.chat.participants.firstWhere(
-      (p) => p.id != 'me',
-      orElse: () => widget.chat.participants.first,
-    );
+    final otherUser = (widget.chat.participants != null && widget.chat.participants!.isNotEmpty)
+        ? widget.chat.participants!.firstWhere(
+            (p) => p.id != 'me',
+            orElse: () => widget.chat.participants!.first,
+          )
+        : User(id: 'unknown', name: 'User', email: '');
 
     // Refined color palette to match mockup
     const kDarkTextColor = Color(0xFF111827);

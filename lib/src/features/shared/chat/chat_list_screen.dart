@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'chat_repository.dart';
+import '../../../common/models/user.dart';
 
 class ChatListScreen extends ConsumerWidget {
   const ChatListScreen({super.key});
@@ -81,7 +82,12 @@ class ChatListScreen extends ConsumerWidget {
                   ),
                   itemBuilder: (context, index) {
                     final chat = chatList[index];
-                    final otherUser = chat.participants.firstWhere((p) => p.id != 'me');
+                    final otherUser = (chat.participants != null && chat.participants!.isNotEmpty)
+                        ? chat.participants!.firstWhere(
+                            (p) => p.id != 'me',
+                            orElse: () => chat.participants!.first,
+                          )
+                        : User(id: 'unknown', name: 'User', email: '');
                     
                     // Mock unread count for BuildMart Supplies to match mockup
                     final hasUnread = otherUser.name == 'BuildMart Supplies';
