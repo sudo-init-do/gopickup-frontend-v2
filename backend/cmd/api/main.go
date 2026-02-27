@@ -28,8 +28,10 @@ func main() {
 
 	if strings.HasPrefix(cfg.DBURL, "postgres://") || strings.HasPrefix(cfg.DBURL, "postgresql://") || strings.Contains(cfg.DBURL, "sslmode=") {
 		db, err = gorm.Open(postgres.Open(cfg.DBURL), &gorm.Config{})
+		log.Println("✅ Connected to PostgreSQL database")
 	} else {
 		db, err = gorm.Open(sqlite.Open(cfg.DBURL), &gorm.Config{})
+		log.Println("📁 Using SQLite file-based database:", cfg.DBURL)
 	}
 
 	if err != nil {
