@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../common/styles/app_colors.dart';
 import '../data/product_repository.dart';
 import '../data/order_repository.dart';
+import '../../../common/models/order.dart';
 import '../../../common/models/product.dart';
 
 class ClientHomeScreen extends ConsumerWidget {
@@ -274,10 +275,10 @@ class ClientHomeScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: ref.watch(ordersProvider).when(
               data: (orders) {
-                // Find first active order (Processing or In Transit)
+                // Find first active order (Pending or In Transit)
                 final activeOrder = orders.where((o) => 
-                  o.status == OrderStatus.processing || 
-                  o.status == OrderStatus.shipped
+                  o.status == OrderStatus.pending || 
+                  o.status == OrderStatus.in_transit
                 ).toList();
 
                 if (activeOrder.isEmpty) return const SizedBox.shrink();
