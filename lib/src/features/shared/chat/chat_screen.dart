@@ -46,7 +46,7 @@ class _ChatScreenState extends State<ChatScreen> {
             (p) => p.id != 'me',
             orElse: () => widget.chat.participants!.first,
           )
-        : User(id: 'unknown', name: 'User', email: '');
+        : User(id: 'unknown', name: 'User', role: UserRole.client);
 
     // Refined color palette to match mockup
     const kDarkTextColor = Color(0xFF111827);
