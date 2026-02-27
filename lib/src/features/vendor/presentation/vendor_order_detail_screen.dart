@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -353,66 +354,6 @@ class VendorOrderDetailScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, bottom: 12),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Color(0xFF64748B),
-          fontWeight: FontWeight.w700,
-          fontSize: 16,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOrderItem(String name, String breakdown, String price) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    color: Color(0xFF111827),
-                    fontWeight: FontWeight.w800,
-                    fontSize: 17,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  breakdown,
-                  style: const TextStyle(
-                    color: Color(0xFF94A3B8),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            price,
-            style: const TextStyle(
-              color: Color(0xFF111827),
-              fontWeight: FontWeight.w800,
-              fontSize: 17,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSummaryRow(String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

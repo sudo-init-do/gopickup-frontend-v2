@@ -73,7 +73,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/driver/submit-bid',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
-          final job = state.extra as Map<String, dynamic>;
+          final job = state.extra as Order;
           return SubmitBidScreen(job: job);
         },
       ),
