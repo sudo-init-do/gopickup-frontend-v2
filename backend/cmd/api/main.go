@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"strings"
+	"time"
 
 	"gopickup-backend/internal/config"
 	"gopickup-backend/internal/handlers"
@@ -27,15 +29,26 @@ func main() {
 	var err error
 
 	if strings.HasPrefix(cfg.DBURL, "postgres://") || strings.HasPrefix(cfg.DBURL, "postgresql://") || strings.Contains(cfg.DBURL, "sslmode=") {
-		db, err = gorm.Open(postgres.Open(cfg.DBURL), &gorm.Config{})
-		log.Println("✅ Connected to PostgreSQL database")
+		// Retry connecting to DB (Postgres might take time to start in Docker)
+		log.Println("⌛ Connecting to PostgreSQL database...")
+		for i := 0; i < 10; i++ {
+			db, err = gorm.Open(postgres.Open(cfg.DBURL), &gorm.Config{})
+			if err == nil {
+				log.Println("✅ Successfully connected to PostgreSQL database")
+				break
+			}
+			log.Printf("⏳ Database not ready yet, retrying... (%d/10)\n", i+1)
+			time.Sleep(3 * time.Second)
+		}
 	} else {
 		db, err = gorm.Open(sqlite.Open(cfg.DBURL), &gorm.Config{})
-		log.Println("📁 Using SQLite file-based database:", cfg.DBURL)
+		if err == nil {
+			log.Println("📁 Using SQLite file-based database:", cfg.DBURL)
+		}
 	}
 
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		log.Fatal("❌ Failed to connect to database after retries:", err)
 	}
 
 	// Automigrate models
@@ -81,6 +94,11 @@ func main() {
 	// API Routes V1
 	v1 := r.Group("/api/v1")
 	{
+		// Health Check
+		v1.GET("/health", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Backend is running"})
+		})
+
 		// Auth
 		auth := v1.Group("/auth")
 		{
