@@ -239,15 +239,20 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
 
   Widget _buildAssignedJobList(Color darkText, Color midText, Color orange, Color green) {
-    final jobs = [
-      {
-        'title': 'Paint Supplies',
-        'status': 'In Progress',
-        'price': '₦65',
-        'eta': '25 mins',
-        'icon': Icons.local_shipping,
-      },
-    ];
+    final List<Map<String, dynamic>> jobs = [];
+
+    if (jobs.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.assignment_outlined, size: 64, color: midText.withOpacity(0.5)),
+            const SizedBox(height: 16),
+            Text('No assigned jobs', style: TextStyle(color: midText, fontSize: 16)),
+          ],
+        ),
+      );
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
@@ -260,24 +265,20 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   }
 
   Widget _buildHistoryJobList(Color darkText, Color midText, Color orange, Color green) {
-    final jobs = [
-      {
-        'title': 'Steel Pipes Delivery',
-        'date': 'Yesterday, 2:30 PM',
-        'price': '₦145.00',
-        'status': 'Delivered',
-        'from': 'Metal Fab Ltd',
-        'to': 'Skyline Towers Site',
-      },
-      {
-        'title': 'Brick & Mortar Haul',
-        'date': 'Feb 12, 11:15 AM',
-        'price': '₦92.50',
-        'status': 'Delivered',
-        'from': 'BuildMart Depot',
-        'to': 'Quay Side Project',
-      },
-    ];
+    final List<Map<String, dynamic>> jobs = [];
+
+    if (jobs.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.history_rounded, size: 64, color: midText.withOpacity(0.5)),
+            const SizedBox(height: 16),
+            Text('No history yet', style: TextStyle(color: midText, fontSize: 16)),
+          ],
+        ),
+      );
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),

@@ -270,86 +270,96 @@ class ClientHomeScreen extends ConsumerWidget {
 
           const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
+          // Active Delivery Section
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: InkWell(
-                onTap: () {
-                  final orders = ref.read(ordersProvider).asData?.value ?? [];
-                  if (orders.isNotEmpty) {
-                    final mockOrder = orders.first;
-                    context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
-                  }
-                },
-                borderRadius: BorderRadius.circular(32),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryLight,
+            child: ref.watch(ordersProvider).when(
+              data: (orders) {
+                // Find first active order (Processing or In Transit)
+                final activeOrder = orders.where((o) => 
+                  o.status == OrderStatus.processing || 
+                  o.status == OrderStatus.shipped
+                ).toList();
+
+                if (activeOrder.isEmpty) return const SizedBox.shrink();
+                
+                final order = activeOrder.first;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: InkWell(
+                    onTap: () => context.push('/client/orders/${order.id}', extra: order),
                     borderRadius: BorderRadius.circular(32),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.05),
-                        blurRadius: 15,
-                        offset: const Offset(0, 4),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryLight,
+                        borderRadius: BorderRadius.circular(32),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.05),
+                            blurRadius: 15,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.6),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.local_shipping_outlined,
-                          color: AppColors.primary,
-                          size: 26,
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Active Delivery',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Color(0xFF1F2937),
-                              ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.6),
+                              shape: BoxShape.circle,
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'BuildMart order arriving in ~25 min',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 13,
-                                height: 1.4,
-                              ),
+                            child: Icon(
+                              Icons.local_shipping_outlined,
+                              color: AppColors.primary,
+                              size: 26,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Active Delivery',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Color(0xFF1F2937),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  '${order.items.length} items • ${order.status.displayName}',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 13,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
             ),
           ),
 
@@ -395,42 +405,48 @@ class ClientHomeScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  InkWell(
-                  onTap: () {
-                      final orders = ref.read(ordersProvider).asData?.value ?? [];
-                      if (orders.isNotEmpty) {
-                        final mockOrder = orders.first;
-                        context.push('/client/orders/${mockOrder.id}', extra: mockOrder);
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(28),
-                    child: const _RecentOrderCard(
-                      title: 'BuildMart Supplies',
-                      status: 'In Transit',
-                      items: 5,
-                      time: 'Today, 2:30 PM',
-                      price: 458.00,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const _RecentOrderCard(
-                    title: 'Steel Works Co.',
-                    status: 'Delivered',
-                    items: 2,
-                    time: 'Yesterday',
-                    price: 1240.00,
-                  ),
-                  const SizedBox(height: 16),
-                  const _RecentOrderCard(
-                    title: 'CementPro Ltd.',
-                    status: 'Processing',
-                    items: 8,
-                    time: 'Feb 9',
-                    price: 2100.00,
-                  ),
-                ],
+              child: ref.watch(ordersProvider).when(
+                data: (orders) {
+                  if (orders.isEmpty) {
+                    return Container(
+                      padding: const EdgeInsets.all(40),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(28),
+                        border: Border.all(color: Colors.grey.shade100),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(Icons.shopping_bag_outlined, size: 48, color: Colors.grey[300]),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No orders yet',
+                            style: TextStyle(color: Colors.grey[500], fontSize: 16, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: orders.take(3).map((order) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: InkWell(
+                        onTap: () => context.push('/client/orders/${order.id}', extra: order),
+                        borderRadius: BorderRadius.circular(28),
+                        child: _RecentOrderCard(
+                          title: 'Order ${order.shortId}',
+                          status: order.status.displayName,
+                          items: order.items.length,
+                          time: 'Recently',
+                          price: order.total,
+                        ),
+                      ),
+                    )).toList(),
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (err, _) => Center(child: Text('Error: $err')),
               ),
             ),
           ),

@@ -89,9 +89,7 @@ class ChatListScreen extends ConsumerWidget {
                           )
                         : User(id: 'unknown', name: 'User', role: UserRole.client);
                     
-                    // Mock unread count for BuildMart Supplies to match mockup
-                    final hasUnread = otherUser.name == 'BuildMart Supplies';
-                    final unreadCount = hasUnread ? 2 : 0;
+                    final unreadCount = 0;
 
                     return _ChatListItem(
                       name: otherUser.name,

@@ -53,7 +53,7 @@ class VendorHomeScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    'BuildMart Supplies',
+                                    'My Store',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 24,
@@ -66,7 +66,7 @@ class VendorHomeScreen extends ConsumerWidget {
                                       const Icon(Icons.star_rounded, color: Color(0xFFFFD700), size: 18),
                                       const SizedBox(width: 4),
                                       Text(
-                                        '4.8 (124 reviews)',
+                                        'New Store',
                                         style: TextStyle(
                                           color: Colors.white.withOpacity(0.9),
                                           fontSize: 14,
@@ -102,7 +102,7 @@ class VendorHomeScreen extends ConsumerWidget {
                               error: (_, __) => _buildStatCard('₦0', 'Revenue', Icons.attach_money_rounded),
                             ),
                             const SizedBox(width: 10),
-                            _buildStatCard('2.3k', 'Views', Icons.visibility_outlined),
+                            _buildStatCard('0', 'Views', Icons.visibility_outlined),
                           ],
                         ),
                       ],
