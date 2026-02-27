@@ -9,7 +9,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: always
 
-  backend:
+  gopickup-api:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -31,7 +31,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
+      - gopickup-api
     restart: always
 
 volumes:
