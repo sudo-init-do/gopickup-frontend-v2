@@ -154,31 +154,36 @@ func (h *AuthHandler) CompleteOnboarding(c *gin.Context) {
 		return
 	}
 
+	var req struct {
+		FullName   string                `json:"full_name"`
+		ClientData *models.ClientProfile `json:"client_data"`
+		DriverData *models.DriverProfile `json:"driver_data"`
+		VendorData *models.VendorProfile `json:"vendor_data"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	switch models.Role(userRole.(string)) {
 	case models.RoleClient:
-		var profile models.ClientProfile
-		if err := c.ShouldBindJSON(&profile); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+		if req.ClientData != nil {
+			req.ClientData.UserID = userID.(uuid.UUID)
+			req.ClientData.FullName = req.FullName
+			h.DB.Save(req.ClientData)
 		}
-		profile.UserID = userID.(uuid.UUID)
-		h.DB.Save(&profile)
 	case models.RoleDriver:
-		var profile models.DriverProfile
-		if err := c.ShouldBindJSON(&profile); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+		if req.DriverData != nil {
+			req.DriverData.UserID = userID.(uuid.UUID)
+			req.DriverData.FullName = req.FullName
+			h.DB.Save(req.DriverData)
 		}
-		profile.UserID = userID.(uuid.UUID)
-		h.DB.Save(&profile)
 	case models.RoleVendor:
-		var profile models.VendorProfile
-		if err := c.ShouldBindJSON(&profile); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+		if req.VendorData != nil {
+			req.VendorData.UserID = userID.(uuid.UUID)
+			h.DB.Save(req.VendorData)
 		}
-		profile.UserID = userID.(uuid.UUID)
-		h.DB.Save(&profile)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Onboarding completed successfully"})

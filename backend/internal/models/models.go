@@ -51,6 +51,7 @@ type ClientProfile struct {
 type DriverProfile struct {
 	ID              uint      `gorm:"primaryKey" json:"id"`
 	UserID          uuid.UUID `gorm:"type:uuid;uniqueIndex;not null" json:"user_id"`
+	FullName        string    `json:"full_name"`
 	LicenseNo       string    `json:"license_no"`
 	VehicleType     string    `json:"vehicle_type"`
 	PlateNo         string    `json:"plate_no"`
@@ -58,12 +59,14 @@ type DriverProfile struct {
 }
 
 type VendorProfile struct {
-	ID           uint      `gorm:"primaryKey" json:"id"`
-	UserID       uuid.UUID `gorm:"type:uuid;uniqueIndex;not null" json:"user_id"`
-	StoreName    string    `json:"store_name"`
-	BusinessType string    `json:"business_type"`
-	Address      string    `json:"address"`
-	Landmark     string    `json:"landmark"`
+	ID                 uint      `gorm:"primaryKey" json:"id"`
+	UserID             uuid.UUID `gorm:"type:uuid;uniqueIndex;not null" json:"user_id"`
+	StoreName          string    `json:"store_name"`
+	StoreDescription   string    `json:"store_description"`
+	BusinessCategory   string    `json:"business_category"`
+	StoreAddress       string    `json:"store_address"`
+	RegistrationNumber string    `json:"registration_number"`
+	Landmark           string    `json:"landmark"`
 }
 
 type Product struct {
