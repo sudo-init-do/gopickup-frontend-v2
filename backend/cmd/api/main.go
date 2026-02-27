@@ -164,9 +164,9 @@ func main() {
 		// WebSocket
 		v1.GET("/socket", socketHandler.HandleWebSocket)
 	}
-
-	log.Printf("Server starting on :%s...\n", cfg.Port)
-	if err := r.Run(":" + cfg.Port); err != nil {
-		log.Fatal("Server failed to start:", err)
+	// Start Server
+	log.Printf("🚀 Server running on port %s in %s mode\n", cfg.Port, cfg.GinMode)
+	if err := r.Run("0.0.0.0:" + cfg.Port); err != nil {
+		log.Fatal("❌ Could not start server:", err)
 	}
 }
