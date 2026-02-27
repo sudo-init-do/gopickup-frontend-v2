@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../auth/data/auth_repository.dart';
 
 class VendorRegistrationScreen extends ConsumerStatefulWidget {
@@ -186,17 +187,17 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
         builder: (context) => const Center(child: CircularProgressIndicator()),
       );
 
-      final success = await ref.read(authRepositoryProvider).completeOnboarding(
-        fullName: _ownerNameController.text.trim(),
-        role: 'vendor',
-        vendorData: {
+      final success = await ref.read(authRepositoryProvider).completeOnboarding({
+        'full_name': _ownerNameController.text.trim(),
+        'role': 'vendor',
+        'vendor_data': {
           'store_name': _storeNameController.text.trim(),
           'store_description': _descriptionController.text.trim(),
           'business_category': _selectedCategory,
           'store_address': _addressController.text.trim(),
           'registration_number': _registrationController.text.trim(),
         },
-      );
+      });
 
       if (mounted) {
         Navigator.pop(context); // Close loading

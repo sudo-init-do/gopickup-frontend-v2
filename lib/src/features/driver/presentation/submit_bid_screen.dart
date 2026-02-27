@@ -271,8 +271,8 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                 );
 
                 final success = await ref.read(jobRepositoryProvider).submitBid(
-                  widget.job.id,
-                  amount,
+                  orderId: widget.job.id,
+                  amount: amount,
                 );
 
                 if (context.mounted) {

@@ -40,7 +40,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final otherUser = widget.chat.participants.firstWhere((p) => p.id != 'me');
+    final otherUser = widget.chat.participants.firstWhere(
+      (p) => p.id != 'me',
+      orElse: () => widget.chat.participants.first,
+    );
 
     // Refined color palette to match mockup
     const kDarkTextColor = Color(0xFF111827);

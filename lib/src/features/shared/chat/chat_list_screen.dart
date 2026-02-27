@@ -71,33 +71,37 @@ class ChatListScreen extends ConsumerWidget {
             
             // Conversations List
             Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.zero,
-                itemCount: chats.length,
-                separatorBuilder: (context, index) => Container(
-                  height: 1,
-                  color: const Color(0xFFF1F5F9),
-                ),
-                itemBuilder: (context, index) {
-                  final chat = chats[index];
-                  final otherUser = chat.participants.firstWhere((p) => p.id != 'me');
-                  
-                  // Mock unread count for BuildMart Supplies to match mockup
-                  final hasUnread = otherUser.name == 'BuildMart Supplies';
-                  final unreadCount = hasUnread ? 2 : 0;
+              child: chats.when(
+                data: (chatList) => ListView.separated(
+                  padding: EdgeInsets.zero,
+                  itemCount: chatList.length,
+                  separatorBuilder: (context, index) => Container(
+                    height: 1,
+                    color: const Color(0xFFF1F5F9),
+                  ),
+                  itemBuilder: (context, index) {
+                    final chat = chatList[index];
+                    final otherUser = chat.participants.firstWhere((p) => p.id != 'me');
+                    
+                    // Mock unread count for BuildMart Supplies to match mockup
+                    final hasUnread = otherUser.name == 'BuildMart Supplies';
+                    final unreadCount = hasUnread ? 2 : 0;
 
-                  return _ChatListItem(
-                    name: otherUser.name,
-                    lastMessage: chat.lastMessage,
-                    time: _formatDateTime(chat.lastUpdated),
-                    unreadCount: unreadCount,
-                    kDarkTextColor: kDarkTextColor,
-                    kMidTextColor: kMidTextColor,
-                    kLightTextColor: kLightTextColor,
-                    kBrandGreen: kBrandGreen,
-                    onTap: () => context.push('/chat/${chat.id}', extra: chat),
-                  );
-                },
+                    return _ChatListItem(
+                      name: otherUser.name,
+                      lastMessage: chat.lastMessage,
+                      time: _formatDateTime(chat.lastUpdated),
+                      unreadCount: unreadCount,
+                      kDarkTextColor: kDarkTextColor,
+                      kMidTextColor: kMidTextColor,
+                      kLightTextColor: kLightTextColor,
+                      kBrandGreen: kBrandGreen,
+                      onTap: () => context.push('/chat/${chat.id}', extra: chat),
+                    );
+                  },
+                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(child: Text('Error: $error')),
               ),
             ),
           ],
