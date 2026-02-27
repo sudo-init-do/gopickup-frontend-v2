@@ -8,9 +8,7 @@ android
 macos
 windows
 linux
-web
 *.log
 .flutter-plugins
 .flutter-plugins-dependencies
 .metadata
-pubspec.lock
