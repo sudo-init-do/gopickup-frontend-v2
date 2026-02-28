@@ -79,6 +79,11 @@ func main() {
 
 	r := gin.Default()
 
+	// Root Health Check (outside /api/v1)
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Root Backend is healthy"})
+	})
+
 	// CORS Setup - Secure
 	allowedOriginsList := strings.Split(cfg.AllowedOrigins, ",")
 
