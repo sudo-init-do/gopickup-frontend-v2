@@ -5,11 +5,6 @@ class AppConfig {
   static const String prodBaseUrl = 'https://backend.gopickup.com.ng/api/v1';
 
   static String get baseUrl {
-    if (kIsWeb) {
-      // In Docker/Production, if serving from the same host, we can use relative path
-      // or the specific production domain.
-      return kDebugMode ? devBaseUrl : '/api/v1'; 
-    }
     return kDebugMode ? devBaseUrl : prodBaseUrl;
   }
 }

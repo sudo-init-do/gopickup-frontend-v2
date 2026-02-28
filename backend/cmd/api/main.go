@@ -93,7 +93,8 @@ func main() {
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		MaxAge:           12 * 3600, // Cache preflight requests for 12 hours
+		AllowWildcard:    true,
+		MaxAge:           12 * 3600,
 	}))
 
 	// API Routes V1
