@@ -8,4 +8,3 @@ class AppConfig {
     return kDebugMode ? devBaseUrl : prodBaseUrl;
   }
 }
-

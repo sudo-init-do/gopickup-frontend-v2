@@ -1,39 +1,8 @@
 services:
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: gopickup
-      POSTGRES_PASSWORD: password123
-      POSTGRES_DB: gopickup_prod
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: always
-
-  gopickup-api:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    environment:
-      - PORT=8080
-      - DB_URL=postgres://gopickup:password123@db:5432/gopickup_prod?sslmode=disable
-      - JWT_SECRET=production_secret_key_123_abc_xyz
-      - GIN_MODE=release
-    restart: always
-
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.web
     ports:
       - "80:80"
-    depends_on:
-      - gopickup-api
     restart: always
-
-volumes:
-  postgres_data:
-
