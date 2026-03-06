@@ -108,15 +108,9 @@ class AppTheme {
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(
-              color: AppColors.primaryDark,
-              size: 24,
-            );
+            return const IconThemeData(color: AppColors.primaryDark, size: 24);
           }
-          return const IconThemeData(
-            color: Color(0xFF9CA3AF),
-            size: 24,
-          );
+          return const IconThemeData(color: Color(0xFF9CA3AF), size: 24);
         }),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(

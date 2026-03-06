@@ -23,7 +23,6 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA), // Slightly off-white background
       appBar: AppBar(
@@ -50,10 +49,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF3B7D23),
-                            Color(0xFF4CA634),
-                          ],
+                          colors: [Color(0xFF3B7D23), Color(0xFF4CA634)],
                         ),
                         borderRadius: BorderRadius.vertical(
                           bottom: Radius.circular(32),
@@ -105,7 +101,9 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                         Text(
                                           'GOOD MORNING',
                                           style: TextStyle(
-                                            color: Colors.white.withValues(alpha: 0.9),
+                                            color: Colors.white.withValues(
+                                              alpha: 0.9,
+                                            ),
                                             fontSize: 13,
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 1.2,
@@ -141,7 +139,8 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                       color: Colors.white,
                                       size: 26,
                                     ),
-                                    onPressed: () => context.push('/notifications'),
+                                    onPressed: () =>
+                                        context.push('/notifications'),
                                     padding: const EdgeInsets.all(10),
                                   ),
                                 ),
@@ -172,7 +171,8 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                   SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'DELIVER TO',
@@ -292,18 +292,22 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                 }
 
                 // Find first active order (Pending or In Transit)
-                final activeOrders = orderState.orders.where((o) => 
-                  o.status == 'pending' || 
-                  o.status == 'in_transit'
-                ).toList();
+                final activeOrders = orderState.orders
+                    .where(
+                      (o) => o.status == 'pending' || o.status == 'in_transit',
+                    )
+                    .toList();
 
                 if (activeOrders.isEmpty) return const SizedBox.shrink();
-                
+
                 final order = activeOrders.first;
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: InkWell(
-                    onTap: () => context.push('/client/orders/${order.id}', extra: order),
+                    onTap: () => context.push(
+                      '/client/orders/${order.id}',
+                      extra: order,
+                    ),
                     borderRadius: BorderRadius.circular(32),
                     child: Container(
                       padding: const EdgeInsets.all(20),
@@ -428,7 +432,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                   } else if (orderState.error != null) {
                     return Center(child: Text('Error: ${orderState.error}'));
                   }
-                  
+
                   final orders = orderState.orders;
                   if (orders.isEmpty) {
                     return Container(
@@ -441,31 +445,47 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                       ),
                       child: Column(
                         children: [
-                          Icon(Icons.shopping_bag_outlined, size: 48, color: Colors.grey[300]),
+                          Icon(
+                            Icons.shopping_bag_outlined,
+                            size: 48,
+                            color: Colors.grey[300],
+                          ),
                           const SizedBox(height: 16),
                           Text(
                             'No orders yet',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 16, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
                     );
                   }
                   return Column(
-                    children: orders.take(3).map((order) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: InkWell(
-                        onTap: () => context.push('/client/orders/${order.id}', extra: order),
-                        borderRadius: BorderRadius.circular(28),
-                        child: _RecentOrderCard(
-                          title: 'Order ${order.id.substring(0, 8)}',
-                          status: order.status.toUpperCase(),
-                          items: order.items.length,
-                          time: 'Recently',
-                          price: order.totalProductAmount,
-                        ),
-                      ),
-                    )).toList(),
+                    children: orders
+                        .take(3)
+                        .map(
+                          (order) => Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: InkWell(
+                              onTap: () => context.push(
+                                '/client/orders/${order.id}',
+                                extra: order,
+                              ),
+                              borderRadius: BorderRadius.circular(28),
+                              child: _RecentOrderCard(
+                                title: 'Order ${order.id.substring(0, 8)}',
+                                status: order.status.toUpperCase(),
+                                items: order.items.length,
+                                time: 'Recently',
+                                price: order.totalProductAmount,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   );
                 },
               ),
@@ -662,9 +682,7 @@ class _FloatingSearchBar extends StatelessWidget {
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 18,
-          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 18),
         ),
       ),
     );

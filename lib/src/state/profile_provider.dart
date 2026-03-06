@@ -10,7 +10,11 @@ class ProfileState {
 
   ProfileState({this.isLoading = false, this.error});
 
-  ProfileState copyWith({bool? isLoading, String? error, bool clearError = false}) {
+  ProfileState copyWith({
+    bool? isLoading,
+    String? error,
+    bool clearError = false,
+  }) {
     return ProfileState(
       isLoading: isLoading ?? this.isLoading,
       error: clearError ? null : error ?? this.error,

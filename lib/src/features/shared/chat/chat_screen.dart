@@ -57,22 +57,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         children: [
           Expanded(
             child: chatState.isLoading && chatState.currentMessages.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              itemCount: chatState.currentMessages.length,
-              itemBuilder: (context, index) {
-                final message = chatState.currentMessages[index];
-                return _MessageBubble(
-                  message: message,
-                  isMe: message.senderId == currentUser?.id,
-                  kBrandGreen: kBrandGreen,
-                  kDarkTextColor: kDarkTextColor,
-                  kMidTextColor: kMidTextColor,
-                  kIncomingBg: kIncomingBg,
-                );
-              },
-            ),
+                ? const Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 24,
+                    ),
+                    itemCount: chatState.currentMessages.length,
+                    itemBuilder: (context, index) {
+                      final message = chatState.currentMessages[index];
+                      return _MessageBubble(
+                        message: message,
+                        isMe: message.senderId == currentUser?.id,
+                        kBrandGreen: kBrandGreen,
+                        kDarkTextColor: kDarkTextColor,
+                        kMidTextColor: kMidTextColor,
+                        kIncomingBg: kIncomingBg,
+                      );
+                    },
+                  ),
           ),
           _ChatInput(
             controller: _controller,
@@ -84,7 +87,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, String name, Color darkText, Color brandGreen) {
+  PreferredSizeWidget _buildAppBar(
+    BuildContext context,
+    String name,
+    Color darkText,
+    Color brandGreen,
+  ) {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
@@ -118,7 +126,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               shape: BoxShape.circle,
             ),
             child: const Center(
-              child: Icon(Icons.person_outline_rounded, color: Color(0xFF4CAF50), size: 28),
+              child: Icon(
+                Icons.person_outline_rounded,
+                color: Color(0xFF4CAF50),
+                size: 28,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -155,10 +167,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(
-          color: const Color(0xFFF1F5F9),
-          height: 1,
-        ),
+        child: Container(color: const Color(0xFFF1F5F9), height: 1),
       ),
     );
   }
@@ -198,7 +207,9 @@ class _MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
-        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -220,7 +231,9 @@ class _MessageBubble extends StatelessWidget {
                 Text(
                   message.content,
                   style: TextStyle(
-                    color: isMe ? Colors.white : kDarkTextColor.withValues(alpha: 0.9),
+                    color: isMe
+                        ? Colors.white
+                        : kDarkTextColor.withValues(alpha: 0.9),
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                     height: 1.4,
@@ -232,7 +245,9 @@ class _MessageBubble extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: isMe ? Colors.white.withValues(alpha: 0.8) : kMidTextColor.withValues(alpha: 0.6),
+                    color: isMe
+                        ? Colors.white.withValues(alpha: 0.8)
+                        : kMidTextColor.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -314,7 +329,11 @@ class _ChatInput extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(Icons.send_rounded, color: Colors.white, size: 24),
+              child: const Icon(
+                Icons.send_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
           ),
         ],

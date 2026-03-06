@@ -19,13 +19,27 @@ class OrderDetailScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context, order.id.length > 8 ? order.id.substring(0, 8) : order.id, kDarkTextColor, kLightTextColor),
+            _buildHeader(
+              context,
+              order.id.length > 8 ? order.id.substring(0, 8) : order.id,
+              kDarkTextColor,
+              kLightTextColor,
+            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildTrackingTop(kBrandGreen, kDarkTextColor, kMidTextColor),
-                    _buildTimelineSection(kDarkTextColor, kMidTextColor, kLightTextColor, kBrandGreen),
+                    _buildTrackingTop(
+                      kBrandGreen,
+                      kDarkTextColor,
+                      kMidTextColor,
+                    ),
+                    _buildTimelineSection(
+                      kDarkTextColor,
+                      kMidTextColor,
+                      kLightTextColor,
+                      kBrandGreen,
+                    ),
                   ],
                 ),
               ),
@@ -36,7 +50,12 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, String orderId, Color darkText, Color lightText) {
+  Widget _buildHeader(
+    BuildContext context,
+    String orderId,
+    Color darkText,
+    Color lightText,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Stack(
@@ -116,7 +135,11 @@ class OrderDetailScreen extends StatelessWidget {
                     color: const Color(0xFFFFF7ED),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.local_shipping_outlined, color: Color(0xFFF97316), size: 24),
+                  child: const Icon(
+                    Icons.local_shipping_outlined,
+                    color: Color(0xFFF97316),
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -148,7 +171,11 @@ class OrderDetailScreen extends StatelessWidget {
                     color: brandGreen,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 20),
+                  child: const Icon(
+                    Icons.location_on_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ],
             ),
@@ -158,7 +185,12 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineSection(Color darkText, Color midText, Color lightText, Color brandGreen) {
+  Widget _buildTimelineSection(
+    Color darkText,
+    Color midText,
+    Color lightText,
+    Color brandGreen,
+  ) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -294,8 +326,12 @@ class OrderDetailScreen extends StatelessWidget {
                           label,
                           style: TextStyle(
                             fontSize: 17,
-                            fontWeight: isActive || isDone ? FontWeight.w800 : FontWeight.w600,
-                            color: isDone || isActive ? darkText : darkText.withValues(alpha: 0.4),
+                            fontWeight: isActive || isDone
+                                ? FontWeight.w800
+                                : FontWeight.w600,
+                            color: isDone || isActive
+                                ? darkText
+                                : darkText.withValues(alpha: 0.4),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -304,7 +340,9 @@ class OrderDetailScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: isDone || isActive ? midText : midText.withValues(alpha: 0.4),
+                            color: isDone || isActive
+                                ? midText
+                                : midText.withValues(alpha: 0.4),
                           ),
                         ),
                       ],

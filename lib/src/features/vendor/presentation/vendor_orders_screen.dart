@@ -53,7 +53,10 @@ class VendorOrdersScreen extends ConsumerWidget {
                 child: const TextField(
                   decoration: InputDecoration(
                     hintText: 'Search orders...',
-                    hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 16),
+                    hintStyle: TextStyle(
+                      color: Color(0xFF94A3B8),
+                      fontSize: 16,
+                    ),
                     prefixIcon: Icon(Icons.search, color: Color(0xFF94A3B8)),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(vertical: 14),
@@ -94,8 +97,10 @@ class VendorOrdersScreen extends ConsumerWidget {
                       itemCount: orders.length,
                       itemBuilder: (context, index) {
                         final order = orders[index];
-                        final itemsDescription = order.items.map((i) => '${i.quantity}x ${i.product.name}').join('\n');
-                        
+                        final itemsDescription = order.items
+                            .map((i) => '${i.quantity}x ${i.product.name}')
+                            .join('\n');
+
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 20),
                           child: _buildOrderCard(
@@ -104,7 +109,9 @@ class VendorOrdersScreen extends ConsumerWidget {
                             order.shortId,
                             'Client: ${order.clientId.substring(0, 8)}',
                             itemsDescription,
-                            DateFormat('MMM d, yyyy • h:mm a').format(order.placedAt),
+                            DateFormat(
+                              'MMM d, yyyy • h:mm a',
+                            ).format(order.placedAt),
                             '₦${order.total.toStringAsFixed(2)}',
                             order.status.displayName,
                             order.status.backgroundColor,
@@ -127,7 +134,6 @@ class VendorOrdersScreen extends ConsumerWidget {
       ),
     );
   }
-
 
   Widget _buildFilterTab(String label, bool isActive, Color activeColor) {
     return Container(
@@ -194,7 +200,10 @@ class VendorOrdersScreen extends ConsumerWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: tagBg,
                     borderRadius: BorderRadius.circular(12),
@@ -204,7 +213,9 @@ class VendorOrdersScreen extends ConsumerWidget {
                       Icon(
                         order.status == OrderStatus.delivered
                             ? Icons.check_circle_outline_rounded
-                            : (order.status == OrderStatus.pending ? Icons.access_time_rounded : Icons.inventory_2_outlined),
+                            : (order.status == OrderStatus.pending
+                                  ? Icons.access_time_rounded
+                                  : Icons.inventory_2_outlined),
                         size: 14,
                         color: tagColor,
                       ),
@@ -266,7 +277,10 @@ class VendorOrdersScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: Color(0xFF94A3B8),
+                    ),
                   ],
                 ),
               ],
@@ -276,5 +290,4 @@ class VendorOrdersScreen extends ConsumerWidget {
       ),
     );
   }
-
 }

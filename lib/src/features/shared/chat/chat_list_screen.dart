@@ -46,7 +46,10 @@ class ChatListScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(28),
-                      border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+                      border: Border.all(
+                        color: const Color(0xFFF1F5F9),
+                        width: 1.5,
+                      ),
                     ),
                     child: TextField(
                       decoration: InputDecoration(
@@ -62,46 +65,49 @@ class ChatListScreen extends ConsumerWidget {
                           size: 26,
                         ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 16,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            
+
             // Conversations List
             Expanded(
               child: chatState.isLoading && conversations.isEmpty
                   ? const Center(child: CircularProgressIndicator())
                   : chatState.error != null && conversations.isEmpty
-                      ? Center(child: Text('Error: ${chatState.error}'))
-                      : ListView.separated(
-                  padding: EdgeInsets.zero,
-                  itemCount: conversations.length,
-                  separatorBuilder: (context, index) => Container(
-                    height: 1,
-                    color: const Color(0xFFF1F5F9),
-                  ),
-                  itemBuilder: (context, index) {
-                    final chat = conversations[index];
-                    final otherUserName = chat.otherUserName ?? 'User';
-                    
-                    final unreadCount = chat.unreadCount;
+                  ? Center(child: Text('Error: ${chatState.error}'))
+                  : ListView.separated(
+                      padding: EdgeInsets.zero,
+                      itemCount: conversations.length,
+                      separatorBuilder: (context, index) =>
+                          Container(height: 1, color: const Color(0xFFF1F5F9)),
+                      itemBuilder: (context, index) {
+                        final chat = conversations[index];
+                        final otherUserName = chat.otherUserName ?? 'User';
 
-                    return _ChatListItem(
-                      name: otherUserName,
-                      lastMessage: chat.lastMessage ?? '',
-                      time: chat.updatedAt != null ? _formatDateTime(chat.updatedAt!) : '',
-                      unreadCount: unreadCount,
-                      kDarkTextColor: kDarkTextColor,
-                      kMidTextColor: kMidTextColor,
-                      kLightTextColor: kLightTextColor,
-                      kBrandGreen: kBrandGreen,
-                      onTap: () => context.push('/chat/${chat.id}', extra: chat),
-                    );
-                  },
-                ),
+                        final unreadCount = chat.unreadCount;
+
+                        return _ChatListItem(
+                          name: otherUserName,
+                          lastMessage: chat.lastMessage ?? '',
+                          time: chat.updatedAt != null
+                              ? _formatDateTime(chat.updatedAt!)
+                              : '',
+                          unreadCount: unreadCount,
+                          kDarkTextColor: kDarkTextColor,
+                          kMidTextColor: kMidTextColor,
+                          kLightTextColor: kLightTextColor,
+                          kBrandGreen: kBrandGreen,
+                          onTap: () =>
+                              context.push('/chat/${chat.id}', extra: chat),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
@@ -115,7 +121,8 @@ class ChatListScreen extends ConsumerWidget {
 
     if (difference.inMinutes < 1) return 'Just now';
     if (difference.inMinutes < 60) return '${difference.inMinutes} mins ago';
-    if (difference.inHours < 24) return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    if (difference.inHours < 24)
+      return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
     if (difference.inDays == 1) return 'Yesterday';
     return DateFormat('MMM d').format(dateTime);
   }
@@ -179,7 +186,9 @@ class _ChatListItem extends StatelessWidget {
                         name,
                         style: TextStyle(
                           fontSize: 17,
-                          fontWeight: unreadCount > 0 ? FontWeight.w800 : FontWeight.w700,
+                          fontWeight: unreadCount > 0
+                              ? FontWeight.w800
+                              : FontWeight.w700,
                           color: kDarkTextColor,
                         ),
                       ),
@@ -188,7 +197,9 @@ class _ChatListItem extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: unreadCount > 0 ? kDarkTextColor.withValues(alpha: 0.6) : kLightTextColor,
+                          color: unreadCount > 0
+                              ? kDarkTextColor.withValues(alpha: 0.6)
+                              : kLightTextColor,
                         ),
                       ),
                     ],
@@ -203,8 +214,12 @@ class _ChatListItem extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: unreadCount > 0 ? FontWeight.w600 : FontWeight.w500,
-                            color: unreadCount > 0 ? kMidTextColor : kLightTextColor,
+                            fontWeight: unreadCount > 0
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            color: unreadCount > 0
+                                ? kMidTextColor
+                                : kLightTextColor,
                           ),
                         ),
                       ),

@@ -21,7 +21,6 @@ class OrderRepository {
     }
   }
 
-
   Future<Order> getOrder(String id) async {
     final response = await _apiClient.get('/orders/$id');
     return Order.fromJson(response.data);
@@ -33,11 +32,14 @@ class OrderRepository {
     required String paymentMethod,
   }) async {
     try {
-      final response = await _apiClient.post('/orders/checkout', data: {
-        'items': items,
-        'delivery_address': deliveryAddress,
-        'payment_method': paymentMethod,
-      });
+      final response = await _apiClient.post(
+        '/orders/checkout',
+        data: {
+          'items': items,
+          'delivery_address': deliveryAddress,
+          'payment_method': paymentMethod,
+        },
+      );
 
       if (response.statusCode == 201) {
         return Order.fromJson(response.data);
@@ -48,7 +50,6 @@ class OrderRepository {
     }
   }
 }
-
 
 final orderRepositoryProvider = Provider<OrderRepository>((ref) {
   return OrderRepository(ref.watch(apiClientProvider));

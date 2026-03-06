@@ -18,27 +18,73 @@ class SettingsScreen extends StatelessWidget {
             _buildHeader(context, kDarkTextColor),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 children: [
                   _buildSectionHeader('ACCOUNT'),
-                  _buildSettingItem(Icons.person_outline_rounded, 'Edit Profile', 'Change your name and contact info'),
-                  _buildSettingItem(Icons.lock_outline_rounded, 'Change Password', 'Update your login credentials'),
-                  _buildSettingItem(Icons.language_rounded, 'Language', 'English (United States)', suffix: 'English'),
-                  
+                  _buildSettingItem(
+                    Icons.person_outline_rounded,
+                    'Edit Profile',
+                    'Change your name and contact info',
+                  ),
+                  _buildSettingItem(
+                    Icons.lock_outline_rounded,
+                    'Change Password',
+                    'Update your login credentials',
+                  ),
+                  _buildSettingItem(
+                    Icons.language_rounded,
+                    'Language',
+                    'English (United States)',
+                    suffix: 'English',
+                  ),
+
                   const SizedBox(height: 24),
                   _buildSectionHeader('PREFERENCES'),
-                  _buildToggleItem(Icons.notifications_none_rounded, 'Push Notifications', true, kBrandGreen),
-                  _buildToggleItem(Icons.dark_mode_outlined, 'Dark Mode', false, kBrandGreen),
-                  _buildToggleItem(Icons.location_on_outlined, 'Location Services', true, kBrandGreen),
+                  _buildToggleItem(
+                    Icons.notifications_none_rounded,
+                    'Push Notifications',
+                    true,
+                    kBrandGreen,
+                  ),
+                  _buildToggleItem(
+                    Icons.dark_mode_outlined,
+                    'Dark Mode',
+                    false,
+                    kBrandGreen,
+                  ),
+                  _buildToggleItem(
+                    Icons.location_on_outlined,
+                    'Location Services',
+                    true,
+                    kBrandGreen,
+                  ),
 
                   const SizedBox(height: 24),
                   _buildSectionHeader('SUPPORT'),
-                  _buildSettingItem(Icons.help_outline_rounded, 'Help Center', 'FAQs and customer support'),
-                  _buildSettingItem(Icons.shield_outlined, 'Privacy Policy', 'How we handle your data'),
-                  _buildSettingItem(Icons.info_outline_rounded, 'About App', 'Version 1.0.0'),
+                  _buildSettingItem(
+                    Icons.help_outline_rounded,
+                    'Help Center',
+                    'FAQs and customer support',
+                  ),
+                  _buildSettingItem(
+                    Icons.shield_outlined,
+                    'Privacy Policy',
+                    'How we handle your data',
+                  ),
+                  _buildSettingItem(
+                    Icons.info_outline_rounded,
+                    'About App',
+                    'Version 1.0.0',
+                  ),
 
                   const SizedBox(height: 32),
-                  _buildDangerItem(Icons.delete_outline_rounded, 'Delete Account'),
+                  _buildDangerItem(
+                    Icons.delete_outline_rounded,
+                    'Delete Account',
+                  ),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -103,7 +149,12 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingItem(IconData icon, String title, String subtitle, {String? suffix}) {
+  Widget _buildSettingItem(
+    IconData icon,
+    String title,
+    String subtitle, {
+    String? suffix,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -158,7 +209,12 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildToggleItem(IconData icon, String title, bool value, Color brandGreen) {
+  Widget _buildToggleItem(
+    IconData icon,
+    String title,
+    bool value,
+    Color brandGreen,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -217,7 +273,10 @@ class SettingsScreen extends StatelessWidget {
             color: Colors.redAccent,
           ),
         ),
-        trailing: const Icon(Icons.chevron_right_rounded, color: Colors.redAccent),
+        trailing: const Icon(
+          Icons.chevron_right_rounded,
+          color: Colors.redAccent,
+        ),
         onTap: () {},
       ),
     );

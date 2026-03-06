@@ -5,7 +5,6 @@ import '../data/cart_provider.dart';
 import '../../../models/order_models.dart';
 import '../../../state/order_provider.dart';
 
-
 class ClientCartScreen extends ConsumerWidget {
   const ClientCartScreen({super.key});
 
@@ -17,7 +16,9 @@ class ClientCartScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       body: SafeArea(
-        child: cart.isEmpty ? _buildEmptyCart(context) : _buildCartList(context, ref, cart, totalItems),
+        child: cart.isEmpty
+            ? _buildEmptyCart(context)
+            : _buildCartList(context, ref, cart, totalItems),
       ),
     );
   }
@@ -38,7 +39,11 @@ class ClientCartScreen extends ConsumerWidget {
                     color: const Color(0xFFF3F4F6),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.shopping_bag_outlined, size: 40, color: Color(0xFF9CA3AF)),
+                  child: const Icon(
+                    Icons.shopping_bag_outlined,
+                    size: 40,
+                    color: Color(0xFF9CA3AF),
+                  ),
                 ),
                 const SizedBox(height: 24),
                 const Text(
@@ -52,10 +57,7 @@ class ClientCartScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 const Text(
                   'Browse the marketplace to add products',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Color(0xFF6B7280),
-                  ),
+                  style: TextStyle(fontSize: 15, color: Color(0xFF6B7280)),
                 ),
                 const SizedBox(height: 32),
                 SizedBox(
@@ -72,7 +74,11 @@ class ClientCartScreen extends ConsumerWidget {
                     ),
                     child: const Text(
                       'Continue Shopping',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -84,8 +90,16 @@ class ClientCartScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCartList(BuildContext context, WidgetRef ref, Map<String, CartItem> cart, int totalItems) {
-    final subtotal = cart.values.fold(0.0, (sum, item) => sum + (item.product.price * item.quantity));
+  Widget _buildCartList(
+    BuildContext context,
+    WidgetRef ref,
+    Map<String, CartItem> cart,
+    int totalItems,
+  ) {
+    final subtotal = cart.values.fold(
+      0.0,
+      (sum, item) => sum + (item.product.price * item.quantity),
+    );
 
     return Column(
       children: [
@@ -94,7 +108,7 @@ class ClientCartScreen extends ConsumerWidget {
           'Cart ($totalItems)',
           showClear: true,
           onClear: () {
-            ref.read(cartProvider.notifier).clear(); 
+            ref.read(cartProvider.notifier).clear();
           },
         ),
         Expanded(
@@ -160,25 +174,31 @@ class ClientCartScreen extends ConsumerWidget {
                     return ElevatedButton(
                       onPressed: () async {
                         final orderNotifier = ref.read(orderProvider.notifier);
-                        final cartItems = cart.values.map((item) => OrderItem(
-                          productId: item.product.id,
-                          name: item.product.name,
-                          quantity: item.quantity,
-                          price: item.product.price,
-                        )).toList();
+                        final cartItems = cart.values
+                            .map(
+                              (item) => OrderItem(
+                                productId: item.product.id,
+                                name: item.product.name,
+                                quantity: item.quantity,
+                                price: item.product.price,
+                              ),
+                            )
+                            .toList();
 
                         // Show loading
                         showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (context) => const Center(child: CircularProgressIndicator()),
+                          builder: (context) =>
+                              const Center(child: CircularProgressIndicator()),
                         );
 
                         final order = await orderNotifier.checkout(
                           items: cartItems,
                           paymentMethod: 'wallet',
                           pickupAddress: 'Vendor Address', // Temporary stub
-                          deliveryAddress: 'Client Selected Address', // Temporary stub
+                          deliveryAddress:
+                              'Client Selected Address', // Temporary stub
                         );
 
                         if (context.mounted) {
@@ -187,14 +207,18 @@ class ClientCartScreen extends ConsumerWidget {
                           if (order != null) {
                             ref.read(cartProvider.notifier).clear();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Order placed successfully!')),
+                              const SnackBar(
+                                content: Text('Order placed successfully!'),
+                              ),
                             );
                             context.go('/client/orders');
                           } else {
-                            final errorMsg = ref.read(orderProvider).error ?? 'Failed to place order.';
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(errorMsg)),
-                            );
+                            final errorMsg =
+                                ref.read(orderProvider).error ??
+                                'Failed to place order.';
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(SnackBar(content: Text(errorMsg)));
                           }
                         }
                       },
@@ -218,7 +242,6 @@ class ClientCartScreen extends ConsumerWidget {
                   },
                 ),
               ),
-
             ],
           ),
         ),
@@ -226,7 +249,12 @@ class ClientCartScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, String title, {required bool showClear, required VoidCallback onClear}) {
+  Widget _buildHeader(
+    BuildContext context,
+    String title, {
+    required bool showClear,
+    required VoidCallback onClear,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Stack(
@@ -266,7 +294,11 @@ class ClientCartScreen extends ConsumerWidget {
                 onPressed: onClear,
                 child: const Text(
                   'Clear all',
-                  style: TextStyle(color: Color(0xFFEF4444), fontSize: 14, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: Color(0xFFEF4444),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -311,14 +343,24 @@ class ClientCartScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'Verified Vendor',
-                      style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
 
                     GestureDetector(
                       onTap: () {
-                        ref.read(cartProvider.notifier).removeItem(item.product.id);
+                        ref
+                            .read(cartProvider.notifier)
+                            .removeItem(item.product.id);
                       },
-                      child: const Icon(Icons.delete_outline_rounded, size: 20, color: Color(0xFF9CA3AF)),
+                      child: const Icon(
+                        Icons.delete_outline_rounded,
+                        size: 20,
+                        color: Color(0xFF9CA3AF),
+                      ),
                     ),
                   ],
                 ),
@@ -354,28 +396,50 @@ class ClientCartScreen extends ConsumerWidget {
                       child: Row(
                         children: [
                           GestureDetector(
-                            onTap: () => ref.read(cartProvider.notifier).removeItem(item.product.id),
+                            onTap: () => ref
+                                .read(cartProvider.notifier)
+                                .removeItem(item.product.id),
                             child: Container(
                               width: 28,
                               height: 28,
-                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                              child: const Icon(Icons.remove, size: 16, color: Color(0xFF1F2937)),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.remove,
+                                size: 16,
+                                color: Color(0xFF1F2937),
+                              ),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Text(
                               '${item.quantity}',
-                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: Color(0xFF1F2937)),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
+                                color: Color(0xFF1F2937),
+                              ),
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => ref.read(cartProvider.notifier).addItem(item.product),
+                            onTap: () => ref
+                                .read(cartProvider.notifier)
+                                .addItem(item.product),
                             child: Container(
                               width: 28,
                               height: 28,
-                              decoration: const BoxDecoration(color: Color(0xFF3B7D23), shape: BoxShape.circle),
-                              child: const Icon(Icons.add, size: 16, color: Colors.white),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF3B7D23),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.add,
+                                size: 16,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],

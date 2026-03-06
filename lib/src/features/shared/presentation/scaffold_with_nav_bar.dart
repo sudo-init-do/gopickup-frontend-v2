@@ -32,10 +32,10 @@ class ScaffoldWithNavBar extends StatelessWidget {
     // Calculate selected index based on current location
     int selectedIndex = 0;
     for (int i = 0; i < items.length; i++) {
-        if (currentLocation == items[i].route || 
-            currentLocation.startsWith('${items[i].route}/')) {
-          selectedIndex = i;
-        }
+      if (currentLocation == items[i].route ||
+          currentLocation.startsWith('${items[i].route}/')) {
+        selectedIndex = i;
+      }
     }
 
     return Scaffold(
@@ -62,7 +62,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
                   children: List.generate(items.length, (index) {
                     final item = items[index];
                     final isSelected = selectedIndex == index;
-                    
+
                     return Expanded(
                       child: GestureDetector(
                         onTap: () => context.go(item.route),
@@ -71,8 +71,12 @@ class ScaffoldWithNavBar extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              isSelected ? item.selectedIcon : item.unselectedIcon,
-                              color: isSelected ? const Color(0xFF45A225) : const Color(0xFF94A3B8),
+                              isSelected
+                                  ? item.selectedIcon
+                                  : item.unselectedIcon,
+                              color: isSelected
+                                  ? const Color(0xFF45A225)
+                                  : const Color(0xFF94A3B8),
                               size: 26,
                             ),
                             const SizedBox(height: 4),
@@ -80,12 +84,16 @@ class ScaffoldWithNavBar extends StatelessWidget {
                               item.label,
                               style: TextStyle(
                                 fontSize: 11,
-                                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                                color: isSelected ? const Color(0xFF45A225) : const Color(0xFF94A3B8),
+                                fontWeight: isSelected
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
+                                color: isSelected
+                                    ? const Color(0xFF45A225)
+                                    : const Color(0xFF94A3B8),
                                 letterSpacing: -0.2,
                               ),
                             ),
-                            if (isSelected) 
+                            if (isSelected)
                               Container(
                                 margin: const EdgeInsets.only(top: 6),
                                 width: 5,

@@ -12,7 +12,8 @@ class ClientProductsScreen extends ConsumerStatefulWidget {
   const ClientProductsScreen({super.key, this.initialSearchQuery});
 
   @override
-  ConsumerState<ClientProductsScreen> createState() => _ClientProductsScreenState();
+  ConsumerState<ClientProductsScreen> createState() =>
+      _ClientProductsScreenState();
 }
 
 class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
@@ -26,7 +27,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
     super.initState();
     _searchQuery = widget.initialSearchQuery ?? '';
     _searchController = TextEditingController(text: _searchQuery);
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(productProvider.notifier).fetchProducts();
     });
@@ -115,7 +116,10 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
                   ),
                 ),
               ),
@@ -141,7 +145,10 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                       SizedBox(width: 8),
                       Text(
                         'Use this address',
-                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
@@ -186,7 +193,10 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
               children: [
                 // Custom App Bar (Keep as is)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -225,7 +235,11 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                                 color: Color(0xFF3B7D23),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 22),
+                              child: const Icon(
+                                Icons.shopping_cart_outlined,
+                                color: Colors.white,
+                                size: 22,
+                              ),
                             ),
                             if (ref.watch(cartProvider).isNotEmpty)
                               Positioned(
@@ -236,7 +250,10 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFEF4444),
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 2),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
                                   ),
                                   constraints: const BoxConstraints(
                                     minWidth: 18,
@@ -274,7 +291,11 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.search, color: Colors.grey[400], size: 22),
+                              Icon(
+                                Icons.search,
+                                color: Colors.grey[400],
+                                size: 22,
+                              ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: TextField(
@@ -285,25 +306,45 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                                     });
                                   },
                                   onSubmitted: (_) {
-                                    ref.read(productProvider.notifier).fetchProducts(
-                                      category: _selectedCategory == 'All' ? null : _selectedCategory,
-                                      search: _searchQuery.isNotEmpty ? _searchQuery : null,
-                                    );
+                                    ref
+                                        .read(productProvider.notifier)
+                                        .fetchProducts(
+                                          category: _selectedCategory == 'All'
+                                              ? null
+                                              : _selectedCategory,
+                                          search: _searchQuery.isNotEmpty
+                                              ? _searchQuery
+                                              : null,
+                                        );
                                   },
                                   decoration: InputDecoration(
                                     hintText: 'Search products...',
-                                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 15,
+                                    ),
                                     suffixIcon: _searchQuery.isNotEmpty
                                         ? IconButton(
-                                            icon: const Icon(Icons.clear, size: 20),
+                                            icon: const Icon(
+                                              Icons.clear,
+                                              size: 20,
+                                            ),
                                             onPressed: () {
                                               setState(() {
                                                 _searchController.clear();
                                                 _searchQuery = '';
                                               });
-                                              ref.read(productProvider.notifier).fetchProducts(
-                                                category: _selectedCategory == 'All' ? null : _selectedCategory,
-                                              );
+                                              ref
+                                                  .read(
+                                                    productProvider.notifier,
+                                                  )
+                                                  .fetchProducts(
+                                                    category:
+                                                        _selectedCategory ==
+                                                            'All'
+                                                        ? null
+                                                        : _selectedCategory,
+                                                  );
                                             },
                                           )
                                         : null,
@@ -325,7 +366,11 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                           shape: BoxShape.circle,
                           border: Border.all(color: const Color(0xFFF3F4F6)),
                         ),
-                        child: const Icon(Icons.tune_rounded, color: Color(0xFF1F2937), size: 22),
+                        child: const Icon(
+                          Icons.tune_rounded,
+                          color: Color(0xFF1F2937),
+                          size: 22,
+                        ),
                       ),
                     ],
                   ),
@@ -337,7 +382,10 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: AppConstants.productCategories.map((category) {
-                      return _buildCategoryChip(category, _selectedCategory == category);
+                      return _buildCategoryChip(
+                        category,
+                        _selectedCategory == category,
+                      );
                     }).toList(),
                   ),
                 ),
@@ -350,20 +398,30 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                         return const Center(child: CircularProgressIndicator());
                       }
                       if (productState.error != null) {
-                        return Center(child: Text('Error: ${productState.error}'));
+                        return Center(
+                          child: Text('Error: ${productState.error}'),
+                        );
                       }
 
                       var filteredProducts = productState.products;
-                      
-                      // NOTE: Because our new API handles filtering too, we could rely strictly on the API 
+
+                      // NOTE: Because our new API handles filtering too, we could rely strictly on the API
                       // if we fetch on every tap, but doing client-side filtering on all models we fetched
                       // is acceptable for now. If you uncomment the API fetch on chip select, it will be faster to just display what we have.
-                      
+
                       if (_selectedCategory != 'All') {
-                        filteredProducts = filteredProducts.where((p) => p.category == _selectedCategory).toList();
+                        filteredProducts = filteredProducts
+                            .where((p) => p.category == _selectedCategory)
+                            .toList();
                       }
                       if (_searchQuery.isNotEmpty) {
-                        filteredProducts = filteredProducts.where((p) => p.name.toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+                        filteredProducts = filteredProducts
+                            .where(
+                              (p) => p.name.toLowerCase().contains(
+                                _searchQuery.toLowerCase(),
+                              ),
+                            )
+                            .toList();
                       }
 
                       if (filteredProducts.isEmpty) {
@@ -372,12 +430,13 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
 
                       return GridView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.58,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.58,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                            ),
                         itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
                           return ProductCard(product: filteredProducts[index]);
@@ -407,7 +466,9 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF3B7D23) : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? Colors.transparent : const Color(0xFFF3F4F6)),
+          border: Border.all(
+            color: isSelected ? Colors.transparent : const Color(0xFFF3F4F6),
+          ),
         ),
         child: Text(
           label,
@@ -456,10 +517,16 @@ class ProductCard extends ConsumerWidget {
                   width: double.infinity,
                   decoration: const BoxDecoration(
                     color: Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
                   ),
                   child: Center(
-                    child: Icon(Icons.image_outlined, size: 40, color: Colors.grey[300]),
+                    child: Icon(
+                      Icons.image_outlined,
+                      size: 40,
+                      color: Colors.grey[300],
+                    ),
                   ),
                 ),
               ),
@@ -473,7 +540,11 @@ class ProductCard extends ConsumerWidget {
                     children: [
                       Text(
                         'Verified Vendor',
-                        style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
 
                       const SizedBox(height: 4),
@@ -492,15 +563,25 @@ class ProductCard extends ConsumerWidget {
                       // Rating
                       Row(
                         children: [
-                          const Icon(Icons.star_rounded, color: Color(0xFFFBBF24), size: 16),
+                          const Icon(
+                            Icons.star_rounded,
+                            color: Color(0xFFFBBF24),
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
                           const Text(
                             '4.8',
-                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
                           ),
                           Text(
                             ' (124)',
-                            style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -519,7 +600,10 @@ class ProductCard extends ConsumerWidget {
                           ),
                           Text(
                             '/piece',
-                            style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
                           ),
                           const Spacer(),
                           Column(
@@ -527,11 +611,19 @@ class ProductCard extends ConsumerWidget {
                             children: [
                               Text(
                                 '${product.stockQuantity} in',
-                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF9CA3AF)),
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF9CA3AF),
+                                ),
                               ),
                               const Text(
                                 'stock',
-                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF9CA3AF)),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF9CA3AF),
+                                ),
                               ),
                             ],
                           ),
@@ -541,7 +633,8 @@ class ProductCard extends ConsumerWidget {
                       // Add Button or Quantity Selector
                       if (!isInCart)
                         GestureDetector(
-                          onTap: () => ref.read(cartProvider.notifier).addItem(product),
+                          onTap: () =>
+                              ref.read(cartProvider.notifier).addItem(product),
                           child: Container(
                             width: double.infinity,
                             height: 40,
@@ -553,11 +646,19 @@ class ProductCard extends ConsumerWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
-                                  Icon(Icons.add, color: Colors.white, size: 16),
+                                  Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
                                   SizedBox(width: 4),
                                   Text(
                                     'Add (1 min)',
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -576,7 +677,9 @@ class ProductCard extends ConsumerWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               GestureDetector(
-                                onTap: () => ref.read(cartProvider.notifier).removeItem(product.id),
+                                onTap: () => ref
+                                    .read(cartProvider.notifier)
+                                    .removeItem(product.id),
                                 child: Container(
                                   width: 40,
                                   height: 40,
@@ -584,7 +687,11 @@ class ProductCard extends ConsumerWidget {
                                     color: Colors.white,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.remove, size: 20, color: Color(0xFF1F2937)),
+                                  child: const Icon(
+                                    Icons.remove,
+                                    size: 20,
+                                    color: Color(0xFF1F2937),
+                                  ),
                                 ),
                               ),
                               Text(
@@ -596,7 +703,9 @@ class ProductCard extends ConsumerWidget {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => ref.read(cartProvider.notifier).addItem(product),
+                                onTap: () => ref
+                                    .read(cartProvider.notifier)
+                                    .addItem(product),
                                 child: Container(
                                   width: 40,
                                   height: 40,
@@ -604,7 +713,11 @@ class ProductCard extends ConsumerWidget {
                                     color: Color(0xFF3B7D23),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.add, size: 20, color: Colors.white),
+                                  child: const Icon(
+                                    Icons.add,
+                                    size: 20,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ],
@@ -628,7 +741,11 @@ class ProductCard extends ConsumerWidget {
               ),
               child: const Text(
                 'MOQ: 1',
-                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
           ),
@@ -637,4 +754,3 @@ class ProductCard extends ConsumerWidget {
     );
   }
 }
-

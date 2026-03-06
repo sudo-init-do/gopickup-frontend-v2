@@ -9,7 +9,8 @@ class CompleteProfileScreen extends ConsumerStatefulWidget {
   const CompleteProfileScreen({super.key});
 
   @override
-  ConsumerState<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
+  ConsumerState<CompleteProfileScreen> createState() =>
+      _CompleteProfileScreenState();
 }
 
 class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
@@ -21,7 +22,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   // We can add a phone number field here but let's mock it for now since the UI doesn't have it
   final String _mockPhoneNumber = '000-000-0000';
-  
+
   // Address Step Controllers
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
@@ -36,8 +37,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   }
 
   bool get _isProfileValid => _nameController.text.trim().length >= 3;
-  bool get _isAddressValid => 
-      _addressController.text.trim().isNotEmpty && 
+  bool get _isAddressValid =>
+      _addressController.text.trim().isNotEmpty &&
       _cityController.text.trim().isNotEmpty;
 
   Future<void> _nextStep() async {
@@ -49,23 +50,28 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
       setState(() => _currentStep = 1);
     } else if (_currentStep == 1 && _isAddressValid) {
       setState(() => _isLoading = true);
-      
+
       final profile = ClientProfile(
         fullName: _nameController.text.trim(),
         phoneNumber: _mockPhoneNumber,
-        address: '${_addressController.text.trim()}, ${_cityController.text.trim()}',
+        address:
+            '${_addressController.text.trim()}, ${_cityController.text.trim()}',
       );
-      
-      final success = await ref.read(profileProvider.notifier).createClientProfile(profile);
-      
+
+      final success = await ref
+          .read(profileProvider.notifier)
+          .createClientProfile(profile);
+
       setState(() => _isLoading = false);
-      
+
       if (success && mounted) {
         context.go('/client');
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(ref.read(profileProvider).error ?? 'Failed to create profile'),
+            content: Text(
+              ref.read(profileProvider).error ?? 'Failed to create profile',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -84,10 +90,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
               child: PageView(
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
-                children: [
-                   _buildProfileStep(),
-                   _buildAddressStep(),
-                ],
+                children: [_buildProfileStep(), _buildAddressStep()],
               ),
             ),
             // Bottom Action Button
@@ -97,12 +100,17 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: (_currentStep == 0 ? _isProfileValid : _isAddressValid && !_isLoading) 
-                      ? _nextStep 
+                  onPressed:
+                      (_currentStep == 0
+                          ? _isProfileValid
+                          : _isAddressValid && !_isLoading)
+                      ? _nextStep
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primarySage.withValues(alpha: 0.5),
+                    disabledBackgroundColor: AppColors.primarySage.withValues(
+                      alpha: 0.5,
+                    ),
                     foregroundColor: Colors.white,
                     disabledForegroundColor: Colors.white,
                     elevation: 0,
@@ -110,11 +118,14 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: _isLoading 
+                  child: _isLoading
                       ? const SizedBox(
                           height: 24,
                           width: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -273,7 +284,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
             height: 2,
             margin: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: _currentStep > 0 ? AppColors.primary : const Color(0xFFF3F4F6),
+              color: _currentStep > 0
+                  ? AppColors.primary
+                  : const Color(0xFFF3F4F6),
               borderRadius: BorderRadius.circular(1),
             ),
           ),
@@ -378,9 +391,15 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.w400),
+          hintStyle: const TextStyle(
+            color: Color(0xFF9CA3AF),
+            fontWeight: FontWeight.w400,
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 20,
+          ),
         ),
       ),
     );
@@ -421,16 +440,14 @@ class _StepBubble extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
-        border: isCompleted ? Border.all(color: AppColors.primary.withValues(alpha: 0.2)) : null,
+        border: isCompleted
+            ? Border.all(color: AppColors.primary.withValues(alpha: 0.2))
+            : null,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 18,
-            color: contentColor,
-          ),
+          Icon(icon, size: 18, color: contentColor),
           const SizedBox(width: 8),
           Text(
             label,
@@ -445,4 +462,3 @@ class _StepBubble extends StatelessWidget {
     );
   }
 }
-

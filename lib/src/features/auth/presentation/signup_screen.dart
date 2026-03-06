@@ -28,14 +28,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   void _validateForm() {
     setState(() {
       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-      _isFormValid = emailRegex.hasMatch(_emailController.text) && _passwordController.text.length >= 6;
+      _isFormValid =
+          emailRegex.hasMatch(_emailController.text) &&
+          _passwordController.text.length >= 6;
     });
   }
 
   void _onNext() {
     ref.read(signupProvider.notifier).updateEmail(_emailController.text);
     ref.read(signupProvider.notifier).updatePassword(_passwordController.text);
-    context.push('/verify?email=${_emailController.text}');
+    context.push('/roles');
   }
 
   @override
@@ -69,9 +71,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   Text(
                     'Go Pickup',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1F2937),
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1F2937),
+                    ),
                   ),
                 ],
               ),
@@ -101,7 +103,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: _emailController.text.isNotEmpty ? AppColors.primary : const Color(0xFFF3F4F6),
+                    color: _emailController.text.isNotEmpty
+                        ? AppColors.primary
+                        : const Color(0xFFF3F4F6),
                     width: 1.5,
                   ),
                 ),
@@ -115,7 +119,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     hintStyle: TextStyle(color: Color(0xFF9CA3AF)),
                     prefixIcon: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Icon(Icons.mail_outline, color: Color(0xFF6B7280), size: 20),
+                      child: Icon(
+                        Icons.mail_outline,
+                        color: Color(0xFF6B7280),
+                        size: 20,
+                      ),
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(vertical: 20),
@@ -128,7 +136,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: _passwordController.text.isNotEmpty ? AppColors.primary : const Color(0xFFF3F4F6),
+                    color: _passwordController.text.isNotEmpty
+                        ? AppColors.primary
+                        : const Color(0xFFF3F4F6),
                     width: 1.5,
                   ),
                 ),
@@ -142,11 +152,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
                     prefixIcon: const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Icon(Icons.lock_outline, color: Color(0xFF6B7280), size: 20),
+                      child: Icon(
+                        Icons.lock_outline,
+                        color: Color(0xFF6B7280),
+                        size: 20,
+                      ),
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         color: Colors.grey,
                       ),
                       onPressed: () {
@@ -203,7 +219,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   onPressed: _isFormValid ? _onNext : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primarySage.withValues(alpha: 0.5),
+                    disabledBackgroundColor: AppColors.primarySage.withValues(
+                      alpha: 0.5,
+                    ),
                     foregroundColor: Colors.white,
                     disabledForegroundColor: Colors.white,
                     elevation: 0,

@@ -9,10 +9,12 @@ class DriverRegistrationScreen extends ConsumerStatefulWidget {
   const DriverRegistrationScreen({super.key});
 
   @override
-  ConsumerState<DriverRegistrationScreen> createState() => _DriverRegistrationScreenState();
+  ConsumerState<DriverRegistrationScreen> createState() =>
+      _DriverRegistrationScreenState();
 }
 
-class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScreen> {
+class _DriverRegistrationScreenState
+    extends ConsumerState<DriverRegistrationScreen> {
   late final PageController _pageController;
   int _currentStep = 0;
   bool _isLoading = false;
@@ -23,10 +25,11 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
   late final TextEditingController _licenseController;
   late final TextEditingController _plateController;
   String? _selectedVehicleType;
-  
+
   // Missing from UI mockup, needed by backend
   final String _mockPhone = "000-000-0000";
-  final double _mockCapacity = 1000.0; // Assume 1k capacity for everything by default
+  final double _mockCapacity =
+      1000.0; // Assume 1k capacity for everything by default
 
   @override
   void initState() {
@@ -56,9 +59,10 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
     } else if (_currentStep == 1) {
       return _licenseController.text.trim().isNotEmpty;
     } else if (_currentStep == 2) {
-      return _selectedVehicleType != null && _plateController.text.trim().isNotEmpty;
+      return _selectedVehicleType != null &&
+          _plateController.text.trim().isNotEmpty;
     }
-    return true; 
+    return true;
   }
 
   Future<void> _nextStep() async {
@@ -70,7 +74,7 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
       setState(() => _currentStep++);
     } else {
       setState(() => _isLoading = true);
-      
+
       final profile = DriverProfile(
         fullName: _nameController.text.trim(),
         phoneNumber: _mockPhone,
@@ -80,17 +84,21 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
         vehicleCapacity: _mockCapacity,
         isApproved: false, // Set to false initially, admin approves
       );
-      
-      final success = await ref.read(profileProvider.notifier).createDriverProfile(profile);
-      
+
+      final success = await ref
+          .read(profileProvider.notifier)
+          .createDriverProfile(profile);
+
       setState(() => _isLoading = false);
-      
+
       if (success && mounted) {
         context.go('/driver');
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(ref.read(profileProvider).error ?? 'Registration failed'),
+            content: Text(
+              ref.read(profileProvider).error ?? 'Registration failed',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -169,9 +177,17 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
                         controller: _pageController,
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
-                          _buildProfileForm(kDarkTextColor, kMidTextColor, kOrangeColor),
+                          _buildProfileForm(
+                            kDarkTextColor,
+                            kMidTextColor,
+                            kOrangeColor,
+                          ),
                           _buildLicenseForm(kDarkTextColor, kMidTextColor),
-                          _buildVehicleForm(kDarkTextColor, kMidTextColor, kOrangeColor),
+                          _buildVehicleForm(
+                            kDarkTextColor,
+                            kMidTextColor,
+                            kOrangeColor,
+                          ),
                         ],
                       ),
                     ),
@@ -179,46 +195,55 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
                 ),
               ),
             ),
-              Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 60,
-                  child: ElevatedButton(
-                    onPressed: (_isFormValid && !_isLoading) ? _nextStep : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
-                      foregroundColor: Colors.white,
-                      disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 60,
+                child: ElevatedButton(
+                  onPressed: (_isFormValid && !_isLoading) ? _nextStep : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    disabledBackgroundColor: AppColors.primary.withValues(
+                      alpha: 0.4,
                     ),
-                    child: _isLoading 
-                        ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _currentStep == 2 ? 'Complete Registration' : 'Continue',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Icon(Icons.arrow_forward_rounded, size: 20),
-                            ],
-                          ),
+                    foregroundColor: Colors.white,
+                    disabledForegroundColor: Colors.white.withValues(
+                      alpha: 0.7,
+                    ),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _currentStep == 2
+                                  ? 'Complete Registration'
+                                  : 'Continue',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.arrow_forward_rounded, size: 20),
+                          ],
+                        ),
                 ),
               ),
+            ),
           ],
         ),
       ),
@@ -232,11 +257,11 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
     required bool isCompleted,
     required Color activeColor,
   }) {
-    final bgColor = isCompleted 
-        ? const Color(0xFFE8F3E5) 
+    final bgColor = isCompleted
+        ? const Color(0xFFE8F3E5)
         : (isActive ? activeColor : const Color(0xFFF3F4F6));
-    final contentColor = isCompleted 
-        ? const Color(0xFF3B7D23) 
+    final contentColor = isCompleted
+        ? const Color(0xFF3B7D23)
         : (isActive ? Colors.white : const Color(0xFF94A3B8));
 
     return Container(
@@ -249,9 +274,9 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            isCompleted ? Icons.check_rounded : icon, 
-            size: 18, 
-            color: contentColor
+            isCompleted ? Icons.check_rounded : icon,
+            size: 18,
+            color: contentColor,
           ),
           const SizedBox(width: 8),
           Text(
@@ -391,7 +416,11 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
                   color: Color(0xFFF3F4F6),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.file_upload_outlined, color: Color(0xFF6B7280), size: 28),
+                child: const Icon(
+                  Icons.file_upload_outlined,
+                  color: Color(0xFF6B7280),
+                  size: 28,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
@@ -434,9 +463,15 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w400),
+          hintStyle: const TextStyle(
+            color: Color(0xFF94A3B8),
+            fontWeight: FontWeight.w400,
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 18,
+          ),
         ),
       ),
     );
@@ -444,11 +479,31 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
 
   Widget _buildVehicleForm(Color darkText, Color midText, Color orange) {
     final vehicleTypes = [
-      {'title': 'Tricycle', 'subtitle': 'Up to 500kg', 'icon': Icons.electric_rickshaw},
-      {'title': 'Van', 'subtitle': 'Up to 1.5 tons', 'icon': Icons.airport_shuttle},
-      {'title': 'Trucks', 'subtitle': 'Up to 5 tons', 'icon': Icons.local_shipping},
-      {'title': 'Flatbeds', 'subtitle': 'Up to 10 tons', 'icon': Icons.rv_hookup},
-      {'title': 'Trailer', 'subtitle': 'Up to 25 tons', 'icon': Icons.agriculture},
+      {
+        'title': 'Tricycle',
+        'subtitle': 'Up to 500kg',
+        'icon': Icons.electric_rickshaw,
+      },
+      {
+        'title': 'Van',
+        'subtitle': 'Up to 1.5 tons',
+        'icon': Icons.airport_shuttle,
+      },
+      {
+        'title': 'Trucks',
+        'subtitle': 'Up to 5 tons',
+        'icon': Icons.local_shipping,
+      },
+      {
+        'title': 'Flatbeds',
+        'subtitle': 'Up to 10 tons',
+        'icon': Icons.rv_hookup,
+      },
+      {
+        'title': 'Trailer',
+        'subtitle': 'Up to 25 tons',
+        'icon': Icons.agriculture,
+      },
     ];
 
     return Column(
@@ -527,7 +582,7 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
                     color: activeColor.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
-                  )
+                  ),
                 ]
               : null,
         ),
@@ -562,6 +617,4 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
       ),
     );
   }
-
-
 }

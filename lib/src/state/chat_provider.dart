@@ -42,30 +42,26 @@ class ChatNotifier extends Notifier<ChatState> {
   @override
   ChatState build() {
     _init();
-    return ChatState(
-      conversations: [],
-      currentMessages: [],
-      isLoading: false,
-    );
+    return ChatState(conversations: [], currentMessages: [], isLoading: false);
   }
 
   void _init() {
     _wsService.onNewMessage.listen((payload) {
       _handleIncomingMessage(payload);
     });
-    
+
     fetchConversations();
   }
 
   void _handleIncomingMessage(Map<String, dynamic> payload) {
     try {
-       final message = Message.fromJson(payload);
-       if (message.chatId == _currentChatId) {
-          state = state.copyWith(
-            currentMessages: [...state.currentMessages, message],
-          );
-       }
-       _updateConversationLastMessage(message.chatId, message.content);
+      final message = Message.fromJson(payload);
+      if (message.chatId == _currentChatId) {
+        state = state.copyWith(
+          currentMessages: [...state.currentMessages, message],
+        );
+      }
+      _updateConversationLastMessage(message.chatId, message.content);
     } catch (e) {
       // ignore parsing error for now
     }
@@ -78,7 +74,9 @@ class ChatNotifier extends Notifier<ChatState> {
           id: c.id,
           orderId: c.orderId,
           lastMessage: content,
-          unreadCount: c.id == _currentChatId ? c.unreadCount : c.unreadCount + 1,
+          unreadCount: c.id == _currentChatId
+              ? c.unreadCount
+              : c.unreadCount + 1,
           updatedAt: DateTime.now(),
           otherUserName: c.otherUserName,
           otherUserAvatar: c.otherUserAvatar,
@@ -93,15 +91,9 @@ class ChatNotifier extends Notifier<ChatState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final conversations = await _chatApi.getChats();
-      state = state.copyWith(
-        conversations: conversations,
-        isLoading: false,
-      );
+      state = state.copyWith(conversations: conversations, isLoading: false);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 
@@ -111,20 +103,17 @@ class ChatNotifier extends Notifier<ChatState> {
     try {
       final data = await _chatApi.getMessages(chatId);
       final messages = data['messages'] as List<Message>? ?? [];
-      
-      state = state.copyWith(
-        currentMessages: messages,
-        isLoading: false,
-      );
-      
+
+      state = state.copyWith(currentMessages: messages, isLoading: false);
+
       _wsService.joinChatRoom(chatId);
-      
+
       try {
         await _chatApi.markRead(chatId);
       } catch (e) {
         // fail silently if marking read fails
       }
-      
+
       final updated = state.conversations.map((c) {
         if (c.id == chatId) {
           return Conversation(
@@ -141,10 +130,7 @@ class ChatNotifier extends Notifier<ChatState> {
       }).toList();
       state = state.copyWith(conversations: updated);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 
@@ -157,37 +143,43 @@ class ChatNotifier extends Notifier<ChatState> {
 
   Future<void> sendMessage(String text) async {
     if (_currentChatId == null) return;
-    
+
     _wsService.sendChatMessage(_currentChatId!, text);
-    
+
     final user = ref.read(authProvider).user;
     if (user != null) {
-        final tempMessage = Message(
-           id: DateTime.now().millisecondsSinceEpoch.toString(),
-           chatId: _currentChatId!,
-           senderId: user.id,
-           content: text,
-           createdAt: DateTime.now(),
-        );
-        state = state.copyWith(
-          currentMessages: [...state.currentMessages, tempMessage],
-        );
-        _updateConversationLastMessage(_currentChatId!, text);
+      final tempMessage = Message(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        chatId: _currentChatId!,
+        senderId: user.id,
+        content: text,
+        createdAt: DateTime.now(),
+      );
+      state = state.copyWith(
+        currentMessages: [...state.currentMessages, tempMessage],
+      );
+      _updateConversationLastMessage(_currentChatId!, text);
     }
   }
-  
-  Future<Conversation?> initiateChat(String recipientId, {String? orderId}) async {
-     try {
-       final conv = await _chatApi.initiateChat(recipientUserId: recipientId, orderId: orderId);
-       final exists = state.conversations.any((c) => c.id == conv.id);
-       if (!exists) {
-         state = state.copyWith(conversations: [conv, ...state.conversations]);
-       }
-       return conv;
-     } catch (e) {
-       state = state.copyWith(error: e.toString());
-       return null;
-     }
+
+  Future<Conversation?> initiateChat(
+    String recipientId, {
+    String? orderId,
+  }) async {
+    try {
+      final conv = await _chatApi.initiateChat(
+        recipientUserId: recipientId,
+        orderId: orderId,
+      );
+      final exists = state.conversations.any((c) => c.id == conv.id);
+      if (!exists) {
+        state = state.copyWith(conversations: [conv, ...state.conversations]);
+      }
+      return conv;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return null;
+    }
   }
 }
 

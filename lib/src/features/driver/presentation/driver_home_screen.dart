@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../driver/data/job_repository.dart';
 import '../../../common/models/order.dart';
 
-
 class DriverHomeScreen extends ConsumerStatefulWidget {
   const DriverHomeScreen({super.key});
 
@@ -29,11 +28,26 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(_isOnline, (val) => setState(() => _isOnline = val), kDarkTextColor, kMidTextColor, kGreenColor),
+            _buildHeader(
+              _isOnline,
+              (val) => setState(() => _isOnline = val),
+              kDarkTextColor,
+              kMidTextColor,
+              kGreenColor,
+            ),
             _buildSearchAndFilter(),
-            _buildTabs(_selectedTabIndex, (index) => setState(() => _selectedTabIndex = index), kOrangeColor),
+            _buildTabs(
+              _selectedTabIndex,
+              (index) => setState(() => _selectedTabIndex = index),
+              kOrangeColor,
+            ),
             Expanded(
-              child: _buildJobList(kDarkTextColor, kMidTextColor, kOrangeColor, kGreenColor),
+              child: _buildJobList(
+                kDarkTextColor,
+                kMidTextColor,
+                kOrangeColor,
+                kGreenColor,
+              ),
             ),
           ],
         ),
@@ -41,7 +55,13 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildHeader(bool isOnline, Function(bool) onToggle, Color darkText, Color midText, Color green) {
+  Widget _buildHeader(
+    bool isOnline,
+    Function(bool) onToggle,
+    Color darkText,
+    Color midText,
+    Color green,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
       child: Row(
@@ -78,13 +98,15 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               decoration: BoxDecoration(
                 color: isOnline ? green : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(28),
-                boxShadow: isOnline ? [
-                  BoxShadow(
-                    color: green.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  )
-                ] : null,
+                boxShadow: isOnline
+                    ? [
+                        BoxShadow(
+                          color: green.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
               ),
               child: Row(
                 children: [
@@ -134,8 +156,14 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               child: const TextField(
                 decoration: InputDecoration(
                   hintText: 'Search jobs...',
-                  hintStyle: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w400),
-                  prefixIcon: Icon(Icons.search_rounded, color: Color(0xFF94A3B8)),
+                  hintStyle: TextStyle(
+                    color: Color(0xFF94A3B8),
+                    fontWeight: FontWeight.w400,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: Color(0xFF94A3B8),
+                  ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 16),
                 ),
@@ -182,7 +210,9 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   child: Text(
                     tabs[index],
                     style: TextStyle(
-                      color: isSelected ? Colors.white : const Color(0xFF64748B),
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF64748B),
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
                     ),
@@ -196,13 +226,25 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildJobList(Color darkText, Color midText, Color orange, Color green) {
-    if (_selectedTabIndex == 0) return _buildAvailableJobList(darkText, midText, orange, green);
-    if (_selectedTabIndex == 1) return _buildAssignedJobList(darkText, midText, orange, green);
+  Widget _buildJobList(
+    Color darkText,
+    Color midText,
+    Color orange,
+    Color green,
+  ) {
+    if (_selectedTabIndex == 0)
+      return _buildAvailableJobList(darkText, midText, orange, green);
+    if (_selectedTabIndex == 1)
+      return _buildAssignedJobList(darkText, midText, orange, green);
     return _buildHistoryJobList(darkText, midText, orange, green);
   }
 
-  Widget _buildAvailableJobList(Color darkText, Color midText, Color orange, Color green) {
+  Widget _buildAvailableJobList(
+    Color darkText,
+    Color midText,
+    Color orange,
+    Color green,
+  ) {
     final availableJobsAsync = ref.watch(availableJobsProvider);
 
     return availableJobsAsync.when(
@@ -212,9 +254,16 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.local_shipping_outlined, size: 64, color: midText.withValues(alpha: 0.5)),
+                Icon(
+                  Icons.local_shipping_outlined,
+                  size: 64,
+                  color: midText.withValues(alpha: 0.5),
+                ),
                 const SizedBox(height: 16),
-                Text('No available jobs at the moment', style: TextStyle(color: midText, fontSize: 16)),
+                Text(
+                  'No available jobs at the moment',
+                  style: TextStyle(color: midText, fontSize: 16),
+                ),
               ],
             ),
           );
@@ -236,8 +285,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-
-  Widget _buildAssignedJobList(Color darkText, Color midText, Color orange, Color green) {
+  Widget _buildAssignedJobList(
+    Color darkText,
+    Color midText,
+    Color orange,
+    Color green,
+  ) {
     final List<Map<String, dynamic>> jobs = [];
 
     if (jobs.isEmpty) {
@@ -245,9 +298,16 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.assignment_outlined, size: 64, color: midText.withValues(alpha: 0.5)),
+            Icon(
+              Icons.assignment_outlined,
+              size: 64,
+              color: midText.withValues(alpha: 0.5),
+            ),
             const SizedBox(height: 16),
-            Text('No assigned jobs', style: TextStyle(color: midText, fontSize: 16)),
+            Text(
+              'No assigned jobs',
+              style: TextStyle(color: midText, fontSize: 16),
+            ),
           ],
         ),
       );
@@ -263,7 +323,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildHistoryJobList(Color darkText, Color midText, Color orange, Color green) {
+  Widget _buildHistoryJobList(
+    Color darkText,
+    Color midText,
+    Color orange,
+    Color green,
+  ) {
     final List<Map<String, dynamic>> jobs = [];
 
     if (jobs.isEmpty) {
@@ -271,9 +336,16 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history_rounded, size: 64, color: midText.withValues(alpha: 0.5)),
+            Icon(
+              Icons.history_rounded,
+              size: 64,
+              color: midText.withValues(alpha: 0.5),
+            ),
             const SizedBox(height: 16),
-            Text('No history yet', style: TextStyle(color: midText, fontSize: 16)),
+            Text(
+              'No history yet',
+              style: TextStyle(color: midText, fontSize: 16),
+            ),
           ],
         ),
       );
@@ -289,7 +361,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildHistoryJobCard(Map<String, dynamic> job, Color darkText, Color midText, Color green) {
+  Widget _buildHistoryJobCard(
+    Map<String, dynamic> job,
+    Color darkText,
+    Color midText,
+    Color green,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
@@ -308,7 +385,11 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   color: const Color(0xFFF3F4F6),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.check_circle_rounded, color: Color(0xFF94A3B8), size: 24),
+                child: const Icon(
+                  Icons.check_circle_rounded,
+                  color: Color(0xFF94A3B8),
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -317,25 +398,40 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   children: [
                     Text(
                       job['title'],
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: darkText),
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: darkText,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       job['date'],
-                      style: TextStyle(fontSize: 14, color: midText, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: midText,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   job['status'],
-                  style: TextStyle(color: green, fontSize: 12, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    color: green,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
@@ -348,13 +444,21 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             children: [
               Text(
                 job['price'],
-                style: TextStyle(fontSize: 20, color: darkText, fontWeight: FontWeight.w900),
+                style: TextStyle(
+                  fontSize: 20,
+                  color: darkText,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
               TextButton(
                 onPressed: () {},
                 child: Text(
                   'View Receipt',
-                  style: TextStyle(color: midText, fontWeight: FontWeight.w700, fontSize: 14),
+                  style: TextStyle(
+                    color: midText,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ],
@@ -364,7 +468,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildAssignedJobCard(Map<String, dynamic> job, Color darkText, Color midText, Color green) {
+  Widget _buildAssignedJobCard(
+    Map<String, dynamic> job,
+    Color darkText,
+    Color midText,
+    Color green,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
@@ -399,19 +508,31 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   children: [
                     Text(
                       job['title'],
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: darkText),
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: darkText,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       job['status'],
-                      style: TextStyle(fontSize: 14, color: green, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: green,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
               ),
               Text(
                 job['price'],
-                style: TextStyle(fontSize: 18, color: green, fontWeight: FontWeight.w900),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: green,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ],
           ),
@@ -423,15 +544,27 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.access_time_rounded, color: Color(0xFF94A3B8), size: 18),
+                  const Icon(
+                    Icons.access_time_rounded,
+                    color: Color(0xFF94A3B8),
+                    size: 18,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'ETA: ',
-                    style: TextStyle(color: midText, fontSize: 15, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      color: midText,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                   Text(
                     job['eta'],
-                    style: TextStyle(color: darkText, fontSize: 15, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      color: darkText,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
@@ -441,10 +574,18 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   backgroundColor: const Color(0xFF388E3C),
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
-                child: const Text('Navigate', style: TextStyle(fontWeight: FontWeight.w800)),
+                child: const Text(
+                  'Navigate',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
               ),
             ],
           ),
@@ -453,11 +594,24 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildJobCard(Order job, Color darkText, Color midText, Color orange, Color green) {
+  Widget _buildJobCard(
+    Order job,
+    Color darkText,
+    Color midText,
+    Color orange,
+    Color green,
+  ) {
     // For title, use the first product name or a generic title
-    final title = job.items.isNotEmpty ? job.items.first.product.name : 'Bulk Delivery';
-    final from = job.items.isNotEmpty ? job.items.first.product.vendorName : 'Vendor Depot';
-    final to = job.id.substring(0, 8); // Just a placeholder for destination address for now
+    final title = job.items.isNotEmpty
+        ? job.items.first.product.name
+        : 'Bulk Delivery';
+    final from = job.items.isNotEmpty
+        ? job.items.first.product.vendorName
+        : 'Vendor Depot';
+    final to = job.id.substring(
+      0,
+      8,
+    ); // Just a placeholder for destination address for now
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -484,7 +638,11 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   color: orange.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.inventory_2_outlined, color: orange, size: 24),
+                child: Icon(
+                  Icons.inventory_2_outlined,
+                  color: orange,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -514,7 +672,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          _buildLocationRow(Icons.location_on_outlined, 'From:', from, Colors.green),
+          _buildLocationRow(
+            Icons.location_on_outlined,
+            'From:',
+            from,
+            Colors.green,
+          ),
           const SizedBox(height: 12),
           _buildLocationRow(Icons.location_on, 'To:', 'Near $to', Colors.red),
           const SizedBox(height: 20),
@@ -553,8 +716,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-
-  Widget _buildLocationRow(IconData icon, String label, String value, Color iconColor) {
+  Widget _buildLocationRow(
+    IconData icon,
+    String label,
+    String value,
+    Color iconColor,
+  ) {
     return Row(
       children: [
         Icon(icon, size: 18, color: iconColor),

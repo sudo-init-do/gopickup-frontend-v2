@@ -26,7 +26,12 @@ class VendorHomeScreen extends ConsumerWidget {
                   clipper: HeaderClipper(),
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.only(top: 60, left: 24, right: 24, bottom: 120),
+                    padding: const EdgeInsets.only(
+                      top: 60,
+                      left: 24,
+                      right: 24,
+                      bottom: 120,
+                    ),
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
@@ -45,7 +50,11 @@ class VendorHomeScreen extends ConsumerWidget {
                                 color: Colors.white.withValues(alpha: 0.2),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.storefront_rounded, color: Colors.white, size: 28),
+                              child: const Icon(
+                                Icons.storefront_rounded,
+                                color: Colors.white,
+                                size: 28,
+                              ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -63,12 +72,18 @@ class VendorHomeScreen extends ConsumerWidget {
                                   ),
                                   Row(
                                     children: [
-                                      const Icon(Icons.star_rounded, color: Color(0xFFFFD700), size: 18),
+                                      const Icon(
+                                        Icons.star_rounded,
+                                        color: Color(0xFFFFD700),
+                                        size: 18,
+                                      ),
                                       const SizedBox(width: 4),
                                       Text(
                                         'New Store',
                                         style: TextStyle(
-                                          color: Colors.white.withValues(alpha: 0.9),
+                                          color: Colors.white.withValues(
+                                            alpha: 0.9,
+                                          ),
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -84,25 +99,67 @@ class VendorHomeScreen extends ConsumerWidget {
                         // Stats Grid
                         Row(
                           children: [
-                            ref.watch(vendorInventoryProvider).when(
-                              data: (products) => _buildStatCard('${products.length}', 'Products', Icons.inventory_2_outlined),
-                              loading: () => _buildStatCard('...', 'Products', Icons.inventory_2_outlined),
-                              error: (_, _) => _buildStatCard('0', 'Products', Icons.inventory_2_outlined),
-                            ),
+                            ref
+                                .watch(vendorInventoryProvider)
+                                .when(
+                                  data: (products) => _buildStatCard(
+                                    '${products.length}',
+                                    'Products',
+                                    Icons.inventory_2_outlined,
+                                  ),
+                                  loading: () => _buildStatCard(
+                                    '...',
+                                    'Products',
+                                    Icons.inventory_2_outlined,
+                                  ),
+                                  error: (_, _) => _buildStatCard(
+                                    '0',
+                                    'Products',
+                                    Icons.inventory_2_outlined,
+                                  ),
+                                ),
                             const SizedBox(width: 10),
                             ordersAsync.when(
-                              data: (orders) => _buildStatCard('${orders.length}', 'Orders', Icons.shopping_cart_outlined),
-                              loading: () => _buildStatCard('...', 'Orders', Icons.shopping_cart_outlined),
-                              error: (_, _) => _buildStatCard('0', 'Orders', Icons.shopping_cart_outlined),
+                              data: (orders) => _buildStatCard(
+                                '${orders.length}',
+                                'Orders',
+                                Icons.shopping_cart_outlined,
+                              ),
+                              loading: () => _buildStatCard(
+                                '...',
+                                'Orders',
+                                Icons.shopping_cart_outlined,
+                              ),
+                              error: (_, _) => _buildStatCard(
+                                '0',
+                                'Orders',
+                                Icons.shopping_cart_outlined,
+                              ),
                             ),
                             const SizedBox(width: 10),
                             balanceAsync.when(
-                              data: (balance) => _buildStatCard('₦${(balance / 1000).toStringAsFixed(1)}k', 'Revenue', Icons.attach_money_rounded),
-                              loading: () => _buildStatCard('...', 'Revenue', Icons.attach_money_rounded),
-                              error: (_, _) => _buildStatCard('₦0', 'Revenue', Icons.attach_money_rounded),
+                              data: (balance) => _buildStatCard(
+                                '₦${(balance / 1000).toStringAsFixed(1)}k',
+                                'Revenue',
+                                Icons.attach_money_rounded,
+                              ),
+                              loading: () => _buildStatCard(
+                                '...',
+                                'Revenue',
+                                Icons.attach_money_rounded,
+                              ),
+                              error: (_, _) => _buildStatCard(
+                                '₦0',
+                                'Revenue',
+                                Icons.attach_money_rounded,
+                              ),
                             ),
                             const SizedBox(width: 10),
-                            _buildStatCard('0', 'Views', Icons.visibility_outlined),
+                            _buildStatCard(
+                              '0',
+                              'Views',
+                              Icons.visibility_outlined,
+                            ),
                           ],
                         ),
                       ],
@@ -131,16 +188,27 @@ class VendorHomeScreen extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () => context.push('/vendor/inventory/add'),
-                            icon: const Icon(Icons.add_rounded, size: 22, color: Colors.white),
+                            onPressed: () =>
+                                context.push('/vendor/inventory/add'),
+                            icon: const Icon(
+                              Icons.add_rounded,
+                              size: 22,
+                              color: Colors.white,
+                            ),
                             label: const Text('Add Product'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF45A225),
                               foregroundColor: Colors.white,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 18),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                              textStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: -0.2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 16,
+                                letterSpacing: -0.2,
+                              ),
                             ),
                           ),
                         ),
@@ -151,11 +219,23 @@ class VendorHomeScreen extends ConsumerWidget {
                             style: OutlinedButton.styleFrom(
                               backgroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 18),
-                              side: const BorderSide(color: Color(0xFFF1F5F9), width: 1.5),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                              textStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: -0.2),
+                              side: const BorderSide(
+                                color: Color(0xFFF1F5F9),
+                                width: 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 16,
+                                letterSpacing: -0.2,
+                              ),
                             ),
-                            child: const Text('View Orders', style: TextStyle(color: Color(0xFF111827))),
+                            child: const Text(
+                              'View Orders',
+                              style: TextStyle(color: Color(0xFF111827)),
+                            ),
                           ),
                         ),
                       ],
@@ -174,19 +254,25 @@ class VendorHomeScreen extends ConsumerWidget {
                 children: [
                   const Text(
                     'Recent Orders',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF111827)),
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF111827),
+                    ),
                   ),
                   TextButton(
                     onPressed: () => context.go('/vendor/orders'),
                     child: const Text(
                       'View all',
-                      style: TextStyle(color: Color(0xFFA855F7), fontWeight: FontWeight.w800),
+                      style: TextStyle(
+                        color: Color(0xFFA855F7),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-
 
             // Orders List
             Padding(
@@ -194,19 +280,29 @@ class VendorHomeScreen extends ConsumerWidget {
               child: ordersAsync.when(
                 data: (orders) {
                   if (orders.isEmpty) {
-                    return const Center(child: Padding(
-                      padding: EdgeInsets.all(40),
-                      child: Text('No orders yet'),
-                    ));
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(40),
+                        child: Text('No orders yet'),
+                      ),
+                    );
                   }
                   return Column(
-                    children: orders.take(5).map((order) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: GestureDetector(
-                        onTap: () => context.push('/vendor/orders/${order.id}', extra: order),
-                        child: _buildOrderCard(order),
-                      ),
-                    )).toList(),
+                    children: orders
+                        .take(5)
+                        .map(
+                          (order) => Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: GestureDetector(
+                              onTap: () => context.push(
+                                '/vendor/orders/${order.id}',
+                                extra: order,
+                              ),
+                              child: _buildOrderCard(order),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -227,7 +323,10 @@ class VendorHomeScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.2),
+            width: 1,
+          ),
         ),
         child: Column(
           children: [
@@ -235,12 +334,21 @@ class VendorHomeScreen extends ConsumerWidget {
             const SizedBox(height: 10),
             Text(
               value,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: -0.5),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 18,
+                letterSpacing: -0.5,
+              ),
             ),
             const SizedBox(height: 2),
             Text(
               label,
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 11, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.8),
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ],
         ),
@@ -273,14 +381,28 @@ class VendorHomeScreen extends ConsumerWidget {
             children: [
               Text(
                 order.shortId,
-                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF111827)),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 18,
+                  color: Color(0xFF111827),
+                ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(color: tagBg, borderRadius: BorderRadius.circular(16)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: tagBg,
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Text(
                   statusText,
-                  style: TextStyle(color: tagText, fontWeight: FontWeight.w900, fontSize: 13),
+                  style: TextStyle(
+                    color: tagText,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ],
@@ -290,7 +412,11 @@ class VendorHomeScreen extends ConsumerWidget {
             children: [
               Text(
                 'Client ID: ${order.clientId.substring(0, 8)}',
-                style: const TextStyle(color: Color(0xFF6B7280), fontWeight: FontWeight.w600, fontSize: 15),
+                style: const TextStyle(
+                  color: Color(0xFF6B7280),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                ),
               ),
             ],
           ),
@@ -298,8 +424,22 @@ class VendorHomeScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${order.items.length} items', style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.w500)),
-              Text('₦${order.total.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: Color(0xFF111827))),
+              Text(
+                '${order.items.length} items',
+                style: const TextStyle(
+                  color: Color(0xFF94A3B8),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                '₦${order.total.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 20,
+                  color: Color(0xFF111827),
+                ),
+              ),
             ],
           ),
         ],
@@ -308,13 +448,17 @@ class VendorHomeScreen extends ConsumerWidget {
   }
 }
 
-
 class HeaderClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
     path.lineTo(0, size.height - 40);
-    path.quadraticBezierTo(size.width / 2, size.height + 20, size.width, size.height - 40);
+    path.quadraticBezierTo(
+      size.width / 2,
+      size.height + 20,
+      size.width,
+      size.height - 40,
+    );
     path.lineTo(size.width, 0);
     path.close();
     return path;

@@ -5,15 +5,9 @@ class CartItem {
   final Product product;
   final int quantity;
 
-  CartItem({
-    required this.product,
-    required this.quantity,
-  });
+  CartItem({required this.product, required this.quantity});
 
-  CartItem copyWith({
-    Product? product,
-    int? quantity,
-  }) {
+  CartItem copyWith({Product? product, int? quantity}) {
     return CartItem(
       product: product ?? this.product,
       quantity: quantity ?? this.quantity,
@@ -29,12 +23,11 @@ class CartNotifier extends Notifier<Map<String, CartItem>> {
 
   void addItem(Product product) {
     final current = state;
-    
+
     // As per specs: All items must belong to the same Vendor
-    if (current.isNotEmpty && current.values.first.product.vendorId != product.vendorId) {
-      state = {
-        product.id: CartItem(product: product, quantity: 1),
-      };
+    if (current.isNotEmpty &&
+        current.values.first.product.vendorId != product.vendorId) {
+      state = {product.id: CartItem(product: product, quantity: 1)};
       return;
     }
 
@@ -46,10 +39,7 @@ class CartNotifier extends Notifier<Map<String, CartItem>> {
         ),
       };
     } else {
-      state = {
-        ...current,
-        product.id: CartItem(product: product, quantity: 1),
-      };
+      state = {...current, product.id: CartItem(product: product, quantity: 1)};
     }
   }
 
@@ -74,9 +64,13 @@ class CartNotifier extends Notifier<Map<String, CartItem>> {
     state = {};
   }
 
-  int get totalItems => state.values.fold(0, (sum, item) => sum + item.quantity);
+  int get totalItems =>
+      state.values.fold(0, (sum, item) => sum + item.quantity);
   int get uniqueItemsCount => state.length;
-  double get totalPrice => state.values.fold(0.0, (sum, item) => sum + (item.product.price * item.quantity));
+  double get totalPrice => state.values.fold(
+    0.0,
+    (sum, item) => sum + (item.product.price * item.quantity),
+  );
 }
 
 final cartProvider = NotifierProvider<CartNotifier, Map<String, CartItem>>(() {

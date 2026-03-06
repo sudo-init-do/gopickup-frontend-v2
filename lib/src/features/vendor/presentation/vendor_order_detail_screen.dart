@@ -8,10 +8,7 @@ import '../data/vendor_repository.dart';
 class VendorOrderDetailScreen extends ConsumerWidget {
   final Order order;
 
-  const VendorOrderDetailScreen({
-    super.key,
-    required this.order,
-  });
+  const VendorOrderDetailScreen({super.key, required this.order});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +35,11 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                   color: Color(0xFFF9FAFB),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.arrow_back, color: kDarkTextColor, size: 20),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: kDarkTextColor,
+                  size: 20,
+                ),
               ),
             ),
           ),
@@ -83,12 +84,18 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: order.status == 'pending' ? const Color(0xFFFFF7ED) : const Color(0xFFEFF6FF),
+                      color: order.status == 'pending'
+                          ? const Color(0xFFFFF7ED)
+                          : const Color(0xFFEFF6FF),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      order.status == 'pending' ? Icons.access_time_filled_rounded : Icons.inventory_2_rounded,
-                      color: order.status == 'pending' ? const Color(0xFFF97316) : const Color(0xFF3B82F6),
+                      order.status == 'pending'
+                          ? Icons.access_time_filled_rounded
+                          : Icons.inventory_2_rounded,
+                      color: order.status == 'pending'
+                          ? const Color(0xFFF97316)
+                          : const Color(0xFF3B82F6),
                       size: 24,
                     ),
                   ),
@@ -107,7 +114,9 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          order.status == 'pending' ? 'Waiting for your action' : 'Order is being processed',
+                          order.status == 'pending'
+                              ? 'Waiting for your action'
+                              : 'Order is being processed',
                           style: const TextStyle(
                             color: kMidTextColor,
                             fontWeight: FontWeight.w500,
@@ -166,17 +175,27 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                 border: Border.all(color: kLightBorderColor, width: 1.5),
               ),
               child: Column(
-                children: order.items.map((item) => Column(
-                  children: [
-                    _buildOrderItem(
-                      item.name ?? 'Item',
-                      '₦${(item.price ?? 0).toStringAsFixed(2)} x ${item.quantity}',
-                      '₦${((item.price ?? 0) * item.quantity).toStringAsFixed(2)}',
-                    ),
-                    if (order.items.indexOf(item) != order.items.length - 1)
-                      const Divider(color: kLightBorderColor, height: 1, indent: 24, endIndent: 24),
-                  ],
-                )).toList(),
+                children: order.items
+                    .map(
+                      (item) => Column(
+                        children: [
+                          _buildOrderItem(
+                            item.name ?? 'Item',
+                            '₦${(item.price ?? 0).toStringAsFixed(2)} x ${item.quantity}',
+                            '₦${((item.price ?? 0) * item.quantity).toStringAsFixed(2)}',
+                          ),
+                          if (order.items.indexOf(item) !=
+                              order.items.length - 1)
+                            const Divider(
+                              color: kLightBorderColor,
+                              height: 1,
+                              indent: 24,
+                              endIndent: 24,
+                            ),
+                        ],
+                      ),
+                    )
+                    .toList(),
               ),
             ),
             const SizedBox(height: 24),
@@ -191,7 +210,7 @@ class VendorOrderDetailScreen extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
@@ -219,82 +238,94 @@ class VendorOrderDetailScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomSheet: order.status == 'pending' ? Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: kLightBorderColor)),
-        ),
-        child: SafeArea(
-          child: Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () async {
-                    // Implement Reject/Cancel
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    side: const BorderSide(color: kLightBorderColor, width: 1.5),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                  ),
-                  child: const Text(
-                    'Reject',
-                    style: TextStyle(
-                      color: kDarkTextColor,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
+      bottomSheet: order.status == 'pending'
+          ? Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(top: BorderSide(color: kLightBorderColor)),
+              ),
+              child: SafeArea(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          // Implement Reject/Cancel
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          side: const BorderSide(
+                            color: kLightBorderColor,
+                            width: 1.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                        ),
+                        child: const Text(
+                          'Reject',
+                          style: TextStyle(
+                            color: kDarkTextColor,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          // Show loading
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+
+                          final success = await ref
+                              .read(vendorRepositoryProvider)
+                              .updateOrderStatus(order.id, 'searching_driver');
+
+                          if (context.mounted) {
+                            Navigator.pop(context); // Close loading
+                            if (success) {
+                              ref.invalidate(vendorOrdersProvider);
+                              context.pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Order accepted successfully!'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: kBrandGreen,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                        ),
+                        child: const Text(
+                          'Accept Order',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () async {
-                     // Show loading
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => const Center(child: CircularProgressIndicator()),
-                    );
-
-                    final success = await ref.read(vendorRepositoryProvider).updateOrderStatus(
-                      order.id,
-                      'searching_driver',
-                    );
-
-                    if (context.mounted) {
-                      Navigator.pop(context); // Close loading
-                      if (success) {
-                        ref.invalidate(vendorOrdersProvider);
-                        context.pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Order accepted successfully!')),
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kBrandGreen,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                  ),
-                  child: const Text(
-                    'Accept Order',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ) : null,
+            )
+          : null,
     );
   }
 
@@ -354,5 +385,4 @@ class VendorOrderDetailScreen extends ConsumerWidget {
       ),
     );
   }
-
 }

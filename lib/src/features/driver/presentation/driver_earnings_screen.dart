@@ -21,7 +21,11 @@ class DriverEarningsScreen extends StatelessWidget {
               _buildHeader(kDarkTextColor, kMidTextColor),
               _buildBalanceCard(kOrangeColor),
               _buildStatsRow(kDarkTextColor, kGreenColor, kRedColor),
-              _buildTransactionsSection(kDarkTextColor, kMidTextColor, kGreenColor),
+              _buildTransactionsSection(
+                kDarkTextColor,
+                kMidTextColor,
+                kGreenColor,
+              ),
             ],
           ),
         ),
@@ -151,7 +155,13 @@ class DriverEarningsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(String label, String amount, String change, Color changeColor, bool isPositive) {
+  Widget _buildStatCard(
+    String label,
+    String amount,
+    String change,
+    Color changeColor,
+    bool isPositive,
+  ) {
     return Container(
       width: 110,
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -184,7 +194,9 @@ class DriverEarningsScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                isPositive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+                isPositive
+                    ? Icons.trending_up_rounded
+                    : Icons.trending_down_rounded,
                 size: 14,
                 color: changeColor,
               ),
@@ -235,17 +247,55 @@ class DriverEarningsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        _buildTransactionItem('Cement Delivery - ORD-001', 'Today, 3:45 PM', '+₦95.00', green, true),
-        _buildTransactionItem('Steel Transport - ORD-002', 'Today, 11:20 AM', '+₦175.00', green, true),
-        _buildTransactionItem('Weekly Payout', 'Yesterday', '₦500.00', darkText, false),
-        _buildTransactionItem('Paint Supplies - ORD-003', 'Yesterday', '+₦65.00', green, true),
-        _buildTransactionItem('Completion Bonus', '2 days ago', '+₦25.00', green, true, isBonus: true),
+        _buildTransactionItem(
+          'Cement Delivery - ORD-001',
+          'Today, 3:45 PM',
+          '+₦95.00',
+          green,
+          true,
+        ),
+        _buildTransactionItem(
+          'Steel Transport - ORD-002',
+          'Today, 11:20 AM',
+          '+₦175.00',
+          green,
+          true,
+        ),
+        _buildTransactionItem(
+          'Weekly Payout',
+          'Yesterday',
+          '₦500.00',
+          darkText,
+          false,
+        ),
+        _buildTransactionItem(
+          'Paint Supplies - ORD-003',
+          'Yesterday',
+          '+₦65.00',
+          green,
+          true,
+        ),
+        _buildTransactionItem(
+          'Completion Bonus',
+          '2 days ago',
+          '+₦25.00',
+          green,
+          true,
+          isBonus: true,
+        ),
         const SizedBox(height: 32),
       ],
     );
   }
 
-  Widget _buildTransactionItem(String title, String time, String amount, Color amountColor, bool isIncoming, {bool isBonus = false}) {
+  Widget _buildTransactionItem(
+    String title,
+    String time,
+    String amount,
+    Color amountColor,
+    bool isIncoming, {
+    bool isBonus = false,
+  }) {
     return Container(
       margin: const EdgeInsets.fromLTRB(24, 0, 24, 16),
       padding: const EdgeInsets.all(20),
@@ -259,12 +309,16 @@ class DriverEarningsScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isBonus ? const Color(0xFFFEF3C7) : const Color(0xFFF0FDF4),
+              color: isBonus
+                  ? const Color(0xFFFEF3C7)
+                  : const Color(0xFFF0FDF4),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.attach_money_rounded,
-              color: isBonus ? const Color(0xFFD97706) : const Color(0xFF22C55E),
+              color: isBonus
+                  ? const Color(0xFFD97706)
+                  : const Color(0xFF22C55E),
               size: 20,
             ),
           ),

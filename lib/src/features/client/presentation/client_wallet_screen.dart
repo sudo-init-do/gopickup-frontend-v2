@@ -30,20 +30,33 @@ class ClientWalletScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     balanceAsync.when(
-                      data: (balance) => _buildBalanceCard(context, ref, balance, kBrandGreen),
-                      loading: () => const Center(child: CircularProgressIndicator()),
+                      data: (balance) =>
+                          _buildBalanceCard(context, ref, balance, kBrandGreen),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
                       error: (err, stack) => Center(child: Text('Error: $err')),
                     ),
                     const SizedBox(height: 32),
                     _buildSectionHeader('Payment Methods', kMidTextColor),
                     const SizedBox(height: 16),
-                    _buildPaymentMethods(kDarkTextColor, kLightTextColor, kBrandGreen),
+                    _buildPaymentMethods(
+                      kDarkTextColor,
+                      kLightTextColor,
+                      kBrandGreen,
+                    ),
                     const SizedBox(height: 32),
                     _buildSectionHeader('Recent Transactions', kMidTextColor),
                     const SizedBox(height: 16),
                     transactionsAsync.when(
-                      data: (txs) => _buildTransactionList(txs, kDarkTextColor, kMidTextColor, kLightTextColor, kBrandGreen),
-                      loading: () => const Center(child: CircularProgressIndicator()),
+                      data: (txs) => _buildTransactionList(
+                        txs,
+                        kDarkTextColor,
+                        kMidTextColor,
+                        kLightTextColor,
+                        kBrandGreen,
+                      ),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
                       error: (err, stack) => Center(child: Text('Error: $err')),
                     ),
                   ],
@@ -107,7 +120,12 @@ class ClientWalletScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBalanceCard(BuildContext context, WidgetRef ref, double balance, Color brandGreen) {
+  Widget _buildBalanceCard(
+    BuildContext context,
+    WidgetRef ref,
+    double balance,
+    Color brandGreen,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -150,13 +168,17 @@ class ClientWalletScreen extends ConsumerWidget {
                 child: InkWell(
                   onTap: () async {
                     // Quick top up for demo
-                    final success = await ref.read(walletRepositoryProvider).topUp(1000);
+                    final success = await ref
+                        .read(walletRepositoryProvider)
+                        .topUp(1000);
                     if (success) {
                       ref.invalidate(balanceProvider);
                       ref.invalidate(transactionsProvider);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Top up successful! Added ₦1,000.00')),
+                          const SnackBar(
+                            content: Text('Top up successful! Added ₦1,000.00'),
+                          ),
                         );
                       }
                     }
@@ -183,7 +205,11 @@ class ClientWalletScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionBtn({required IconData icon, required String label, required Color bgColor}) {
+  Widget _buildActionBtn({
+    required IconData icon,
+    required String label,
+    required Color bgColor,
+  }) {
     return Container(
       height: 52,
       decoration: BoxDecoration(
@@ -208,7 +234,11 @@ class ClientWalletScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPaymentMethods(Color darkText, Color lightText, Color brandGreen) {
+  Widget _buildPaymentMethods(
+    Color darkText,
+    Color lightText,
+    Color brandGreen,
+  ) {
     return Column(
       children: [
         Container(
@@ -233,7 +263,11 @@ class ClientWalletScreen extends ConsumerWidget {
                   color: const Color(0xFFF3F4F6),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(Icons.credit_card_rounded, color: Color(0xFF3B7D23), size: 24),
+                child: const Icon(
+                  Icons.credit_card_rounded,
+                  color: Color(0xFF3B7D23),
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -262,7 +296,10 @@ class ClientWalletScreen extends ConsumerWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: brandGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
@@ -283,7 +320,13 @@ class ClientWalletScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTransactionList(List<WalletTransaction> transactions, Color darkText, Color midText, Color lightText, Color brandGreen) {
+  Widget _buildTransactionList(
+    List<WalletTransaction> transactions,
+    Color darkText,
+    Color midText,
+    Color lightText,
+    Color brandGreen,
+  ) {
     if (transactions.isEmpty) {
       return Center(
         child: Padding(
@@ -315,11 +358,15 @@ class ClientWalletScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isCredit ? const Color(0xFFF0FDF4) : const Color(0xFFFFF1F2),
+                  color: isCredit
+                      ? const Color(0xFFF0FDF4)
+                      : const Color(0xFFFFF1F2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  isCredit ? Icons.call_received_rounded : Icons.call_made_rounded,
+                  isCredit
+                      ? Icons.call_received_rounded
+                      : Icons.call_made_rounded,
                   color: isCredit ? brandGreen : Colors.redAccent,
                   size: 20,
                 ),
@@ -366,4 +413,3 @@ class ClientWalletScreen extends ConsumerWidget {
     );
   }
 }
-

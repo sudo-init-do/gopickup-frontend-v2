@@ -19,15 +19,18 @@ class VendorRepository {
     String? imageUrl,
   }) async {
     try {
-      final response = await _apiClient.post('/products', data: {
-        'name': name,
-        'description': description,
-        'category': category,
-        'price': price,
-        'stock': stock,
-        'moq': moq,
-        'image_url': imageUrl ?? '',
-      });
+      final response = await _apiClient.post(
+        '/products',
+        data: {
+          'name': name,
+          'description': description,
+          'category': category,
+          'price': price,
+          'stock': stock,
+          'moq': moq,
+          'image_url': imageUrl ?? '',
+        },
+      );
       return response.statusCode == 201;
     } catch (e) {
       return false;
@@ -62,9 +65,10 @@ class VendorRepository {
 
   Future<bool> updateOrderStatus(String orderId, String status) async {
     try {
-      final response = await _apiClient.patch('/orders/$orderId/status', data: {
-        'status': status,
-      });
+      final response = await _apiClient.patch(
+        '/orders/$orderId/status',
+        data: {'status': status},
+      );
       return response.statusCode == 200;
     } catch (e) {
       return false;

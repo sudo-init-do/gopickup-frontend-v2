@@ -9,7 +9,7 @@ enum OrderStatus {
   assigned,
   in_transit,
   delivered,
-  cancelled
+  cancelled,
 }
 
 extension OrderStatusExtension on OrderStatus {
@@ -71,7 +71,6 @@ extension OrderStatusExtension on OrderStatus {
   }
 }
 
-
 class OrderItem {
   final Product product;
   final int quantity;
@@ -106,7 +105,7 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> json) {
     OrderStatus status = OrderStatus.pending;
     final statusStr = json['status'] as String? ?? 'pending';
-    
+
     try {
       status = OrderStatus.values.firstWhere(
         (e) => e.name == statusStr,
@@ -119,17 +118,19 @@ class Order {
     return Order(
       id: json['id'],
       status: status,
-      items: (json['items'] as List?)
-          ?.map((i) => OrderItem.fromJson(i))
-          .toList() ?? [],
+      items:
+          (json['items'] as List?)
+              ?.map((i) => OrderItem.fromJson(i))
+              .toList() ??
+          [],
       placedAt: DateTime.parse(json['created_at']),
       clientId: json['client_id'] ?? '',
       driverId: json['driver_id'] ?? '',
     );
   }
 
-  String get shortId => id.length > 8 ? 'ORD-${id.substring(0, 8).toUpperCase()}' : id;
-
+  String get shortId =>
+      id.length > 8 ? 'ORD-${id.substring(0, 8).toUpperCase()}' : id;
 
   double get total =>
       items.fold(0, (sum, item) => sum + (item.product.price * item.quantity));

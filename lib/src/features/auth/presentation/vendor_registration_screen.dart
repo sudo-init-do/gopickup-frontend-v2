@@ -8,23 +8,25 @@ class VendorRegistrationScreen extends ConsumerStatefulWidget {
   const VendorRegistrationScreen({super.key});
 
   @override
-  ConsumerState<VendorRegistrationScreen> createState() => _VendorRegistrationScreenState();
+  ConsumerState<VendorRegistrationScreen> createState() =>
+      _VendorRegistrationScreenState();
 }
 
-class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScreen> {
+class _VendorRegistrationScreenState
+    extends ConsumerState<VendorRegistrationScreen> {
   int _currentStep = 0; // 0: Store Info, 1: Location, 2: Verification
-  
+
   // Store Info Controllers
   final _storeNameController = TextEditingController();
   final _ownerNameController = TextEditingController();
   final _descriptionController = TextEditingController();
   String _selectedCategory = 'Building Materials';
-  
+
   // Location Controllers
   final _addressController = TextEditingController();
   final _cityController = TextEditingController();
   // Assume state is captured somehow or omitted
-  
+
   // Custom mock since UI missing
   final String _mockPhone = '000-000-0000';
 
@@ -60,11 +62,9 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
       _ownerNameController.text.isNotEmpty &&
       _descriptionController.text.isNotEmpty;
 
-  bool get _isStep2Valid =>
-      _addressController.text.isNotEmpty;
+  bool get _isStep2Valid => _addressController.text.isNotEmpty;
 
-  bool get _isStep3Valid =>
-      _registrationController.text.isNotEmpty;
+  bool get _isStep3Valid => _registrationController.text.isNotEmpty;
 
   @override
   void dispose() {
@@ -89,7 +89,7 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
     bool isCurrentStepValid = _currentStep == 0
         ? _isStep1Valid
         : (_currentStep == 1 ? _isStep2Valid : _isStep3Valid);
-        
+
     final isLoading = ref.watch(profileProvider).isLoading;
 
     return Scaffold(
@@ -99,7 +99,10 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 24,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -122,30 +125,57 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
                       ),
                     ),
                     const SizedBox(height: 32),
-                    
+
                     // Progress Chips
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildStepChip('Store Info', Icons.store_mall_directory_rounded, _currentStep == 0, kPurple),
+                          _buildStepChip(
+                            'Store Info',
+                            Icons.store_mall_directory_rounded,
+                            _currentStep == 0,
+                            kPurple,
+                          ),
                           const SizedBox(width: 12),
-                          _buildStepChip('Location', Icons.location_on_outlined, _currentStep == 1, kPurple),
+                          _buildStepChip(
+                            'Location',
+                            Icons.location_on_outlined,
+                            _currentStep == 1,
+                            kPurple,
+                          ),
                           const SizedBox(width: 12),
-                          _buildStepChip('Verification', Icons.assignment_outlined, _currentStep == 2, kPurple),
+                          _buildStepChip(
+                            'Verification',
+                            Icons.assignment_outlined,
+                            _currentStep == 2,
+                            kPurple,
+                          ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 40),
 
-                    if (_currentStep == 0) _buildStoreInfoStep(kPurple, kLightPurpleBg, kDarkTextColor, kMidTextColor),
-                    if (_currentStep == 1) _buildLocationStep(kDarkTextColor, kMidTextColor),
-                    if (_currentStep == 2) _buildVerificationStep(kDarkTextColor, kMidTextColor, kPurple),
+                    if (_currentStep == 0)
+                      _buildStoreInfoStep(
+                        kPurple,
+                        kLightPurpleBg,
+                        kDarkTextColor,
+                        kMidTextColor,
+                      ),
+                    if (_currentStep == 1)
+                      _buildLocationStep(kDarkTextColor, kMidTextColor),
+                    if (_currentStep == 2)
+                      _buildVerificationStep(
+                        kDarkTextColor,
+                        kMidTextColor,
+                        kPurple,
+                      ),
                   ],
                 ),
               ),
             ),
-            
+
             // Bottom Action Bar
             Padding(
               padding: const EdgeInsets.all(24),
@@ -153,26 +183,38 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
                 width: double.infinity,
                 height: 64,
                 child: ElevatedButton(
-                  onPressed: (isCurrentStepValid && !isLoading) ? _handleContinue : null,
+                  onPressed: (isCurrentStepValid && !isLoading)
+                      ? _handleContinue
+                      : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isCurrentStepValid ? kActiveGreen : kGreenButton,
+                    backgroundColor: isCurrentStepValid
+                        ? kActiveGreen
+                        : kGreenButton,
                     disabledBackgroundColor: kGreenButton,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32),
+                    ),
                   ),
-                  child: isLoading 
+                  child: isLoading
                       ? const SizedBox(
                           height: 24,
                           width: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               _currentStep == 2 ? 'Complete Setup' : 'Continue',
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             const Icon(Icons.arrow_forward_rounded, size: 22),
@@ -199,21 +241,33 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
         isApproved: false,
       );
 
-      final success = await ref.read(profileProvider.notifier).createVendorProfile(profile);
+      final success = await ref
+          .read(profileProvider.notifier)
+          .createVendorProfile(profile);
 
       if (mounted) {
         if (success) {
           context.go('/vendor');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(ref.read(profileProvider).error ?? 'Failed to complete setup. Please try again.')),
+            SnackBar(
+              content: Text(
+                ref.read(profileProvider).error ??
+                    'Failed to complete setup. Please try again.',
+              ),
+            ),
           );
         }
       }
     }
   }
 
-  Widget _buildStoreInfoStep(Color kPurple, Color kLightPurpleBg, Color kDarkTextColor, Color kMidTextColor) {
+  Widget _buildStoreInfoStep(
+    Color kPurple,
+    Color kLightPurpleBg,
+    Color kDarkTextColor,
+    Color kMidTextColor,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -228,7 +282,11 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
                   borderRadius: BorderRadius.circular(40),
                 ),
                 child: const Center(
-                  child: Icon(Icons.storefront_rounded, size: 40, color: Color(0xFF475569)),
+                  child: Icon(
+                    Icons.storefront_rounded,
+                    size: 40,
+                    color: Color(0xFF475569),
+                  ),
                 ),
               ),
               Positioned(
@@ -241,7 +299,11 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2.5),
                   ),
-                  child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: Colors.white,
+                    size: 16,
+                  ),
                 ),
               ),
             ],
@@ -265,7 +327,10 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
               onTap: () => setState(() => _selectedCategory = cat),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? kLightPurpleBg : const Color(0xFFF3F4F6),
                   borderRadius: BorderRadius.circular(24),
@@ -288,7 +353,11 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
         ),
         const SizedBox(height: 24),
         _buildInputLabel('Store Description', kDarkTextColor),
-        _buildTextField(_descriptionController, 'Describe your store...', maxLines: 4),
+        _buildTextField(
+          _descriptionController,
+          'Describe your store...',
+          maxLines: 4,
+        ),
       ],
     );
   }
@@ -300,7 +369,7 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
         _buildInputLabel('Store Address', kDarkTextColor),
         _buildTextField(_addressController, 'Enter full address'),
         const SizedBox(height: 24),
-        
+
         // Pin on map action
         Row(
           children: const [
@@ -329,7 +398,11 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
-              Icon(Icons.location_on_outlined, size: 48, color: Color(0xFF94A3B8)),
+              Icon(
+                Icons.location_on_outlined,
+                size: 48,
+                color: Color(0xFF94A3B8),
+              ),
               SizedBox(height: 8),
               Text(
                 'Map preview',
@@ -346,7 +419,11 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
     );
   }
 
-  Widget _buildVerificationStep(Color kDarkTextColor, Color kMidTextColor, Color kPurple) {
+  Widget _buildVerificationStep(
+    Color kDarkTextColor,
+    Color kMidTextColor,
+    Color kPurple,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -424,9 +501,12 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
     );
   }
 
-
-
-  Widget _buildStepChip(String label, IconData icon, bool isActive, Color activeColor) {
+  Widget _buildStepChip(
+    String label,
+    IconData icon,
+    bool isActive,
+    Color activeColor,
+  ) {
     bool isCompleted = false;
     // Determine if step is completed based on current step index
     if (label == 'Store Info' && _currentStep > 0) isCompleted = true;
@@ -484,12 +564,20 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
       padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         label,
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: color),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w800,
+          color: color,
+        ),
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hint, {
+    int maxLines = 1,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -502,9 +590,16 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
         onChanged: (_) => setState(() {}),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w400, fontSize: 16),
+          hintStyle: const TextStyle(
+            color: Color(0xFF94A3B8),
+            fontWeight: FontWeight.w400,
+            fontSize: 16,
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 18,
+          ),
         ),
       ),
     );

@@ -10,10 +10,13 @@ class ProductRepository {
 
   Future<List<Product>> getProducts({String? category, String? query}) async {
     try {
-      final response = await _apiClient.get('/products', queryParameters: {
-        if (category != null && category != 'All') 'category': category,
-        if (query != null && query.isNotEmpty) 'q': query,
-      });
+      final response = await _apiClient.get(
+        '/products',
+        queryParameters: {
+          if (category != null && category != 'All') 'category': category,
+          if (query != null && query.isNotEmpty) 'q': query,
+        },
+      );
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data['items'];

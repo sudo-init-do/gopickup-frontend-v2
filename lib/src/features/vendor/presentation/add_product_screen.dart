@@ -26,7 +26,7 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
     'Electrical',
     'Quarry Materials',
     'Plumbing',
-    'Hardware'
+    'Hardware',
   ];
 
   @override
@@ -63,7 +63,11 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                   color: Color(0xFFF9FAFB),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.arrow_back, color: kDarkTextColor, size: 20),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: kDarkTextColor,
+                  size: 20,
+                ),
               ),
             ),
           ),
@@ -89,10 +93,7 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
               height: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: const Color(0xFFE5E7EB),
-                  width: 1.5,
-                ),
+                border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
               ),
               child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -119,7 +120,11 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
 
             _buildSectionLabel('Description', kDarkTextColor),
             const SizedBox(height: 12),
-            _buildTextField(_descriptionController, 'Describe your product...', maxLines: 4),
+            _buildTextField(
+              _descriptionController,
+              'Describe your product...',
+              maxLines: 4,
+            ),
             const SizedBox(height: 32),
 
             _buildSectionLabel('Category', kDarkTextColor),
@@ -132,9 +137,14 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                 return GestureDetector(
                   onTap: () => setState(() => _selectedCategory = cat),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFFA855F7) : const Color(0xFFF9FAFB),
+                      color: isSelected
+                          ? const Color(0xFFA855F7)
+                          : const Color(0xFFF9FAFB),
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: Text(
@@ -159,7 +169,11 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                     children: [
                       _buildSectionLabel('Price (₦)', kDarkTextColor),
                       const SizedBox(height: 12),
-                      _buildTextField(_priceController, '0.00', keyboardType: TextInputType.number),
+                      _buildTextField(
+                        _priceController,
+                        '0.00',
+                        keyboardType: TextInputType.number,
+                      ),
                     ],
                   ),
                 ),
@@ -170,7 +184,11 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                     children: [
                       _buildSectionLabel('Stock', kDarkTextColor),
                       const SizedBox(height: 12),
-                      _buildTextField(_stockController, '0', keyboardType: TextInputType.number),
+                      _buildTextField(
+                        _stockController,
+                        '0',
+                        keyboardType: TextInputType.number,
+                      ),
                     ],
                   ),
                 ),
@@ -192,12 +210,17 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                 children: [
                   Text(
                     '$_moq',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kDarkTextColor),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: kDarkTextColor,
+                    ),
                   ),
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () => setState(() => _moq = _moq > 1 ? _moq - 1 : 1),
+                        onPressed: () =>
+                            setState(() => _moq = _moq > 1 ? _moq - 1 : 1),
                         icon: const Icon(Icons.remove, size: 20),
                       ),
                       IconButton(
@@ -212,7 +235,11 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
             const SizedBox(height: 8),
             const Text(
               'Customers must order at least this quantity',
-              style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                color: Color(0xFF94A3B8),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 120),
           ],
@@ -237,7 +264,9 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
 
                 if (name.isEmpty || price <= 0 || stock <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please fill all required fields')),
+                    const SnackBar(
+                      content: Text('Please fill all required fields'),
+                    ),
                   );
                   return;
                 }
@@ -246,29 +275,38 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                 showDialog(
                   context: context,
                   barrierDismissible: false,
-                  builder: (context) => const Center(child: CircularProgressIndicator()),
+                  builder: (context) =>
+                      const Center(child: CircularProgressIndicator()),
                 );
 
-                final success = await ref.read(vendorRepositoryProvider).addProduct(
-                  name: name,
-                  description: desc,
-                  category: _selectedCategory,
-                  price: price,
-                  stock: stock,
-                  moq: _moq,
-                );
+                final success = await ref
+                    .read(vendorRepositoryProvider)
+                    .addProduct(
+                      name: name,
+                      description: desc,
+                      category: _selectedCategory,
+                      price: price,
+                      stock: stock,
+                      moq: _moq,
+                    );
 
                 if (context.mounted) {
                   Navigator.pop(context); // Close loading
 
                   if (success) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Product added successfully!'), backgroundColor: Color(0xFF45A225)),
+                      const SnackBar(
+                        content: Text('Product added successfully!'),
+                        backgroundColor: Color(0xFF45A225),
+                      ),
                     );
                     context.pop();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Failed to add product.'), backgroundColor: Colors.red),
+                      const SnackBar(
+                        content: Text('Failed to add product.'),
+                        backgroundColor: Colors.red,
+                      ),
                     );
                   }
                 }
@@ -277,7 +315,9 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                 backgroundColor: kBrandGreen,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
               ),
               child: const Text(
                 'Add Product',
@@ -293,15 +333,16 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
   Widget _buildSectionLabel(String label, Color color) {
     return Text(
       label,
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w800,
-        color: color,
-      ),
+      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: color),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1, TextInputType? keyboardType}) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hint, {
+    int maxLines = 1,
+    TextInputType? keyboardType,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFFAFAFA),
@@ -314,12 +355,18 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w500, fontSize: 15),
+          hintStyle: const TextStyle(
+            color: Color(0xFF94A3B8),
+            fontWeight: FontWeight.w500,
+            fontSize: 15,
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 18,
+          ),
         ),
       ),
     );
   }
 }
-

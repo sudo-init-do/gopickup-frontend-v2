@@ -25,15 +25,11 @@ class MockInterceptor extends Interceptor {
             'category': 'Steel',
             'image_url': 'https://via.placeholder.com/150',
           },
-        ]
+        ],
       };
 
       return handler.resolve(
-        Response(
-          requestOptions: options,
-          data: responseData,
-          statusCode: 200,
-        ),
+        Response(requestOptions: options, data: responseData, statusCode: 200),
       );
     }
 
@@ -66,22 +62,18 @@ class MockInterceptor extends Interceptor {
                   'category': 'Cement',
                   'image_url': '',
                 },
-                'quantity': 5
-              }
+                'quantity': 5,
+              },
             ],
             'placed_at': '2026-02-06T10:00:00Z',
             'client_id': 'c1',
-            'driver_id': 'd1'
-          }
-        ]
+            'driver_id': 'd1',
+          },
+        ],
       };
 
       return handler.resolve(
-        Response(
-          requestOptions: options,
-          data: responseData,
-          statusCode: 200,
-        ),
+        Response(requestOptions: options, data: responseData, statusCode: 200),
       );
     }
 

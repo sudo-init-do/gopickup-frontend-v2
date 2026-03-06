@@ -56,7 +56,11 @@ class VendorProfileScreen extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
-                              icon: const Icon(Icons.settings_outlined, color: Colors.white, size: 20),
+                              icon: const Icon(
+                                Icons.settings_outlined,
+                                color: Colors.white,
+                                size: 20,
+                              ),
                               onPressed: () => context.push('/settings'),
                             ),
                           ),
@@ -71,10 +75,17 @@ class VendorProfileScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: Colors.white.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 4),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.3),
+                                width: 4,
+                              ),
                             ),
                             child: const Center(
-                              child: Icon(Icons.storefront_outlined, color: Colors.white, size: 50),
+                              child: Icon(
+                                Icons.storefront_outlined,
+                                color: Colors.white,
+                                size: 50,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 20),
@@ -102,7 +113,11 @@ class VendorProfileScreen extends StatelessWidget {
                                 SizedBox(height: 12),
                                 Row(
                                   children: [
-                                    Icon(Icons.star_rounded, color: Colors.orange, size: 18),
+                                    Icon(
+                                      Icons.star_rounded,
+                                      color: Colors.orange,
+                                      size: 18,
+                                    ),
                                     SizedBox(width: 4),
                                     Text(
                                       '4.9 (1.2k reviews)',
@@ -154,22 +169,79 @@ class VendorProfileScreen extends StatelessWidget {
                 ),
               ],
             ),
-            
-            const SizedBox(height: 64), 
-            
+
+            const SizedBox(height: 64),
+
             // Menu Items List
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  _buildMenuItem(context, Icons.inventory_2_outlined, 'Manage Inventory', kIconBgColor, kIconColor, '/vendor/inventory'),
-                  _buildMenuItem(context, Icons.assignment_outlined, 'Sales History', kIconBgColor, kIconColor, '/vendor/orders'),
-                  _buildMenuItem(context, Icons.account_balance_wallet_outlined, 'Store Wallet', kIconBgColor, kIconColor, '/vendor/wallet'),
-                  _buildMenuItem(context, Icons.business_outlined, 'Business Details', kIconBgColor, kIconColor, '/vendor/details'),
-                  _buildMenuItem(context, Icons.notifications_none_rounded, 'Notifications', kIconBgColor, kIconColor, '/notifications'),
-                  _buildMenuItem(context, Icons.insights_outlined, 'Analytics & Reports', kIconBgColor, kIconColor, '/vendor/analytics'),
-                  _buildMenuItem(context, Icons.help_outline_rounded, 'Help & Support', kIconBgColor, kIconColor, '/help'),
-                  _buildMenuItem(context, Icons.logout_rounded, 'Log Out', const Color(0xFFFFEBEE), const Color(0xFFEF5350), '', isLogout: true),
+                  _buildMenuItem(
+                    context,
+                    Icons.inventory_2_outlined,
+                    'Manage Inventory',
+                    kIconBgColor,
+                    kIconColor,
+                    '/vendor/inventory',
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.assignment_outlined,
+                    'Sales History',
+                    kIconBgColor,
+                    kIconColor,
+                    '/vendor/orders',
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.account_balance_wallet_outlined,
+                    'Store Wallet',
+                    kIconBgColor,
+                    kIconColor,
+                    '/vendor/wallet',
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.business_outlined,
+                    'Business Details',
+                    kIconBgColor,
+                    kIconColor,
+                    '/vendor/details',
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.notifications_none_rounded,
+                    'Notifications',
+                    kIconBgColor,
+                    kIconColor,
+                    '/notifications',
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.insights_outlined,
+                    'Analytics & Reports',
+                    kIconBgColor,
+                    kIconColor,
+                    '/vendor/analytics',
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.help_outline_rounded,
+                    'Help & Support',
+                    kIconBgColor,
+                    kIconColor,
+                    '/help',
+                  ),
+                  _buildMenuItem(
+                    context,
+                    Icons.logout_rounded,
+                    'Log Out',
+                    const Color(0xFFFFEBEE),
+                    const Color(0xFFEF5350),
+                    '',
+                    isLogout: true,
+                  ),
                 ],
               ),
             ),
@@ -208,14 +280,18 @@ class VendorProfileScreen extends StatelessWidget {
   }
 
   Widget _buildDivider() {
-    return Container(
-      width: 1.5,
-      height: 40,
-      color: const Color(0xFFF1F5F9),
-    );
+    return Container(width: 1.5, height: 40, color: const Color(0xFFF1F5F9));
   }
 
-  Widget _buildMenuItem(BuildContext context, IconData icon, String title, Color bgColor, Color iconColor, String route, {bool isLogout = false}) {
+  Widget _buildMenuItem(
+    BuildContext context,
+    IconData icon,
+    String title,
+    Color bgColor,
+    Color iconColor,
+    String route, {
+    bool isLogout = false,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
@@ -251,13 +327,17 @@ class VendorProfileScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
-                    color: isLogout ? const Color(0xFFEF5350) : const Color(0xFF1E293B),
+                    color: isLogout
+                        ? const Color(0xFFEF5350)
+                        : const Color(0xFF1E293B),
                   ),
                 ),
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: isLogout ? const Color(0xFFEF5350).withValues(alpha: 0.5) : const Color(0xFFCBD5E1),
+                color: isLogout
+                    ? const Color(0xFFEF5350).withValues(alpha: 0.5)
+                    : const Color(0xFFCBD5E1),
                 size: 24,
               ),
             ],

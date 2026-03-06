@@ -13,7 +13,12 @@ class AuthState {
 
   AuthState({this.user, this.isLoading = false, this.error});
 
-  AuthState copyWith({User? user, bool? isLoading, String? error, bool clearError = false}) {
+  AuthState copyWith({
+    User? user,
+    bool? isLoading,
+    String? error,
+    bool clearError = false,
+  }) {
     return AuthState(
       user: user ?? this.user,
       isLoading: isLoading ?? this.isLoading,
@@ -58,10 +63,10 @@ class AuthNotifier extends Notifier<AuthState> {
       final response = await _authApi.login(email, password);
       final token = response['token'] as String;
       final userDict = response['user'] as Map<String, dynamic>;
-      
+
       await ApiClient.secureStorage.write(key: 'jwt_token', value: token);
       final user = User.fromJson(userDict);
-      
+
       state = state.copyWith(user: user, isLoading: false);
       ref.read(websocketServiceProvider).connect(token);
       return true;
@@ -77,12 +82,24 @@ class AuthNotifier extends Notifier<AuthState> {
       final response = await _authApi.register(email, password, role);
       final token = response['token'] as String;
       final userDict = response['user'] as Map<String, dynamic>;
-      
+
       await ApiClient.secureStorage.write(key: 'jwt_token', value: token);
       final user = User.fromJson(userDict);
-      
+
       state = state.copyWith(user: user, isLoading: false);
       ref.read(websocketServiceProvider).connect(token);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> verifyOtp(String email, String otp) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await _authApi.verifyOtp(email, otp);
+      state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());

@@ -6,16 +6,25 @@ import 'api_client.dart';
 class VendorApi {
   Future<Product> createProduct(Map<String, dynamic> productData) async {
     try {
-      final response = await ApiClient.dio.post('/vendor/products', data: productData);
+      final response = await ApiClient.dio.post(
+        '/vendor/products',
+        data: productData,
+      );
       return Product.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Failed to create product');
     }
   }
 
-  Future<Product> updateProduct(String id, Map<String, dynamic> productData) async {
+  Future<Product> updateProduct(
+    String id,
+    Map<String, dynamic> productData,
+  ) async {
     try {
-      final response = await ApiClient.dio.put('/vendor/products/$id', data: productData);
+      final response = await ApiClient.dio.put(
+        '/vendor/products/$id',
+        data: productData,
+      );
       return Product.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Failed to update product');
@@ -32,21 +41,28 @@ class VendorApi {
 
   Future<Order> updateOrderStatus(String orderId, String status) async {
     try {
-      final response = await ApiClient.dio.patch('/vendor/orders/$orderId/status', data: {
-        'status': status,
-      });
+      final response = await ApiClient.dio.patch(
+        '/vendor/orders/$orderId/status',
+        data: {'status': status},
+      );
       return Order.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Failed to update order status');
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to update order status',
+      );
     }
   }
 
   Future<Order> markOrderReady(String orderId) async {
     try {
-      final response = await ApiClient.dio.patch('/vendor/orders/$orderId/ready');
+      final response = await ApiClient.dio.patch(
+        '/vendor/orders/$orderId/ready',
+      );
       return Order.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Failed to mark order ready');
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to mark order ready',
+      );
     }
   }
 
@@ -55,7 +71,9 @@ class VendorApi {
       final response = await ApiClient.dio.get('/vendor/dashboard');
       return response.data; // { "total_sales": 100.0, "active_orders": 5 }
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Failed to get vendor dashboard');
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to get vendor dashboard',
+      );
     }
   }
 }

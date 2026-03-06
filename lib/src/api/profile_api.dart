@@ -7,7 +7,9 @@ class ProfileApi {
     try {
       await ApiClient.dio.post('/profile/client', data: profile.toJson());
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Client profile creation failed');
+      throw Exception(
+        e.response?.data['error'] ?? 'Client profile creation failed',
+      );
     }
   }
 
@@ -15,7 +17,9 @@ class ProfileApi {
     try {
       await ApiClient.dio.post('/profile/driver', data: profile.toJson());
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Driver profile creation failed');
+      throw Exception(
+        e.response?.data['error'] ?? 'Driver profile creation failed',
+      );
     }
   }
 
@@ -23,7 +27,9 @@ class ProfileApi {
     try {
       await ApiClient.dio.post('/profile/vendor', data: profile.toJson());
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Vendor profile creation failed');
+      throw Exception(
+        e.response?.data['error'] ?? 'Vendor profile creation failed',
+      );
     }
   }
 

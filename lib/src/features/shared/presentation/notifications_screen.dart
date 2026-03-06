@@ -14,21 +14,24 @@ class NotificationsScreen extends StatelessWidget {
     final notifications = [
       {
         'title': 'Order Delivered',
-        'message': 'Your order ORD-002 has been successfully delivered by the driver.',
+        'message':
+            'Your order ORD-002 has been successfully delivered by the driver.',
         'time': DateTime.now().subtract(const Duration(hours: 2)),
         'type': 'order',
         'isRead': false,
       },
       {
         'title': 'New Message',
-        'message': 'BuildMart Supplies: "Hello, we have confirmed your order and it is being processed."',
+        'message':
+            'BuildMart Supplies: "Hello, we have confirmed your order and it is being processed."',
         'time': DateTime.now().subtract(const Duration(hours: 5)),
         'type': 'chat',
         'isRead': false,
       },
       {
         'title': 'New Bid Received',
-        'message': 'A driver has submitted a bid of ₦120.00 for your delivery job.',
+        'message':
+            'A driver has submitted a bid of ₦120.00 for your delivery job.',
         'time': DateTime.now().subtract(const Duration(days: 1)),
         'type': 'bid',
         'isRead': true,
@@ -50,10 +53,18 @@ class NotificationsScreen extends StatelessWidget {
             _buildHeader(context, kDarkTextColor),
             Expanded(
               child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 itemCount: notifications.length,
                 itemBuilder: (context, index) {
-                  return _buildNotificationCard(notifications[index], kDarkTextColor, kMidTextColor, kBrandGreen);
+                  return _buildNotificationCard(
+                    notifications[index],
+                    kDarkTextColor,
+                    kMidTextColor,
+                    kBrandGreen,
+                  );
                 },
               ),
             ),
@@ -115,10 +126,15 @@ class NotificationsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationCard(Map<String, dynamic> notification, Color darkText, Color midText, Color brandGreen) {
+  Widget _buildNotificationCard(
+    Map<String, dynamic> notification,
+    Color darkText,
+    Color midText,
+    Color brandGreen,
+  ) {
     final bool isRead = notification['isRead'] as bool;
     final String type = notification['type'] as String;
-    
+
     IconData icon;
     Color iconColor;
     Color bgColor;
@@ -156,24 +172,26 @@ class NotificationsScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: isRead ? Colors.transparent : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: isRead ? const Color(0xFFF1F5F9) : Colors.transparent, width: 1.5),
-        boxShadow: isRead ? [] : [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(
+          color: isRead ? const Color(0xFFF1F5F9) : Colors.transparent,
+          width: 1.5,
+        ),
+        boxShadow: isRead
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: bgColor,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
             child: Icon(icon, color: iconColor, size: 22),
           ),
           const SizedBox(width: 16),
@@ -215,7 +233,9 @@ class NotificationsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  DateFormat('h:mm a • MMM d').format(notification['time'] as DateTime),
+                  DateFormat(
+                    'h:mm a • MMM d',
+                  ).format(notification['time'] as DateTime),
                   style: TextStyle(
                     fontSize: 12,
                     color: midText.withValues(alpha: 0.6),

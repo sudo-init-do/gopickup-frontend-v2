@@ -25,9 +25,18 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(kDarkTextColor, kMidTextColor),
-            _buildTabs(_selectedTabIndex, (index) => setState(() => _selectedTabIndex = index), kOrangeColor),
+            _buildTabs(
+              _selectedTabIndex,
+              (index) => setState(() => _selectedTabIndex = index),
+              kOrangeColor,
+            ),
             Expanded(
-              child: _buildBidsList(kDarkTextColor, kMidTextColor, kOrangeColor, kRedColor),
+              child: _buildBidsList(
+                kDarkTextColor,
+                kMidTextColor,
+                kOrangeColor,
+                kRedColor,
+              ),
             ),
           ],
         ),
@@ -88,7 +97,9 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
                   child: Text(
                     tabs[index],
                     style: TextStyle(
-                      color: isSelected ? Colors.white : const Color(0xFF64748B),
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF64748B),
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
                     ),
@@ -102,12 +113,21 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
     );
   }
 
-  Widget _buildBidsList(Color darkText, Color midText, Color orange, Color red) {
+  Widget _buildBidsList(
+    Color darkText,
+    Color midText,
+    Color orange,
+    Color red,
+  ) {
     if (_selectedTabIndex != 0) {
       return Center(
         child: Text(
           'No bids here yet',
-          style: TextStyle(color: midText, fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            color: midText,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       );
     }
@@ -143,7 +163,13 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
     );
   }
 
-  Widget _buildBidCard(Map<String, dynamic> bid, Color darkText, Color midText, Color orange, Color red) {
+  Widget _buildBidCard(
+    Map<String, dynamic> bid,
+    Color darkText,
+    Color midText,
+    Color orange,
+    Color red,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
@@ -169,30 +195,49 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
                 children: [
                   Text(
                     bid['title'],
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: darkText),
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: darkText,
+                    ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     bid['time'],
-                    style: TextStyle(fontSize: 14, color: midText, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: midText,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   bid['status'],
-                  style: TextStyle(color: orange, fontSize: 12, fontWeight: FontWeight.w700),
+                  style: TextStyle(
+                    color: orange,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          _buildLocationRow(Icons.location_on_outlined, bid['from'], Colors.green),
+          _buildLocationRow(
+            Icons.location_on_outlined,
+            bid['from'],
+            Colors.green,
+          ),
           const SizedBox(height: 12),
           _buildLocationRow(Icons.location_on_outlined, bid['to'], Colors.red),
           const SizedBox(height: 20),
@@ -206,12 +251,20 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
                 children: [
                   const Text(
                     'Your bid',
-                    style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: Color(0xFF94A3B8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     bid['yourBid'],
-                    style: TextStyle(color: darkText, fontSize: 20, fontWeight: FontWeight.w900),
+                    style: TextStyle(
+                      color: darkText,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ],
               ),
@@ -220,12 +273,20 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
                 children: [
                   const Text(
                     'Budget range',
-                    style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: Color(0xFF94A3B8),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     bid['budget'],
-                    style: TextStyle(color: midText, fontSize: 16, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      color: midText,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),
@@ -239,12 +300,20 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    side: const BorderSide(
+                      color: Color(0xFFE2E8F0),
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                   child: Text(
                     'Edit Bid',
-                    style: TextStyle(color: darkText, fontWeight: FontWeight.w800),
+                    style: TextStyle(
+                      color: darkText,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
@@ -257,9 +326,14 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
-                  child: const Text('Withdraw', style: TextStyle(fontWeight: FontWeight.w800)),
+                  child: const Text(
+                    'Withdraw',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
                 ),
               ),
             ],

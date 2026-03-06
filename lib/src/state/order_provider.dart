@@ -16,11 +16,7 @@ class OrderState {
   final bool isLoading;
   final String? error;
 
-  OrderState({
-    this.orders = const [],
-    this.isLoading = false,
-    this.error,
-  });
+  OrderState({this.orders = const [], this.isLoading = false, this.error});
 
   OrderState copyWith({
     List<Order>? orders,
@@ -54,7 +50,7 @@ class OrderNotifier extends Notifier<OrderState> {
 
   void updateOrderStatusInState(String orderId, String status) {
     if (state.orders.isEmpty) return;
-    
+
     final updatedList = state.orders.map((order) {
       if (order.id == orderId) {
         // Simple immutable state update simulating an update

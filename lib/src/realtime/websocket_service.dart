@@ -12,25 +12,32 @@ class WebSocketService {
   bool get isConnected => _channel != null;
 
   // Event Streams for the UI to listen to
-  final _orderStatusController = StreamController<Map<String, dynamic>>.broadcast();
+  final _orderStatusController =
+      StreamController<Map<String, dynamic>>.broadcast();
   final _newBidController = StreamController<Map<String, dynamic>>.broadcast();
-  final _bidAcceptedController = StreamController<Map<String, dynamic>>.broadcast();
-  final _driverMovedController = StreamController<Map<String, dynamic>>.broadcast();
-  final _newMessageController = StreamController<Map<String, dynamic>>.broadcast();
+  final _bidAcceptedController =
+      StreamController<Map<String, dynamic>>.broadcast();
+  final _driverMovedController =
+      StreamController<Map<String, dynamic>>.broadcast();
+  final _newMessageController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
-  Stream<Map<String, dynamic>> get onOrderStatusUpdated => _orderStatusController.stream;
+  Stream<Map<String, dynamic>> get onOrderStatusUpdated =>
+      _orderStatusController.stream;
   Stream<Map<String, dynamic>> get onNewBid => _newBidController.stream;
-  Stream<Map<String, dynamic>> get onBidAccepted => _bidAcceptedController.stream;
-  Stream<Map<String, dynamic>> get onDriverMoved => _driverMovedController.stream;
+  Stream<Map<String, dynamic>> get onBidAccepted =>
+      _bidAcceptedController.stream;
+  Stream<Map<String, dynamic>> get onDriverMoved =>
+      _driverMovedController.stream;
   Stream<Map<String, dynamic>> get onNewMessage => _newMessageController.stream;
 
   void connect(String token) {
     if (_channel != null) return;
-    
+
     try {
       final uri = Uri.parse('$wsUrl?token=$token');
       _channel = WebSocketChannel.connect(uri);
-      
+
       _subscription = _channel?.stream.listen(
         (message) {
           _handleIncomingMessage(message);
@@ -99,10 +106,7 @@ class WebSocketService {
 
   void _sendEvent(String event, Map<String, dynamic> payload) {
     if (_channel != null) {
-      _channel!.sink.add(jsonEncode({
-        'event': event,
-        'payload': payload,
-      }));
+      _channel!.sink.add(jsonEncode({'event': event, 'payload': payload}));
     } else {
       debugPrint('Attempted to send over WS while disconnected: $event');
     }
@@ -123,10 +127,7 @@ class WebSocketService {
   }
 
   void sendChatMessage(String chatId, String text) {
-    _sendEvent('chat_message', {
-      'chat_id': chatId,
-      'text': text,
-    });
+    _sendEvent('chat_message', {'chat_id': chatId, 'text': text});
   }
 
   void sendDriverLocationUpdate(String orderId, double lat, double lng) {

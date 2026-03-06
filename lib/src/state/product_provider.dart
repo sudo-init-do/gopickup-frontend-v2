@@ -9,11 +9,7 @@ class ProductState {
   final bool isLoading;
   final String? error;
 
-  ProductState({
-    this.products = const [],
-    this.isLoading = false,
-    this.error,
-  });
+  ProductState({this.products = const [], this.isLoading = false, this.error});
 
   ProductState copyWith({
     List<Product>? products,

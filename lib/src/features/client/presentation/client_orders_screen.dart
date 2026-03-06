@@ -182,7 +182,9 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                DateFormat('MMM d, yyyy').format(order.createdAt),
+                                DateFormat(
+                                  'MMM d, yyyy',
+                                ).format(order.createdAt),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: kLightTextColor,
@@ -192,7 +194,10 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                             ],
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: badgeColor,
                               borderRadius: BorderRadius.circular(20),
@@ -217,7 +222,9 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                order.items.isNotEmpty ? order.items.first.name ?? 'Unknown item' : 'No items',
+                                order.items.isNotEmpty
+                                    ? order.items.first.name ?? 'Unknown item'
+                                    : 'No items',
                                 style: const TextStyle(
                                   color: kMidTextColor,
                                   fontSize: 15,
@@ -268,11 +275,7 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
               ),
               Row(
                 children: const [
-                  Icon(
-                    Icons.access_time_rounded,
-                    size: 18,
-                    color: kBrandGreen,
-                  ),
+                  Icon(Icons.access_time_rounded, size: 18, color: kBrandGreen),
                   SizedBox(width: 8),
                   Text(
                     'ETA:',

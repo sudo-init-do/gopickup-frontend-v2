@@ -12,14 +12,17 @@ class OrdersApi {
     double? deliveryLng,
   }) async {
     try {
-      final response = await ApiClient.dio.post('/orders/checkout', data: {
-        'items': items.map((i) => i.toJson()).toList(),
-        'payment_method': paymentMethod,
-        'pickup_address': pickupAddress,
-        'delivery_address': deliveryAddress,
-        'delivery_lat': ?deliveryLat,
-        'delivery_lng': ?deliveryLng,
-      });
+      final response = await ApiClient.dio.post(
+        '/orders/checkout',
+        data: {
+          'items': items.map((i) => i.toJson()).toList(),
+          'payment_method': paymentMethod,
+          'pickup_address': pickupAddress,
+          'delivery_address': deliveryAddress,
+          'delivery_lat': ?deliveryLat,
+          'delivery_lng': ?deliveryLng,
+        },
+      );
       return Order.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Checkout failed');
@@ -28,17 +31,14 @@ class OrdersApi {
 
   Future<Map<String, dynamic>> getOrders({int page = 1, int limit = 10}) async {
     try {
-      final response = await ApiClient.dio.get('/orders', queryParameters: {
-        'page': page,
-        'limit': limit,
-      });
+      final response = await ApiClient.dio.get(
+        '/orders',
+        queryParameters: {'page': page, 'limit': limit},
+      );
       List<Order> orders = (response.data['data'] as List)
           .map((o) => Order.fromJson(o))
           .toList();
-      return {
-        'orders': orders,
-        'meta': response.data['meta'],
-      };
+      return {'orders': orders, 'meta': response.data['meta']};
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Failed to get orders');
     }
@@ -49,7 +49,9 @@ class OrdersApi {
       final response = await ApiClient.dio.get('/orders/$id');
       return Order.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Failed to get order details');
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to get order details',
+      );
     }
   }
 
@@ -64,7 +66,9 @@ class OrdersApi {
 
   Future<Order> acceptBid(String orderId, String bidId) async {
     try {
-      final response = await ApiClient.dio.post('/orders/$orderId/bids/$bidId/accept');
+      final response = await ApiClient.dio.post(
+        '/orders/$orderId/bids/$bidId/accept',
+      );
       return Order.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Failed to accept bid');

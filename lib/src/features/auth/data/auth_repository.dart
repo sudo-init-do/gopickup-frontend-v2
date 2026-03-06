@@ -11,10 +11,10 @@ class AuthRepository {
 
   Future<bool> login(String email, String password) async {
     try {
-      final response = await _apiClient.post('/auth/login', data: {
-        'email': email,
-        'password': password,
-      });
+      final response = await _apiClient.post(
+        '/auth/login',
+        data: {'email': email, 'password': password},
+      );
 
       if (response.statusCode == 200) {
         final token = response.data['token'];
@@ -34,11 +34,14 @@ class AuthRepository {
 
   Future<bool> register(String email, String password, String role) async {
     try {
-      final response = await _apiClient.post('/auth/register', data: {
-        'email': email,
-        'password': password,
-        'role': role.toLowerCase(),
-      });
+      final response = await _apiClient.post(
+        '/auth/register',
+        data: {
+          'email': email,
+          'password': password,
+          'role': role.toLowerCase(),
+        },
+      );
       return response.statusCode == 201;
     } catch (e) {
       return false;
@@ -47,10 +50,10 @@ class AuthRepository {
 
   Future<bool> verifyOTP(String email, String otp) async {
     try {
-      final response = await _apiClient.post('/auth/verify-otp', data: {
-        'email': email,
-        'code': otp,
-      });
+      final response = await _apiClient.post(
+        '/auth/verify-otp',
+        data: {'email': email, 'code': otp},
+      );
       return response.statusCode == 200;
     } catch (e) {
       return false;
@@ -59,7 +62,10 @@ class AuthRepository {
 
   Future<bool> completeOnboarding(Map<String, dynamic> profileData) async {
     try {
-      final response = await _apiClient.post('/auth/onboarding/complete', data: profileData);
+      final response = await _apiClient.post(
+        '/auth/onboarding/complete',
+        data: profileData,
+      );
       return response.statusCode == 200;
     } catch (e) {
       return false;
@@ -71,7 +77,6 @@ class AuthRepository {
     await _storage.delete(key: 'user_role');
     await _storage.delete(key: 'user_id');
   }
-
 
   Future<bool> isLoggedIn() async {
     final token = await _storage.read(key: 'jwt_token');
@@ -86,5 +91,3 @@ class AuthRepository {
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(ref.watch(apiClientProvider));
 });
-
-

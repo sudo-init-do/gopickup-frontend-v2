@@ -4,7 +4,7 @@ class Conversation {
   final String? lastMessage;
   final int unreadCount;
   final DateTime? updatedAt;
-  
+
   // Frontend convenience field for who they are talking to
   final String? otherUserName;
   final String? otherUserAvatar;
@@ -25,8 +25,10 @@ class Conversation {
       orderId: json['order_id'] as String?,
       lastMessage: json['last_message'] as String?,
       unreadCount: json['unread_count'] as int? ?? 0,
-      updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at']) : null,
-      otherUserName: json['other_user_name'] as String?, 
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : null,
+      otherUserName: json['other_user_name'] as String?,
       otherUserAvatar: json['other_user_avatar'] as String?,
     );
   }
@@ -53,8 +55,8 @@ class Message {
       chatId: json['chat_id'] as String? ?? '',
       senderId: json['sender_id'] as String? ?? '',
       content: json['content'] as String? ?? '',
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : DateTime.now(),
     );
   }

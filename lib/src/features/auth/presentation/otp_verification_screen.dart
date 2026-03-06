@@ -1,20 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../state/auth_provider.dart';
+import '../../../state/signup_provider.dart';
 
-class OtpVerificationScreen extends StatefulWidget {
+class OtpVerificationScreen extends ConsumerStatefulWidget {
   final String email;
   const OtpVerificationScreen({super.key, required this.email});
 
   @override
-  State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
+  ConsumerState<OtpVerificationScreen> createState() =>
+      _OtpVerificationScreenState();
 }
 
-class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
-  final List<TextEditingController> _controllers = List.generate(6, (_) => TextEditingController());
+class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
+  final List<TextEditingController> _controllers = List.generate(
+    6,
+    (_) => TextEditingController(),
+  );
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   bool _isComplete = false;
+  bool _isLoading = false;
+
+  Future<void> _verifyOtp() async {
+    if (!_isComplete) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final otp = _controllers.map((c) => c.text).join();
+    final signupData = ref.read(signupProvider);
+
+    final success = await ref
+        .read(authProvider.notifier)
+        .verifyOtp(widget.email, otp);
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (success && mounted) {
+      if (signupData.role == 'client') {
+        context.push('/complete-profile');
+      } else if (signupData.role == 'driver') {
+        context.push('/driver/registration');
+      } else {
+        context.push('/vendor/registration');
+      }
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ref.read(authProvider).error ?? 'Invalid OTP'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -50,7 +94,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         leadingWidth: 100,
         leading: TextButton.icon(
           onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_ios, size: 16, color: Color(0xFF6B7280)),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            size: 16,
+            color: Color(0xFF6B7280),
+          ),
           label: const Text(
             'Back',
             style: TextStyle(
@@ -88,9 +136,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   Text(
                     'Go Pickup',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1F2937),
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF1F2937),
+                    ),
                   ),
                 ],
               ),
@@ -139,17 +187,26 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       textAlign: TextAlign.center,
                       maxLength: 1,
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                       decoration: InputDecoration(
                         counterText: "",
                         contentPadding: EdgeInsets.zero,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(color: Colors.grey.shade200, width: 1.5),
+                          borderSide: BorderSide(
+                            color: Colors.grey.shade200,
+                            width: 1.5,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25),
-                          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -187,10 +244,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _isComplete ? () => context.go('/roles') : null,
+                  onPressed: (_isComplete && !_isLoading) ? _verifyOtp : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primarySage.withValues(alpha: 0.5),
+                    disabledBackgroundColor: AppColors.primarySage.withValues(
+                      alpha: 0.5,
+                    ),
                     foregroundColor: Colors.white,
                     disabledForegroundColor: Colors.white,
                     elevation: 0,
@@ -198,20 +257,29 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Verify',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Verify',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.arrow_forward_rounded, size: 20),
+                          ],
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, size: 20),
-                    ],
-                  ),
                 ),
               ),
               const SizedBox(height: 16),

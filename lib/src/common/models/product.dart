@@ -9,7 +9,6 @@ class Product {
   final String vendorName;
 
   Product({
-
     required this.id,
     required this.name,
     required this.price,
@@ -25,7 +24,7 @@ class Product {
     if (json['vendor'] != null && json['vendor']['store_name'] != null) {
       vName = json['vendor']['store_name'];
     }
-    
+
     return Product(
       id: json['id'] as String,
       name: json['name'] as String,
@@ -37,7 +36,6 @@ class Product {
       vendorName: vName,
     );
   }
-
 
   Map<String, dynamic> toJson() {
     return {

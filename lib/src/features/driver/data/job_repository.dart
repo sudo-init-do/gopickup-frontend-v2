@@ -25,11 +25,14 @@ class JobRepository {
     String? deliveryTime,
   }) async {
     try {
-      final response = await _apiClient.post('/jobs/$orderId/bid', data: {
-        'amount': amount,
-        'estimated_pickup_time': pickupTime,
-        'estimated_delivery_time': deliveryTime,
-      });
+      final response = await _apiClient.post(
+        '/jobs/$orderId/bid',
+        data: {
+          'amount': amount,
+          'estimated_pickup_time': pickupTime,
+          'estimated_delivery_time': deliveryTime,
+        },
+      );
       return response.statusCode == 201;
     } catch (e) {
       return false;

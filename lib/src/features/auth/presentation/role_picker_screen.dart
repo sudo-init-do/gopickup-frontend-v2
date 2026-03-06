@@ -18,32 +18,25 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
 
   Future<void> _onContinue() async {
     if (_selectedRole == null) return;
-    
+
     setState(() {
       _isLoading = true;
     });
 
-    final signupData = ref.read(signupProvider);
     final roleValue = _selectedRole?.toLowerCase() ?? 'client';
-    
-    final success = await ref.read(authProvider.notifier).register(
-      signupData.email,
-      signupData.password,
-      roleValue,
-    );
+    ref.read(signupProvider.notifier).updateRole(roleValue);
+
+    final signupData = ref.read(signupProvider);
+    final success = await ref
+        .read(authProvider.notifier)
+        .register(signupData.email, signupData.password, roleValue);
 
     setState(() {
       _isLoading = false;
     });
 
     if (success && mounted) {
-      if (_selectedRole == 'Client') {
-        context.push('/complete-profile');
-      } else if (_selectedRole == 'Driver') {
-        context.push('/driver/registration');
-      } else {
-        context.push('/vendor/registration');
-      }
+      context.push('/verify?email=${signupData.email}');
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -87,7 +80,8 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                         const SizedBox(width: 12),
                         Text(
                           'Go Pickup',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: const Color(0xFF1F2937),
                               ),
@@ -126,7 +120,7 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                         'Browse marketplace',
                         'Post loads',
                         'Track deliveries',
-                        'Manage payments'
+                        'Manage payments',
                       ],
                       isSelected: _selectedRole == 'Client',
                       onTap: () => setState(() => _selectedRole = 'Client'),
@@ -142,7 +136,7 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                         'Accept jobs',
                         'Bid on loads',
                         'Navigate routes',
-                        'Track earnings'
+                        'Track earnings',
                       ],
                       isSelected: _selectedRole == 'Driver',
                       onTap: () => setState(() => _selectedRole = 'Driver'),
@@ -158,7 +152,7 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                         'List products',
                         'Manage inventory',
                         'Process orders',
-                        'Receive payments'
+                        'Receive payments',
                       ],
                       isSelected: _selectedRole == 'Vendor',
                       onTap: () => setState(() => _selectedRole = 'Vendor'),
@@ -175,22 +169,31 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: (_selectedRole != null && !_isLoading) ? _onContinue : null,
+                  onPressed: (_selectedRole != null && !_isLoading)
+                      ? _onContinue
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3B7D23),
-                    disabledBackgroundColor: const Color(0xFF3B7D23).withValues(alpha: 0.5),
+                    disabledBackgroundColor: const Color(
+                      0xFF3B7D23,
+                    ).withValues(alpha: 0.5),
                     foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
+                    disabledForegroundColor: Colors.white.withValues(
+                      alpha: 0.7,
+                    ),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: _isLoading 
+                  child: _isLoading
                       ? const SizedBox(
                           height: 24,
                           width: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -245,7 +248,9 @@ class _RoleOptionCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryLight.withValues(alpha: 0.5) : Colors.white,
+          color: isSelected
+              ? AppColors.primaryLight.withValues(alpha: 0.5)
+              : Colors.white,
           borderRadius: BorderRadius.circular(32),
           border: Border.all(
             color: isSelected ? AppColors.primary : const Color(0xFFF3F4F6),
@@ -257,7 +262,7 @@ class _RoleOptionCard extends StatelessWidget {
                     color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
-                  )
+                  ),
                 ]
               : null,
         ),
@@ -303,9 +308,13 @@ class _RoleOptionCard extends StatelessWidget {
                   height: 24,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isSelected ? const Color(0xFF4CAF50) : Colors.transparent,
+                    color: isSelected
+                        ? const Color(0xFF4CAF50)
+                        : Colors.transparent,
                     border: Border.all(
-                      color: isSelected ? const Color(0xFF4CAF50) : const Color(0xFFD1D5DB),
+                      color: isSelected
+                          ? const Color(0xFF4CAF50)
+                          : const Color(0xFFD1D5DB),
                       width: 2,
                     ),
                   ),
