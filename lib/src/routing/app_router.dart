@@ -33,8 +33,8 @@ import '../features/shared/chat/chat_screen.dart';
 import '../features/shared/presentation/scaffold_with_nav_bar.dart';
 import '../features/shared/presentation/notifications_screen.dart';
 import '../features/shared/presentation/settings_screen.dart';
-import '../common/models/order.dart';
-import '../common/models/chat.dart';
+import '../models/order_models.dart';
+import '../models/chat_models.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -81,7 +81,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/chat/:id',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) {
-          final chat = state.extra as Chat;
+          final chat = state.extra as Conversation;
           return ChatScreen(chat: chat);
         },
       ),

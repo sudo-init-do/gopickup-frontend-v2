@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../data/cart_provider.dart';
-import '../data/order_repository.dart';
+import '../../../models/order_models.dart';
+import '../../../state/order_provider.dart';
 
-import '../../../common/styles/app_colors.dart';
 
 class ClientCartScreen extends ConsumerWidget {
   const ClientCartScreen({super.key});
@@ -94,8 +94,7 @@ class ClientCartScreen extends ConsumerWidget {
           'Cart ($totalItems)',
           showClear: true,
           onClear: () {
-            // Implementation for clear all if needed
-            // ref.read(cartProvider.notifier).clearCart(); 
+            ref.read(cartProvider.notifier).clear(); 
           },
         ),
         Expanded(
@@ -117,7 +116,7 @@ class ClientCartScreen extends ConsumerWidget {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 20,
                 offset: const Offset(0, -5),
               ),
@@ -160,11 +159,13 @@ class ClientCartScreen extends ConsumerWidget {
                   builder: (context, ref, _) {
                     return ElevatedButton(
                       onPressed: () async {
-                        final repository = ref.read(orderRepositoryProvider);
-                        final cartItems = cart.values.map((item) => {
-                          'product_id': item.product.id,
-                          'quantity': item.quantity,
-                        }).toList();
+                        final orderNotifier = ref.read(orderProvider.notifier);
+                        final cartItems = cart.values.map((item) => OrderItem(
+                          productId: item.product.id,
+                          name: item.product.name,
+                          quantity: item.quantity,
+                          price: item.product.price,
+                        )).toList();
 
                         // Show loading
                         showDialog(
@@ -173,10 +174,11 @@ class ClientCartScreen extends ConsumerWidget {
                           builder: (context) => const Center(child: CircularProgressIndicator()),
                         );
 
-                        final order = await repository.createOrder(
+                        final order = await orderNotifier.checkout(
                           items: cartItems,
-                          deliveryAddress: "Selected Address", // In real app, use actual address
-                          paymentMethod: "wallet",
+                          paymentMethod: 'wallet',
+                          pickupAddress: 'Vendor Address', // Temporary stub
+                          deliveryAddress: 'Client Selected Address', // Temporary stub
                         );
 
                         if (context.mounted) {
@@ -189,8 +191,9 @@ class ClientCartScreen extends ConsumerWidget {
                             );
                             context.go('/client/orders');
                           } else {
+                            final errorMsg = ref.read(orderProvider).error ?? 'Failed to place order.';
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Failed to place order. Check balance?')),
+                              SnackBar(content: Text(errorMsg)),
                             );
                           }
                         }
@@ -237,7 +240,7 @@ class ClientCartScreen extends ConsumerWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -281,7 +284,7 @@ class ClientCartScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -307,13 +310,13 @@ class ClientCartScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      item.product.vendorName,
+                      'Verified Vendor',
                       style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.w500),
                     ),
 
                     GestureDetector(
                       onTap: () {
-                        // Delete logic
+                        ref.read(cartProvider.notifier).removeItem(item.product.id);
                       },
                       child: const Icon(Icons.delete_outline_rounded, size: 20, color: Color(0xFF9CA3AF)),
                     ),

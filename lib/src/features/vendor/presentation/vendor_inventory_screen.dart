@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../data/vendor_repository.dart';
-import '../../../common/models/product.dart';
 
 class VendorInventoryScreen extends ConsumerWidget {
   const VendorInventoryScreen({super.key});
@@ -191,7 +190,7 @@ class VendorInventoryScreen extends ConsumerWidget {
         border: Border.all(color: kLightBorderColor, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: kDarkTextColor.withOpacity(0.04),
+            color: kDarkTextColor.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

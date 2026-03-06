@@ -58,7 +58,7 @@ class VendorWalletScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(32),
                       boxShadow: [
                         BoxShadow(
-                          color: kPurple.withOpacity(0.3),
+                          color: kPurple.withValues(alpha: 0.3),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -70,7 +70,7 @@ class VendorWalletScreen extends StatelessWidget {
                         Text(
                           'Available Balance',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
@@ -89,7 +89,7 @@ class VendorWalletScreen extends StatelessWidget {
                         Text(
                           '+ ₦890.00 pending',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
@@ -102,7 +102,7 @@ class VendorWalletScreen extends StatelessWidget {
                             icon: const Icon(Icons.south_west_rounded, size: 18),
                             label: const Text('Withdraw to Bank'),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.2),
+                              backgroundColor: Colors.white.withValues(alpha: 0.2),
                               foregroundColor: Colors.white,
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 16),

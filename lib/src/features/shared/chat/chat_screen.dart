@@ -1,52 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../common/models/chat.dart';
-import '../../../common/models/user.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../models/chat_models.dart';
+import '../../../state/auth_provider.dart';
+import '../../../state/chat_provider.dart';
 
-class ChatScreen extends StatefulWidget {
-  final Chat chat;
+class ChatScreen extends ConsumerStatefulWidget {
+  final Conversation chat;
 
   const ChatScreen({super.key, required this.chat});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
-  late List<Message> _messages;
 
   @override
   void initState() {
     super.initState();
-    _messages = List.from(widget.chat.messages);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(chatProvider.notifier).fetchMessages(widget.chat.id);
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   void _sendMessage() {
     if (_controller.text.trim().isEmpty) return;
 
-    setState(() {
-      _messages.add(
-        Message(
-          id: DateTime.now().toString(),
-          senderId: 'me',
-          content: _controller.text,
-          timestamp: DateTime.now(),
-          isMe: true,
-        ),
-      );
-      _controller.clear();
-    });
+    ref.read(chatProvider.notifier).sendMessage(_controller.text);
+    _controller.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    final otherUser = (widget.chat.participants != null && widget.chat.participants!.isNotEmpty)
-        ? widget.chat.participants!.firstWhere(
-            (p) => p.id != 'me',
-            orElse: () => widget.chat.participants!.first,
-          )
-        : User(id: 'unknown', name: 'User', role: UserRole.client);
+    final chatState = ref.watch(chatProvider);
+    final currentUser = ref.watch(authProvider).user;
+    final otherUserName = widget.chat.otherUserName ?? 'User';
 
     // Refined color palette to match mockup
     const kDarkTextColor = Color(0xFF111827);
@@ -57,17 +52,20 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       backgroundColor: kChatBg,
-      appBar: _buildAppBar(context, otherUser.name, kDarkTextColor, kBrandGreen),
+      appBar: _buildAppBar(context, otherUserName, kDarkTextColor, kBrandGreen),
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
+            child: chatState.isLoading && chatState.currentMessages.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              itemCount: _messages.length,
+              itemCount: chatState.currentMessages.length,
               itemBuilder: (context, index) {
-                final message = _messages[index];
+                final message = chatState.currentMessages[index];
                 return _MessageBubble(
                   message: message,
+                  isMe: message.senderId == currentUser?.id,
                   kBrandGreen: kBrandGreen,
                   kDarkTextColor: kDarkTextColor,
                   kMidTextColor: kMidTextColor,
@@ -180,6 +178,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
 class _MessageBubble extends StatelessWidget {
   final Message message;
+  final bool isMe;
   final Color kBrandGreen;
   final Color kDarkTextColor;
   final Color kMidTextColor;
@@ -187,6 +186,7 @@ class _MessageBubble extends StatelessWidget {
 
   const _MessageBubble({
     required this.message,
+    required this.isMe,
     required this.kBrandGreen,
     required this.kDarkTextColor,
     required this.kMidTextColor,
@@ -198,17 +198,17 @@ class _MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
-        crossAxisAlignment: message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: BoxDecoration(
-              color: message.isMe ? kBrandGreen : kIncomingBg,
+              color: isMe ? kBrandGreen : kIncomingBg,
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(24),
                 topRight: const Radius.circular(24),
-                bottomLeft: Radius.circular(message.isMe ? 24 : 0),
-                bottomRight: Radius.circular(message.isMe ? 0 : 24),
+                bottomLeft: Radius.circular(isMe ? 24 : 0),
+                bottomRight: Radius.circular(isMe ? 0 : 24),
               ),
             ),
             constraints: BoxConstraints(
@@ -220,7 +220,7 @@ class _MessageBubble extends StatelessWidget {
                 Text(
                   message.content,
                   style: TextStyle(
-                    color: message.isMe ? Colors.white : kDarkTextColor.withOpacity(0.9),
+                    color: isMe ? Colors.white : kDarkTextColor.withValues(alpha: 0.9),
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                     height: 1.4,
@@ -228,11 +228,11 @@ class _MessageBubble extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  DateFormat('h:mm a').format(message.timestamp),
+                  DateFormat('h:mm a').format(message.createdAt),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: message.isMe ? Colors.white.withOpacity(0.8) : kMidTextColor.withOpacity(0.6),
+                    color: isMe ? Colors.white.withValues(alpha: 0.8) : kMidTextColor.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -308,7 +308,7 @@ class _ChatInput extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: kBrandGreen.withOpacity(0.3),
+                    color: kBrandGreen.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

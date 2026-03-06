@@ -110,7 +110,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 'We sent a 6-digit code to',
                 style: TextStyle(
                   fontSize: 16,
-                  color: const Color(0xFF6B7280).withOpacity(0.8),
+                  color: const Color(0xFF6B7280).withValues(alpha: 0.8),
                 ),
               ),
               const SizedBox(height: 4),
@@ -190,7 +190,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   onPressed: _isComplete ? () => context.go('/roles') : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primarySage.withOpacity(0.5),
+                    disabledBackgroundColor: AppColors.primarySage.withValues(alpha: 0.5),
                     foregroundColor: Colors.white,
                     disabledForegroundColor: Colors.white,
                     elevation: 0,

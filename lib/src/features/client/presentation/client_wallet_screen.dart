@@ -70,7 +70,7 @@ class ClientWalletScreen extends ConsumerWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -101,7 +101,7 @@ class ClientWalletScreen extends ConsumerWidget {
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w700,
-        color: midText.withOpacity(0.8),
+        color: midText.withValues(alpha: 0.8),
         letterSpacing: 0.2,
       ),
     );
@@ -116,7 +116,7 @@ class ClientWalletScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: brandGreen.withOpacity(0.2),
+            color: brandGreen.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -164,7 +164,7 @@ class ClientWalletScreen extends ConsumerWidget {
                   child: _buildActionBtn(
                     icon: Icons.add_rounded,
                     label: 'Top Up',
-                    bgColor: Colors.white.withOpacity(0.2),
+                    bgColor: Colors.white.withValues(alpha: 0.2),
                   ),
                 ),
               ),
@@ -173,7 +173,7 @@ class ClientWalletScreen extends ConsumerWidget {
                 child: _buildActionBtn(
                   icon: Icons.call_made_rounded,
                   label: 'Transfer',
-                  bgColor: Colors.white.withOpacity(0.2),
+                  bgColor: Colors.white.withValues(alpha: 0.2),
                 ),
               ),
             ],
@@ -216,10 +216,10 @@ class ClientWalletScreen extends ConsumerWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.black.withOpacity(0.02)),
+            border: Border.all(color: Colors.black.withValues(alpha: 0.02)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withValues(alpha: 0.02),
                 blurRadius: 15,
                 offset: const Offset(0, 8),
               ),
@@ -264,7 +264,7 @@ class ClientWalletScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: brandGreen.withOpacity(0.1),
+                  color: brandGreen.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -304,7 +304,7 @@ class ClientWalletScreen extends ConsumerWidget {
             borderRadius: BorderRadius.circular(32),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.01),
+                color: Colors.black.withValues(alpha: 0.01),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),

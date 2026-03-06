@@ -1,30 +1,41 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../state/signup_provider.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isFormValid = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
     _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
   void _validateForm() {
     setState(() {
       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-      _isFormValid = emailRegex.hasMatch(_emailController.text);
+      _isFormValid = emailRegex.hasMatch(_emailController.text) && _passwordController.text.length >= 6;
     });
+  }
+
+  void _onNext() {
+    ref.read(signupProvider.notifier).updateEmail(_emailController.text);
+    ref.read(signupProvider.notifier).updatePassword(_passwordController.text);
+    context.push('/verify?email=${_emailController.text}');
   }
 
   @override
@@ -77,7 +88,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(height: 12),
               // Subtext
               const Text(
-                'Enter your email address to get started',
+                'Enter your details to get started',
                 style: TextStyle(
                   fontSize: 16,
                   color: Color(0xFF6B7280),
@@ -90,7 +101,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: _isFormValid ? AppColors.primary : const Color(0xFFF3F4F6),
+                    color: _emailController.text.isNotEmpty ? AppColors.primary : const Color(0xFFF3F4F6),
                     width: 1.5,
                   ),
                 ),
@@ -108,6 +119,44 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(vertical: 20),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Password Input
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: _passwordController.text.isNotEmpty ? AppColors.primary : const Color(0xFFF3F4F6),
+                    width: 1.5,
+                  ),
+                ),
+                child: TextField(
+                  controller: _passwordController,
+                  onChanged: (_) => _validateForm(),
+                  obscureText: _obscurePassword,
+                  style: const TextStyle(fontSize: 16),
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+                    prefixIcon: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Icon(Icons.lock_outline, color: Color(0xFF6B7280), size: 20),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 20),
                   ),
                 ),
               ),
@@ -151,10 +200,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _isFormValid ? () => context.push('/verify?email=${_emailController.text}') : null,
+                  onPressed: _isFormValid ? _onNext : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primarySage.withOpacity(0.5),
+                    disabledBackgroundColor: AppColors.primarySage.withValues(alpha: 0.5),
                     foregroundColor: Colors.white,
                     disabledForegroundColor: Colors.white,
                     elevation: 0,
@@ -166,7 +215,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Send Code',
+                        'Next',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w600,

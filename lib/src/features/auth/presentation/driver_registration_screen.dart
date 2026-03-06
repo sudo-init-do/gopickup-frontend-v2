@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../state/profile_provider.dart';
+import '../../../models/user_models.dart';
 
-class DriverRegistrationScreen extends StatefulWidget {
+class DriverRegistrationScreen extends ConsumerStatefulWidget {
   const DriverRegistrationScreen({super.key});
 
   @override
-  State<DriverRegistrationScreen> createState() => _DriverRegistrationScreenState();
+  ConsumerState<DriverRegistrationScreen> createState() => _DriverRegistrationScreenState();
 }
 
-class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
+class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScreen> {
   late final PageController _pageController;
   int _currentStep = 0;
+  bool _isLoading = false;
 
   // Form Controllers
   late final TextEditingController _nameController;
@@ -19,6 +23,10 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
   late final TextEditingController _licenseController;
   late final TextEditingController _plateController;
   String? _selectedVehicleType;
+  
+  // Missing from UI mockup, needed by backend
+  final String _mockPhone = "000-000-0000";
+  final double _mockCapacity = 1000.0; // Assume 1k capacity for everything by default
 
   @override
   void initState() {
@@ -53,7 +61,7 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
     return true; 
   }
 
-  void _nextStep() {
+  Future<void> _nextStep() async {
     if (_currentStep < 2) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -61,7 +69,32 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
       );
       setState(() => _currentStep++);
     } else {
-      context.go('/driver');
+      setState(() => _isLoading = true);
+      
+      final profile = DriverProfile(
+        fullName: _nameController.text.trim(),
+        phoneNumber: _mockPhone,
+        licenseNumber: _licenseController.text.trim(),
+        vehicleType: _selectedVehicleType ?? "Truck",
+        plateNumber: _plateController.text.trim(),
+        vehicleCapacity: _mockCapacity,
+        isApproved: false, // Set to false initially, admin approves
+      );
+      
+      final success = await ref.read(profileProvider.notifier).createDriverProfile(profile);
+      
+      setState(() => _isLoading = false);
+      
+      if (success && mounted) {
+        context.go('/driver');
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(ref.read(profileProvider).error ?? 'Registration failed'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -146,40 +179,46 @@ class _DriverRegistrationScreenState extends State<DriverRegistrationScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 60,
-                child: ElevatedButton(
-                  onPressed: _isFormValid ? _nextStep : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _currentStep == 2 ? 'Complete Registration' : 'Continue',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 60,
+                  child: ElevatedButton(
+                    onPressed: (_isFormValid && !_isLoading) ? _nextStep : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.4),
+                      foregroundColor: Colors.white,
+                      disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_rounded, size: 20),
-                    ],
+                    ),
+                    child: _isLoading 
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _currentStep == 2 ? 'Complete Registration' : 'Continue',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.arrow_forward_rounded, size: 20),
+                            ],
+                          ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),

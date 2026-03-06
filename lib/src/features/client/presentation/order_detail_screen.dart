@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../common/models/order.dart';
+import '../../../models/order_models.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final Order order;
@@ -19,7 +19,7 @@ class OrderDetailScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context, order.id, kDarkTextColor, kLightTextColor),
+            _buildHeader(context, order.id.length > 8 ? order.id.substring(0, 8) : order.id, kDarkTextColor, kLightTextColor),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -50,7 +50,7 @@ class OrderDetailScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -102,7 +102,7 @@ class OrderDetailScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -218,7 +218,7 @@ class OrderDetailScreen extends StatelessWidget {
             'Now',
             true,
             false,
-            brandGreen.withOpacity(0.6),
+            brandGreen.withValues(alpha: 0.6),
             darkText,
             midText,
             lightText,
@@ -230,9 +230,9 @@ class OrderDetailScreen extends StatelessWidget {
             '',
             false,
             false,
-            lightText.withOpacity(0.3),
-            darkText.withOpacity(0.5),
-            midText.withOpacity(0.5),
+            lightText.withValues(alpha: 0.3),
+            darkText.withValues(alpha: 0.5),
+            midText.withValues(alpha: 0.5),
             lightText,
             isLast: true,
           ),
@@ -274,7 +274,7 @@ class OrderDetailScreen extends StatelessWidget {
                   child: Container(
                     width: 2,
                     margin: const EdgeInsets.symmetric(vertical: 4),
-                    color: showSolidLine ? color : color.withOpacity(0.2),
+                    color: showSolidLine ? color : color.withValues(alpha: 0.2),
                   ),
                 ),
             ],
@@ -295,7 +295,7 @@ class OrderDetailScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: isActive || isDone ? FontWeight.w800 : FontWeight.w600,
-                            color: isDone || isActive ? darkText : darkText.withOpacity(0.4),
+                            color: isDone || isActive ? darkText : darkText.withValues(alpha: 0.4),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -304,7 +304,7 @@ class OrderDetailScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: isDone || isActive ? midText : midText.withOpacity(0.4),
+                            color: isDone || isActive ? midText : midText.withValues(alpha: 0.4),
                           ),
                         ),
                       ],

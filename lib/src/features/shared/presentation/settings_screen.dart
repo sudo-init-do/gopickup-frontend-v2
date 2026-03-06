@@ -63,7 +63,7 @@ class SettingsScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -188,7 +188,7 @@ class SettingsScreen extends StatelessWidget {
           value: value,
           onChanged: (val) {},
           activeColor: brandGreen,
-          activeTrackColor: brandGreen.withOpacity(0.2),
+          activeTrackColor: brandGreen.withValues(alpha: 0.2),
         ),
       ),
     );

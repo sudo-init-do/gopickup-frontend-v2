@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../state/profile_provider.dart';
+import '../../../models/user_models.dart';
 
-class CompleteProfileScreen extends StatefulWidget {
+class CompleteProfileScreen extends ConsumerStatefulWidget {
   const CompleteProfileScreen({super.key});
 
   @override
-  State<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
+  ConsumerState<CompleteProfileScreen> createState() => _CompleteProfileScreenState();
 }
 
-class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
+class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   final PageController _pageController = PageController();
   int _currentStep = 0;
+  bool _isLoading = false;
 
   // Profile Step Controllers
   final TextEditingController _nameController = TextEditingController();
+  // We can add a phone number field here but let's mock it for now since the UI doesn't have it
+  final String _mockPhoneNumber = '000-000-0000';
   
   // Address Step Controllers
   final TextEditingController _addressController = TextEditingController();
@@ -34,7 +40,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       _addressController.text.trim().isNotEmpty && 
       _cityController.text.trim().isNotEmpty;
 
-  void _nextStep() {
+  Future<void> _nextStep() async {
     if (_currentStep == 0 && _isProfileValid) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -42,7 +48,28 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       );
       setState(() => _currentStep = 1);
     } else if (_currentStep == 1 && _isAddressValid) {
-      context.go('/client');
+      setState(() => _isLoading = true);
+      
+      final profile = ClientProfile(
+        fullName: _nameController.text.trim(),
+        phoneNumber: _mockPhoneNumber,
+        address: '${_addressController.text.trim()}, ${_cityController.text.trim()}',
+      );
+      
+      final success = await ref.read(profileProvider.notifier).createClientProfile(profile);
+      
+      setState(() => _isLoading = false);
+      
+      if (success && mounted) {
+        context.go('/client');
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(ref.read(profileProvider).error ?? 'Failed to create profile'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -58,8 +85,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  _buildProfileStep(),
-                  _buildAddressStep(),
+                   _buildProfileStep(),
+                   _buildAddressStep(),
                 ],
               ),
             ),
@@ -70,7 +97,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: (_currentStep == 0 ? _isProfileValid : _isAddressValid) 
+                  onPressed: (_currentStep == 0 ? _isProfileValid : _isAddressValid && !_isLoading) 
                       ? _nextStep 
                       : null,
                   style: ElevatedButton.styleFrom(
@@ -83,20 +110,26 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _currentStep == 0 ? 'Continue' : 'Complete Setup',
-                        style: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
+                  child: _isLoading 
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _currentStep == 0 ? 'Continue' : 'Complete Setup',
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.arrow_forward_rounded, size: 20),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_rounded, size: 20),
-                    ],
-                  ),
                 ),
               ),
             ),

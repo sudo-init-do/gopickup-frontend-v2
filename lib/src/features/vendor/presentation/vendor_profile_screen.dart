@@ -52,7 +52,7 @@ class VendorProfileScreen extends StatelessWidget {
                           ),
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
@@ -69,9 +69,9 @@ class VendorProfileScreen extends StatelessWidget {
                             width: 100,
                             height: 100,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withOpacity(0.3), width: 4),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 4),
                             ),
                             child: const Center(
                               child: Icon(Icons.storefront_outlined, color: Colors.white, size: 50),
@@ -135,7 +135,7 @@ class VendorProfileScreen extends StatelessWidget {
                       border: Border.all(color: kLightGrey, width: 1.5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -257,7 +257,7 @@ class VendorProfileScreen extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: isLogout ? const Color(0xFFEF5350).withOpacity(0.5) : const Color(0xFFCBD5E1),
+                color: isLogout ? const Color(0xFFEF5350).withValues(alpha: 0.5) : const Color(0xFFCBD5E1),
                 size: 24,
               ),
             ],

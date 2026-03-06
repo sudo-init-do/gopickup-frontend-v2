@@ -2,16 +2,57 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../state/auth_provider.dart';
+import '../../../state/signup_provider.dart';
 
-class RolePickerScreen extends StatefulWidget {
+class RolePickerScreen extends ConsumerStatefulWidget {
   const RolePickerScreen({super.key});
 
   @override
-  State<RolePickerScreen> createState() => _RolePickerScreenState();
+  ConsumerState<RolePickerScreen> createState() => _RolePickerScreenState();
 }
 
-class _RolePickerScreenState extends State<RolePickerScreen> {
+class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
   String? _selectedRole;
+  bool _isLoading = false;
+
+  Future<void> _onContinue() async {
+    if (_selectedRole == null) return;
+    
+    setState(() {
+      _isLoading = true;
+    });
+
+    final signupData = ref.read(signupProvider);
+    final roleValue = _selectedRole?.toLowerCase() ?? 'client';
+    
+    final success = await ref.read(authProvider.notifier).register(
+      signupData.email,
+      signupData.password,
+      roleValue,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (success && mounted) {
+      if (_selectedRole == 'Client') {
+        context.push('/complete-profile');
+      } else if (_selectedRole == 'Driver') {
+        context.push('/driver/registration');
+      } else {
+        context.push('/vendor/registration');
+      }
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ref.read(authProvider).error ?? 'Registration failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,42 +175,37 @@ class _RolePickerScreenState extends State<RolePickerScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _selectedRole != null
-                      ? () {
-                          // Navigate based on role
-                          if (_selectedRole == 'Client') {
-                            context.push('/complete-profile');
-                          } else if (_selectedRole == 'Driver') {
-                            context.push('/driver/registration');
-                          } else {
-                            context.push('/vendor/registration');
-                          }
-                        }
-                      : null,
+                  onPressed: (_selectedRole != null && !_isLoading) ? _onContinue : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3B7D23),
-                    disabledBackgroundColor: const Color(0xFF3B7D23).withOpacity(0.5),
+                    disabledBackgroundColor: const Color(0xFF3B7D23).withValues(alpha: 0.5),
                     foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white.withOpacity(0.7),
+                    disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text(
-                        'Continue',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
+                  child: _isLoading 
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Continue',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Icon(Icons.arrow_forward_rounded, size: 20),
+                          ],
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, size: 20),
-                    ],
-                  ),
                 ),
               ),
             ),
@@ -209,7 +245,7 @@ class _RoleOptionCard extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primaryLight.withOpacity(0.5) : Colors.white,
+          color: isSelected ? AppColors.primaryLight.withValues(alpha: 0.5) : Colors.white,
           borderRadius: BorderRadius.circular(32),
           border: Border.all(
             color: isSelected ? AppColors.primary : const Color(0xFFF3F4F6),
@@ -218,7 +254,7 @@ class _RoleOptionCard extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   )

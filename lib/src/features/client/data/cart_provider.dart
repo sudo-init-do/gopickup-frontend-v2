@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../common/models/product.dart';
+import '../../../models/product_models.dart';
 
 class CartItem {
   final Product product;
@@ -39,7 +39,7 @@ class CartNotifier extends Notifier<Map<String, CartItem>> {
     } else {
       state = {
         ...current,
-        product.id: CartItem(product: product, quantity: product.moq),
+        product.id: CartItem(product: product, quantity: 1),
       };
     }
   }
@@ -49,7 +49,7 @@ class CartNotifier extends Notifier<Map<String, CartItem>> {
     if (!current.containsKey(productId)) return;
 
     final item = current[productId]!;
-    if (item.quantity <= item.product.moq) {
+    if (item.quantity <= 1) {
       final newState = Map<String, CartItem>.from(current);
       newState.remove(productId);
       state = newState;

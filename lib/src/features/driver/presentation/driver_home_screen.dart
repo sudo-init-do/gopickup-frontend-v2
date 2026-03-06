@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../common/styles/app_colors.dart';
 import '../../driver/data/job_repository.dart';
 import '../../../common/models/order.dart';
 
@@ -213,7 +212,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.local_shipping_outlined, size: 64, color: midText.withOpacity(0.5)),
+                Icon(Icons.local_shipping_outlined, size: 64, color: midText.withValues(alpha: 0.5)),
                 const SizedBox(height: 16),
                 Text('No available jobs at the moment', style: TextStyle(color: midText, fontSize: 16)),
               ],
@@ -246,7 +245,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.assignment_outlined, size: 64, color: midText.withOpacity(0.5)),
+            Icon(Icons.assignment_outlined, size: 64, color: midText.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
             Text('No assigned jobs', style: TextStyle(color: midText, fontSize: 16)),
           ],
@@ -272,7 +271,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.history_rounded, size: 64, color: midText.withOpacity(0.5)),
+            Icon(Icons.history_rounded, size: 64, color: midText.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
             Text('No history yet', style: TextStyle(color: midText, fontSize: 16)),
           ],
@@ -469,7 +468,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),

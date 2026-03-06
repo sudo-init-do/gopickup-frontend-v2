@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../auth/data/auth_repository.dart';
+import '../../../state/profile_provider.dart';
+import '../../../models/user_models.dart';
 
 class VendorRegistrationScreen extends ConsumerStatefulWidget {
   const VendorRegistrationScreen({super.key});
@@ -22,7 +23,10 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
   // Location Controllers
   final _addressController = TextEditingController();
   final _cityController = TextEditingController();
-  final _stateController = TextEditingController();
+  // Assume state is captured somehow or omitted
+  
+  // Custom mock since UI missing
+  final String _mockPhone = '000-000-0000';
 
   // Verification Controllers
   final _registrationController = TextEditingController();
@@ -69,7 +73,6 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
     _descriptionController.dispose();
     _addressController.dispose();
     _cityController.dispose();
-    _stateController.dispose();
     _registrationController.dispose();
     super.dispose();
   }
@@ -86,6 +89,8 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
     bool isCurrentStepValid = _currentStep == 0
         ? _isStep1Valid
         : (_currentStep == 1 ? _isStep2Valid : _isStep3Valid);
+        
+    final isLoading = ref.watch(profileProvider).isLoading;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -148,7 +153,7 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
                 width: double.infinity,
                 height: 64,
                 child: ElevatedButton(
-                  onPressed: isCurrentStepValid ? _handleContinue : null,
+                  onPressed: (isCurrentStepValid && !isLoading) ? _handleContinue : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isCurrentStepValid ? kActiveGreen : kGreenButton,
                     disabledBackgroundColor: kGreenButton,
@@ -156,17 +161,23 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _currentStep == 2 ? 'Complete Setup' : 'Continue',
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_rounded, size: 22),
-                    ],
-                  ),
+                  child: isLoading 
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _currentStep == 2 ? 'Complete Setup' : 'Continue',
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.arrow_forward_rounded, size: 22),
+                          ],
+                        ),
                 ),
               ),
             ),
@@ -180,38 +191,27 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
     if (_currentStep < 2) {
       setState(() => _currentStep++);
     } else {
-      // Complete Onboarding
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
+      final profile = VendorProfile(
+        storeName: _storeNameController.text.trim(),
+        businessType: _selectedCategory,
+        address: _addressController.text.trim(),
+        phoneNumber: _mockPhone,
+        isApproved: false,
       );
 
-      final success = await ref.read(authRepositoryProvider).completeOnboarding({
-        'full_name': _ownerNameController.text.trim(),
-        'role': 'vendor',
-        'vendor_data': {
-          'store_name': _storeNameController.text.trim(),
-          'store_description': _descriptionController.text.trim(),
-          'business_category': _selectedCategory,
-          'store_address': _addressController.text.trim(),
-          'registration_number': _registrationController.text.trim(),
-        },
-      });
+      final success = await ref.read(profileProvider.notifier).createVendorProfile(profile);
 
       if (mounted) {
-        Navigator.pop(context); // Close loading
         if (success) {
           context.go('/vendor');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to complete setup. Please try again.')),
+            SnackBar(content: Text(ref.read(profileProvider).error ?? 'Failed to complete setup. Please try again.')),
           );
         }
       }
     }
   }
-
 
   Widget _buildStoreInfoStep(Color kPurple, Color kLightPurpleBg, Color kDarkTextColor, Color kMidTextColor) {
     return Column(

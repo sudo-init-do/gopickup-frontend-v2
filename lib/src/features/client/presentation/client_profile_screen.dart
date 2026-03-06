@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../state/auth_provider.dart';
 
-class ClientProfileScreen extends StatelessWidget {
+class ClientProfileScreen extends ConsumerWidget {
   const ClientProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     const kBrandGreen = Color(0xFF3B7D23);
     const kStatTextColor = Color(0xFF1E293B);
     const kLightGrey = Color(0xFFF1F5F9);
     const kIconBgColor = Color(0xFFF1FDF4);
     const kIconColor = Color(0xFF22C55E);
+
+    final user = ref.watch(authProvider).user;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -52,7 +56,7 @@ class ClientProfileScreen extends StatelessWidget {
                           ),
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
@@ -69,38 +73,38 @@ class ClientProfileScreen extends StatelessWidget {
                             width: 100,
                             height: 100,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withValues(alpha: 0.2),
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withOpacity(0.3), width: 4),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 4),
                             ),
                             child: const Center(
                               child: Icon(Icons.person_outline_rounded, color: Colors.white, size: 50),
                             ),
                           ),
                           const SizedBox(width: 20),
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'John Doe',
+                                const Text(
+                                  'Client Name',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 24,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(
-                                  'john.doe@example.com',
-                                  style: TextStyle(
+                                  user?.email ?? 'client@example.com',
+                                  style: const TextStyle(
                                     color: Colors.white70,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                SizedBox(height: 12),
-                                Text(
+                                const SizedBox(height: 12),
+                                const Text(
                                   'Lagos, Nigeria',
                                   style: TextStyle(
                                     color: Colors.white,
@@ -129,7 +133,7 @@ class ClientProfileScreen extends StatelessWidget {
                       border: Border.all(color: kLightGrey, width: 1.5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -156,14 +160,14 @@ class ClientProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  _buildMenuItem(context, Icons.inventory_2_outlined, 'My Orders', kIconBgColor, kIconColor, '/client/orders'),
-                  _buildMenuItem(context, Icons.account_balance_wallet_outlined, 'My Wallet', kIconBgColor, kIconColor, '/client/wallet'),
-                  _buildMenuItem(context, Icons.location_on_outlined, 'Delivery Addresses', kIconBgColor, kIconColor, '/client/addresses'),
-                  _buildMenuItem(context, Icons.notifications_none_rounded, 'Notifications', kIconBgColor, kIconColor, '/notifications'),
-                  _buildMenuItem(context, Icons.shield_outlined, 'Privacy & Security', kIconBgColor, kIconColor, '/settings/privacy'),
-                  _buildMenuItem(context, Icons.settings_outlined, 'Settings', kIconBgColor, kIconColor, '/settings'),
-                  _buildMenuItem(context, Icons.help_outline_rounded, 'Help & Support', kIconBgColor, kIconColor, '/help'),
-                  _buildMenuItem(context, Icons.logout_rounded, 'Log Out', const Color(0xFFFFEBEE), const Color(0xFFEF5350), '', isLogout: true),
+                  _buildMenuItem(context, ref, Icons.inventory_2_outlined, 'My Orders', kIconBgColor, kIconColor, '/client/orders'),
+                  _buildMenuItem(context, ref, Icons.account_balance_wallet_outlined, 'My Wallet', kIconBgColor, kIconColor, '/client/wallet'),
+                  _buildMenuItem(context, ref, Icons.location_on_outlined, 'Delivery Addresses', kIconBgColor, kIconColor, '/client/addresses'),
+                  _buildMenuItem(context, ref, Icons.notifications_none_rounded, 'Notifications', kIconBgColor, kIconColor, '/notifications'),
+                  _buildMenuItem(context, ref, Icons.shield_outlined, 'Privacy & Security', kIconBgColor, kIconColor, '/settings/privacy'),
+                  _buildMenuItem(context, ref, Icons.settings_outlined, 'Settings', kIconBgColor, kIconColor, '/settings'),
+                  _buildMenuItem(context, ref, Icons.help_outline_rounded, 'Help & Support', kIconBgColor, kIconColor, '/help'),
+                  _buildMenuItem(context, ref, Icons.logout_rounded, 'Log Out', const Color(0xFFFFEBEE), const Color(0xFFEF5350), '', isLogout: true),
                 ],
               ),
             ),
@@ -209,13 +213,14 @@ class ClientProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, IconData icon, String title, Color bgColor, Color iconColor, String route, {bool isLogout = false}) {
+  Widget _buildMenuItem(BuildContext context, WidgetRef ref, IconData icon, String title, Color bgColor, Color iconColor, String route, {bool isLogout = false}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        onTap: () {
+        onTap: () async {
           if (isLogout) {
-            context.go('/');
+            await ref.read(authProvider.notifier).logout();
+            context.go('/auth/login');
           } else if (route.isNotEmpty) {
             context.push(route);
           }
@@ -251,7 +256,7 @@ class ClientProfileScreen extends StatelessWidget {
               ),
               Icon(
                 Icons.chevron_right_rounded,
-                color: isLogout ? const Color(0xFFEF5350).withOpacity(0.5) : const Color(0xFFCBD5E1),
+                color: isLogout ? const Color(0xFFEF5350).withValues(alpha: 0.5) : const Color(0xFFCBD5E1),
                 size: 24,
               ),
             ],

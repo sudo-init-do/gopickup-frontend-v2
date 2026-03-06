@@ -2,16 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../client/data/order_repository.dart';
-import '../../../common/models/order.dart';
+import '../../../models/order_models.dart';
+import '../../../state/order_provider.dart';
 
-class ClientOrdersScreen extends ConsumerWidget {
+class ClientOrdersScreen extends ConsumerStatefulWidget {
   const ClientOrdersScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final ordersAsync = ref.watch(ordersProvider);
+  ConsumerState<ClientOrdersScreen> createState() => _ClientOrdersScreenState();
+}
 
+class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(orderProvider.notifier).fetchOrders();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       body: SafeArea(
@@ -19,16 +30,30 @@ class ClientOrdersScreen extends ConsumerWidget {
           children: [
             _buildHeader(context),
             Expanded(
-              child: ordersAsync.when(
-                data: (orders) => ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                  itemCount: orders.length,
-                  itemBuilder: (context, index) {
-                    return _buildOrderCard(context, orders[index]);
-                  },
-                ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, stack) => Center(child: Text('Error: $err')),
+              child: Builder(
+                builder: (context) {
+                  final orderState = ref.watch(orderProvider);
+
+                  if (orderState.isLoading && orderState.orders.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (orderState.error != null) {
+                    return Center(child: Text('Error: ${orderState.error}'));
+                  }
+
+                  final orders = orderState.orders;
+                  if (orders.isEmpty) {
+                    return const Center(child: Text('No orders found'));
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                    itemCount: orders.length,
+                    itemBuilder: (context, index) {
+                      return _buildOrderCard(context, orders[index]);
+                    },
+                  );
+                },
               ),
             ),
           ],
@@ -51,7 +76,7 @@ class ClientOrdersScreen extends ConsumerWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -77,9 +102,23 @@ class ClientOrdersScreen extends ConsumerWidget {
   }
 
   Widget _buildOrderCard(BuildContext context, Order order) {
-    final badgeColor = order.status.backgroundColor;
-    final badgeTextColor = order.status.color;
-    final statusText = order.status.displayName;
+    Color badgeColor;
+    Color badgeTextColor;
+    final statusText = order.status.toUpperCase();
+
+    switch (order.status.toLowerCase()) {
+      case 'delivered':
+        badgeColor = const Color(0xFFECFDF5);
+        badgeTextColor = const Color(0xFF059669);
+        break;
+      case 'pending':
+        badgeColor = const Color(0xFFFFFBEB);
+        badgeTextColor = const Color(0xFFD97706);
+        break;
+      default:
+        badgeColor = const Color(0xFFE0E7FF);
+        badgeTextColor = const Color(0xFF4F46E5);
+    }
 
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF6B7280);
@@ -97,7 +136,7 @@ class ClientOrdersScreen extends ConsumerWidget {
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.02),
+              color: Colors.black.withValues(alpha: 0.02),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -133,7 +172,7 @@ class ClientOrdersScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                order.shortId,
+                                order.id.substring(0, 8),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w900,
                                   fontSize: 18,
@@ -141,10 +180,9 @@ class ClientOrdersScreen extends ConsumerWidget {
                                   letterSpacing: -0.5,
                                 ),
                               ),
-
                               const SizedBox(height: 2),
                               Text(
-                                DateFormat('MMM d, yyyy').format(order.placedAt),
+                                DateFormat('MMM d, yyyy').format(order.createdAt),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   color: kLightTextColor,
@@ -179,7 +217,7 @@ class ClientOrdersScreen extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                order.items.isNotEmpty ? order.items.first.product.vendorName : 'Unknown Vendor',
+                                order.items.isNotEmpty ? order.items.first.name ?? 'Unknown item' : 'No items',
                                 style: const TextStyle(
                                   color: kMidTextColor,
                                   fontSize: 15,
@@ -200,7 +238,7 @@ class ClientOrdersScreen extends ConsumerWidget {
                           Row(
                             children: [
                               Text(
-                                '₦${order.total.toStringAsFixed(2)}',
+                                '₦${order.totalProductAmount.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,
@@ -223,13 +261,13 @@ class ClientOrdersScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            if (statusText != 'Delivered') ...[
+            if (statusText != 'DELIVERED') ...[
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Divider(color: Color(0xFFF3F4F6), height: 1),
               ),
-              const Row(
-                children: [
+              Row(
+                children: const [
                   Icon(
                     Icons.access_time_rounded,
                     size: 18,

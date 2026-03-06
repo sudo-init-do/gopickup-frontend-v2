@@ -1,0 +1,21 @@
+Analyzing Gopickup...                                           
+
+   info • The constant name 'searching_driver' isn't a lowerCamelCase identifier • lib/src/common/models/order.dart:6:3 • constant_identifier_names
+   info • The constant name 'bidding_open' isn't a lowerCamelCase identifier • lib/src/common/models/order.dart:7:3 • constant_identifier_names
+   info • The constant name 'in_transit' isn't a lowerCamelCase identifier • lib/src/common/models/order.dart:9:3 • constant_identifier_names
+warning • The declaration '_buildPlaceholderStep' isn't referenced • lib/src/features/auth/presentation/driver_registration_screen.dart:566:10 • unused_element
+warning • The declaration '_buildFileUploadCard' isn't referenced • lib/src/features/auth/presentation/vendor_registration_screen.dart:427:10 • unused_element
+   info • Don't use 'BuildContext's across async gaps • lib/src/features/client/presentation/client_profile_screen.dart:223:13 • use_build_context_synchronously
+warning • The value of the local variable 'kMenuTextColor' isn't used • lib/src/features/driver/presentation/driver_profile_screen.dart:11:11 • unused_local_variable
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/src/features/driver/presentation/submit_bid_screen.dart:279:33 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/src/features/driver/presentation/submit_bid_screen.dart:282:42 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/src/features/driver/presentation/submit_bid_screen.dart:285:21 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps, guarded by an unrelated 'mounted' check • lib/src/features/driver/presentation/submit_bid_screen.dart:287:42 • use_build_context_synchronously
+warning • The value of the local variable 'kMidTextColor' isn't used • lib/src/features/shared/presentation/settings_screen.dart:10:11 • unused_local_variable
+   info • 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor or activeTrackColor instead. This feature was deprecated after v3.31.0-2.0.pre • lib/src/features/shared/presentation/settings_screen.dart:190:11 • deprecated_member_use
+   info • Unnecessary use of multiple underscores • lib/src/features/vendor/presentation/vendor_home_screen.dart:90:42 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • lib/src/features/vendor/presentation/vendor_home_screen.dart:96:42 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores • lib/src/features/vendor/presentation/vendor_home_screen.dart:102:42 • unnecessary_underscores
+warning • The declaration '_buildSummaryRow' isn't referenced • lib/src/features/vendor/presentation/vendor_order_detail_screen.dart:357:10 • unused_element
+warning • The value of the field '_wsSubscription' isn't used • lib/src/state/chat_provider.dart:39:23 • unused_field
+

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../common/models/order.dart';
+import '../../../models/order_models.dart';
 import '../data/job_repository.dart';
 
 class SubmitBidScreen extends ConsumerStatefulWidget {
@@ -22,7 +22,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
   void initState() {
     super.initState();
     // Default bid amount could be based on order total or some calculation
-    _amountController.text = (widget.job.total * 0.1).toInt().toString();
+    _amountController.text = (widget.job.totalProductAmount * 0.1).toInt().toString();
   }
 
   void _adjustAmount(int delta) {
@@ -178,8 +178,8 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
   }
 
   Widget _buildJobSummary(Order job, Color darkText, Color midText) {
-    final title = job.items.isNotEmpty ? job.items.first.product.name : 'Bulk Delivery';
-    final from = job.items.isNotEmpty ? job.items.first.product.vendorName : 'Vendor Depot';
+    final title = job.items.isNotEmpty ? job.items.first.name ?? 'Item' : 'Bulk Delivery';
+    final from = 'Vendor Depot';
     final to = job.id.substring(0, 8);
 
     return Container(
@@ -190,7 +190,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -205,7 +205,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
           ),
           const SizedBox(height: 2),
           Text(
-            job.shortId,
+            job.id.substring(0, 8),
             style: TextStyle(fontSize: 14, color: midText, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 20),
@@ -223,7 +223,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                 style: TextStyle(color: midText, fontSize: 16, fontWeight: FontWeight.w600),
               ),
               Text(
-                '₦${job.total.toStringAsFixed(2)}',
+                '₦${job.totalProductAmount.toStringAsFixed(2)}',
                 style: TextStyle(color: darkText, fontSize: 18, fontWeight: FontWeight.w800),
               ),
             ],

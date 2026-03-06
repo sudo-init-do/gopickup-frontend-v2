@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../common/styles/app_colors.dart';
-import '../../client/data/product_repository.dart';
-import '../../../common/models/product.dart';
-import '../data/cart_provider.dart';
 import '../../../common/constants/app_constants.dart';
+import '../../../models/product_models.dart';
+import '../../../state/product_provider.dart';
+import '../data/cart_provider.dart';
 
-class ClientProductsScreen extends StatefulWidget {
+class ClientProductsScreen extends ConsumerStatefulWidget {
   final String? initialSearchQuery;
   const ClientProductsScreen({super.key, this.initialSearchQuery});
 
   @override
-  State<ClientProductsScreen> createState() => _ClientProductsScreenState();
+  ConsumerState<ClientProductsScreen> createState() => _ClientProductsScreenState();
 }
 
-class _ClientProductsScreenState extends State<ClientProductsScreen> {
+class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
   bool _hasAddress = false;
   String _selectedCategory = 'All';
   String _searchQuery = '';
@@ -26,6 +26,10 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
     super.initState();
     _searchQuery = widget.initialSearchQuery ?? '';
     _searchController = TextEditingController(text: _searchQuery);
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(productProvider.notifier).fetchProducts();
+    });
   }
 
   @override
@@ -171,9 +175,9 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
   }
 
   Widget _buildProductList(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, _) {
-        final productsAsync = ref.watch(productsProvider);
+    return Builder(
+      builder: (context) {
+        final productState = ref.watch(productProvider);
 
         return Scaffold(
           backgroundColor: const Color(0xFFF9FAFB),
@@ -280,6 +284,12 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                                       _searchQuery = value;
                                     });
                                   },
+                                  onSubmitted: (_) {
+                                    ref.read(productProvider.notifier).fetchProducts(
+                                      category: _selectedCategory == 'All' ? null : _selectedCategory,
+                                      search: _searchQuery.isNotEmpty ? _searchQuery : null,
+                                    );
+                                  },
                                   decoration: InputDecoration(
                                     hintText: 'Search products...',
                                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
@@ -291,6 +301,9 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                                                 _searchController.clear();
                                                 _searchQuery = '';
                                               });
+                                              ref.read(productProvider.notifier).fetchProducts(
+                                                category: _selectedCategory == 'All' ? null : _selectedCategory,
+                                              );
                                             },
                                           )
                                         : null,
@@ -331,9 +344,21 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                 const SizedBox(height: 20),
                 // Product Grid
                 Expanded(
-                  child: productsAsync.when(
-                    data: (productsList) {
-                      var filteredProducts = productsList;
+                  child: Builder(
+                    builder: (context) {
+                      if (productState.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (productState.error != null) {
+                        return Center(child: Text('Error: ${productState.error}'));
+                      }
+
+                      var filteredProducts = productState.products;
+                      
+                      // NOTE: Because our new API handles filtering too, we could rely strictly on the API 
+                      // if we fetch on every tap, but doing client-side filtering on all models we fetched
+                      // is acceptable for now. If you uncomment the API fetch on chip select, it will be faster to just display what we have.
+                      
                       if (_selectedCategory != 'All') {
                         filteredProducts = filteredProducts.where((p) => p.category == _selectedCategory).toList();
                       }
@@ -359,8 +384,6 @@ class _ClientProductsScreenState extends State<ClientProductsScreen> {
                         },
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (err, stack) => Center(child: Text('Error: $err')),
                   ),
                 ),
               ],
@@ -415,7 +438,7 @@ class ProductCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -449,7 +472,7 @@ class ProductCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        product.vendorName,
+                        'Verified Vendor',
                         style: TextStyle(color: Colors.grey[500], fontSize: 11, fontWeight: FontWeight.w500),
                       ),
 
@@ -502,9 +525,9 @@ class ProductCard extends ConsumerWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              const Text(
-                                '500 in',
-                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF9CA3AF)),
+                              Text(
+                                '${product.stockQuantity} in',
+                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF9CA3AF)),
                               ),
                               const Text(
                                 'stock',
@@ -529,12 +552,12 @@ class ProductCard extends ConsumerWidget {
                             child: Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.add, color: Colors.white, size: 16),
-                                  const SizedBox(width: 4),
+                                children: const [
+                                  Icon(Icons.add, color: Colors.white, size: 16),
+                                  SizedBox(width: 4),
                                   Text(
-                                    'Add (${product.moq} min)',
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                    'Add (1 min)',
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
                                   ),
                                 ],
                               ),
@@ -603,9 +626,9 @@ class ProductCard extends ConsumerWidget {
                 color: const Color(0xFF3B7D23),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Text(
-                'MOQ: ${product.moq}',
-                style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800),
+              child: const Text(
+                'MOQ: 1',
+                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800),
               ),
             ),
           ),

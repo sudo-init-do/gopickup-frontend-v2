@@ -153,7 +153,7 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -181,7 +181,7 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: orange.withOpacity(0.1),
+                  color: orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(

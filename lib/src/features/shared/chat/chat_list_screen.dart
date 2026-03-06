@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'chat_repository.dart';
-import '../../../common/models/user.dart';
+import '../../../state/chat_provider.dart';
 
 class ChatListScreen extends ConsumerWidget {
   const ChatListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chats = ref.watch(chatsProvider);
+    final chatState = ref.watch(chatProvider);
+    final conversations = chatState.conversations;
 
     // Color constants for high-fidelity design
     const kDarkTextColor = Color(0xFF111827);
@@ -52,13 +52,13 @@ class ChatListScreen extends ConsumerWidget {
                       decoration: InputDecoration(
                         hintText: 'Search conversations...',
                         hintStyle: TextStyle(
-                          color: kMidTextColor.withOpacity(0.5),
+                          color: kMidTextColor.withValues(alpha: 0.5),
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                         prefixIcon: Icon(
                           Icons.search_rounded,
-                          color: kMidTextColor.withOpacity(0.5),
+                          color: kMidTextColor.withValues(alpha: 0.5),
                           size: 26,
                         ),
                         border: InputBorder.none,
@@ -72,29 +72,27 @@ class ChatListScreen extends ConsumerWidget {
             
             // Conversations List
             Expanded(
-              child: chats.when(
-                data: (chatList) => ListView.separated(
+              child: chatState.isLoading && conversations.isEmpty
+                  ? const Center(child: CircularProgressIndicator())
+                  : chatState.error != null && conversations.isEmpty
+                      ? Center(child: Text('Error: ${chatState.error}'))
+                      : ListView.separated(
                   padding: EdgeInsets.zero,
-                  itemCount: chatList.length,
+                  itemCount: conversations.length,
                   separatorBuilder: (context, index) => Container(
                     height: 1,
                     color: const Color(0xFFF1F5F9),
                   ),
                   itemBuilder: (context, index) {
-                    final chat = chatList[index];
-                    final otherUser = (chat.participants != null && chat.participants!.isNotEmpty)
-                        ? chat.participants!.firstWhere(
-                            (p) => p.id != 'me',
-                            orElse: () => chat.participants!.first,
-                          )
-                        : User(id: 'unknown', name: 'User', role: UserRole.client);
+                    final chat = conversations[index];
+                    final otherUserName = chat.otherUserName ?? 'User';
                     
-                    final unreadCount = 0;
+                    final unreadCount = chat.unreadCount;
 
                     return _ChatListItem(
-                      name: otherUser.name,
-                      lastMessage: chat.lastMessage,
-                      time: _formatDateTime(chat.lastUpdated),
+                      name: otherUserName,
+                      lastMessage: chat.lastMessage ?? '',
+                      time: chat.updatedAt != null ? _formatDateTime(chat.updatedAt!) : '',
                       unreadCount: unreadCount,
                       kDarkTextColor: kDarkTextColor,
                       kMidTextColor: kMidTextColor,
@@ -104,9 +102,6 @@ class ChatListScreen extends ConsumerWidget {
                     );
                   },
                 ),
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(child: Text('Error: $error')),
-              ),
             ),
           ],
         ),
@@ -193,7 +188,7 @@ class _ChatListItem extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: unreadCount > 0 ? kDarkTextColor.withOpacity(0.6) : kLightTextColor,
+                          color: unreadCount > 0 ? kDarkTextColor.withValues(alpha: 0.6) : kLightTextColor,
                         ),
                       ),
                     ],

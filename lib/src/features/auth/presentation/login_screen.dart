@@ -1,16 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../state/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -36,8 +38,29 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _signIn() {
-    context.go('/client');
+  Future<void> _signIn() async {
+    final success = await ref.read(authProvider.notifier).login(
+      _emailController.text,
+      _passwordController.text,
+    );
+    
+    if (success && mounted) {
+      final user = ref.read(authProvider).user;
+      if (user?.role == 'vendor') {
+        context.go('/vendor');
+      } else if (user?.role == 'driver') {
+        context.go('/driver');
+      } else {
+        context.go('/client');
+      }
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ref.read(authProvider).error ?? 'Login failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

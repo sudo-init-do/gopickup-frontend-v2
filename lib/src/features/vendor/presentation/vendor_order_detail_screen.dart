@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import '../../../common/models/order.dart';
+import '../../../models/order_models.dart';
 import '../data/vendor_repository.dart';
 
 class VendorOrderDetailScreen extends ConsumerWidget {
@@ -47,7 +47,7 @@ class VendorOrderDetailScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              order.shortId,
+              order.id.substring(0, 8),
               style: const TextStyle(
                 color: kDarkTextColor,
                 fontWeight: FontWeight.w900,
@@ -55,7 +55,7 @@ class VendorOrderDetailScreen extends ConsumerWidget {
               ),
             ),
             Text(
-              DateFormat('MMM d, yyyy • h:mm a').format(order.placedAt),
+              DateFormat('MMM d, yyyy • h:mm a').format(order.createdAt),
               style: const TextStyle(
                 color: kMidTextColor,
                 fontSize: 14,
@@ -83,12 +83,12 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: order.status.backgroundColor,
+                      color: order.status == 'pending' ? const Color(0xFFFFF7ED) : const Color(0xFFEFF6FF),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      order.status == OrderStatus.pending ? Icons.access_time_filled_rounded : Icons.inventory_2_rounded,
-                      color: order.status.color,
+                      order.status == 'pending' ? Icons.access_time_filled_rounded : Icons.inventory_2_rounded,
+                      color: order.status == 'pending' ? const Color(0xFFF97316) : const Color(0xFF3B82F6),
                       size: 24,
                     ),
                   ),
@@ -98,7 +98,7 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          order.status.displayName,
+                          order.status.toUpperCase(),
                           style: const TextStyle(
                             color: kDarkTextColor,
                             fontWeight: FontWeight.w800,
@@ -107,7 +107,7 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          order.status == OrderStatus.pending ? 'Waiting for your action' : 'Order is being processed',
+                          order.status == 'pending' ? 'Waiting for your action' : 'Order is being processed',
                           style: const TextStyle(
                             color: kMidTextColor,
                             fontWeight: FontWeight.w500,
@@ -169,9 +169,9 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                 children: order.items.map((item) => Column(
                   children: [
                     _buildOrderItem(
-                      item.product.name,
-                      '₦${item.product.price.toStringAsFixed(2)} x ${item.quantity}',
-                      '₦${(item.product.price * item.quantity).toStringAsFixed(2)}',
+                      item.name ?? 'Item',
+                      '₦${(item.price ?? 0).toStringAsFixed(2)} x ${item.quantity}',
+                      '₦${((item.price ?? 0) * item.quantity).toStringAsFixed(2)}',
                     ),
                     if (order.items.indexOf(item) != order.items.length - 1)
                       const Divider(color: kLightBorderColor, height: 1, indent: 24, endIndent: 24),
@@ -203,7 +203,7 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        '₦${order.total.toStringAsFixed(2)}',
+                        '₦${order.totalProductAmount.toStringAsFixed(2)}',
                         style: const TextStyle(
                           color: kDarkTextColor,
                           fontWeight: FontWeight.w900,
@@ -219,7 +219,7 @@ class VendorOrderDetailScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomSheet: order.status == OrderStatus.pending ? Container(
+      bottomSheet: order.status == 'pending' ? Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,

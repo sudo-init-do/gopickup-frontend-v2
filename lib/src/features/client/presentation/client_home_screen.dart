@@ -2,16 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../common/styles/app_colors.dart';
-import '../data/product_repository.dart';
-import '../data/order_repository.dart';
-import '../../../common/models/order.dart';
-import '../../../common/models/product.dart';
+import '../../../state/order_provider.dart';
 
-class ClientHomeScreen extends ConsumerWidget {
+class ClientHomeScreen extends ConsumerStatefulWidget {
   const ClientHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ClientHomeScreen> createState() => _ClientHomeScreenState();
+}
+
+class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch orders when screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(orderProvider.notifier).fetchOrders();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA), // Slightly off-white background
@@ -69,7 +80,7 @@ class ClientHomeScreen extends ConsumerWidget {
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
+                          color: Colors.white.withValues(alpha: 0.05),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -273,17 +284,22 @@ class ClientHomeScreen extends ConsumerWidget {
 
           // Active Delivery Section
           SliverToBoxAdapter(
-            child: ref.watch(ordersProvider).when(
-              data: (orders) {
+            child: Builder(
+              builder: (context) {
+                final orderState = ref.watch(orderProvider);
+                if (orderState.isLoading && orderState.orders.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+
                 // Find first active order (Pending or In Transit)
-                final activeOrder = orders.where((o) => 
-                  o.status == OrderStatus.pending || 
-                  o.status == OrderStatus.in_transit
+                final activeOrders = orderState.orders.where((o) => 
+                  o.status == 'pending' || 
+                  o.status == 'in_transit'
                 ).toList();
 
-                if (activeOrder.isEmpty) return const SizedBox.shrink();
+                if (activeOrders.isEmpty) return const SizedBox.shrink();
                 
-                final order = activeOrder.first;
+                final order = activeOrders.first;
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: InkWell(
@@ -331,7 +347,7 @@ class ClientHomeScreen extends ConsumerWidget {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  '${order.items.length} items • ${order.status.displayName}',
+                                  '${order.items.length} items • ${order.status.toUpperCase()}',
                                   style: TextStyle(
                                     color: Colors.grey[600],
                                     fontSize: 13,
@@ -359,8 +375,6 @@ class ClientHomeScreen extends ConsumerWidget {
                   ),
                 );
               },
-              loading: () => const SizedBox.shrink(),
-              error: (_, __) => const SizedBox.shrink(),
             ),
           ),
 
@@ -406,8 +420,16 @@ class ClientHomeScreen extends ConsumerWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: ref.watch(ordersProvider).when(
-                data: (orders) {
+              child: Builder(
+                builder: (context) {
+                  final orderState = ref.watch(orderProvider);
+                  if (orderState.isLoading && orderState.orders.isEmpty) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (orderState.error != null) {
+                    return Center(child: Text('Error: ${orderState.error}'));
+                  }
+                  
+                  final orders = orderState.orders;
                   if (orders.isEmpty) {
                     return Container(
                       padding: const EdgeInsets.all(40),
@@ -436,18 +458,16 @@ class ClientHomeScreen extends ConsumerWidget {
                         onTap: () => context.push('/client/orders/${order.id}', extra: order),
                         borderRadius: BorderRadius.circular(28),
                         child: _RecentOrderCard(
-                          title: 'Order ${order.shortId}',
-                          status: order.status.displayName,
+                          title: 'Order ${order.id.substring(0, 8)}',
+                          status: order.status.toUpperCase(),
                           items: order.items.length,
                           time: 'Recently',
-                          price: order.total,
+                          price: order.totalProductAmount,
                         ),
                       ),
                     )).toList(),
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, _) => Center(child: Text('Error: $err')),
               ),
             ),
           ),
@@ -675,7 +695,7 @@ class _QuickActionCard extends StatelessWidget {
         border: Border.all(color: Colors.grey.shade50),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
