@@ -7,7 +7,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
+
     const kBrandGreen = Color(0xFF3B7D23);
 
     return Scaffold(
@@ -187,8 +187,7 @@ class SettingsScreen extends StatelessWidget {
         trailing: Switch.adaptive(
           value: value,
           onChanged: (val) {},
-          activeColor: brandGreen,
-          activeTrackColor: brandGreen.withValues(alpha: 0.2),
+          activeTrackColor: brandGreen,
         ),
       ),
     );

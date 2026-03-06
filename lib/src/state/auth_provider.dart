@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/auth_api.dart';
 import '../api/api_client.dart';
 import '../models/user_models.dart';
+import 'order_provider.dart'; // Add this to access websocketServiceProvider
 
 final authApiProvider = Provider<AuthApi>((ref) => AuthApi());
 
@@ -38,12 +39,15 @@ class AuthNotifier extends Notifier<AuthState> {
       if (token != null) {
         final user = await _authApi.getCurrentUser();
         state = state.copyWith(user: user, isLoading: false);
+        // Automatically connect to websocket if a valid token exists
+        ref.read(websocketServiceProvider).connect(token);
       } else {
         state = state.copyWith(isLoading: false);
       }
     } catch (e) {
       // Token might be expired or invalid
       await ApiClient.secureStorage.delete(key: 'jwt_token');
+      ref.read(websocketServiceProvider).disconnect();
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -59,6 +63,7 @@ class AuthNotifier extends Notifier<AuthState> {
       final user = User.fromJson(userDict);
       
       state = state.copyWith(user: user, isLoading: false);
+      ref.read(websocketServiceProvider).connect(token);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -77,6 +82,7 @@ class AuthNotifier extends Notifier<AuthState> {
       final user = User.fromJson(userDict);
       
       state = state.copyWith(user: user, isLoading: false);
+      ref.read(websocketServiceProvider).connect(token);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -86,6 +92,7 @@ class AuthNotifier extends Notifier<AuthState> {
 
   Future<void> logout() async {
     await ApiClient.secureStorage.delete(key: 'jwt_token');
+    ref.read(websocketServiceProvider).disconnect();
     state = AuthState(); // Reset state
   }
 }

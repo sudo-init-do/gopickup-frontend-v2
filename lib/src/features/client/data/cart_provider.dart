@@ -29,6 +29,15 @@ class CartNotifier extends Notifier<Map<String, CartItem>> {
 
   void addItem(Product product) {
     final current = state;
+    
+    // As per specs: All items must belong to the same Vendor
+    if (current.isNotEmpty && current.values.first.product.vendorId != product.vendorId) {
+      state = {
+        product.id: CartItem(product: product, quantity: 1),
+      };
+      return;
+    }
+
     if (current.containsKey(product.id)) {
       state = {
         ...current,

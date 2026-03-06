@@ -87,19 +87,19 @@ class VendorHomeScreen extends ConsumerWidget {
                             ref.watch(vendorInventoryProvider).when(
                               data: (products) => _buildStatCard('${products.length}', 'Products', Icons.inventory_2_outlined),
                               loading: () => _buildStatCard('...', 'Products', Icons.inventory_2_outlined),
-                              error: (_, __) => _buildStatCard('0', 'Products', Icons.inventory_2_outlined),
+                              error: (_, _) => _buildStatCard('0', 'Products', Icons.inventory_2_outlined),
                             ),
                             const SizedBox(width: 10),
                             ordersAsync.when(
                               data: (orders) => _buildStatCard('${orders.length}', 'Orders', Icons.shopping_cart_outlined),
                               loading: () => _buildStatCard('...', 'Orders', Icons.shopping_cart_outlined),
-                              error: (_, __) => _buildStatCard('0', 'Orders', Icons.shopping_cart_outlined),
+                              error: (_, _) => _buildStatCard('0', 'Orders', Icons.shopping_cart_outlined),
                             ),
                             const SizedBox(width: 10),
                             balanceAsync.when(
                               data: (balance) => _buildStatCard('₦${(balance / 1000).toStringAsFixed(1)}k', 'Revenue', Icons.attach_money_rounded),
                               loading: () => _buildStatCard('...', 'Revenue', Icons.attach_money_rounded),
-                              error: (_, __) => _buildStatCard('₦0', 'Revenue', Icons.attach_money_rounded),
+                              error: (_, _) => _buildStatCard('₦0', 'Revenue', Icons.attach_money_rounded),
                             ),
                             const SizedBox(width: 10),
                             _buildStatCard('0', 'Views', Icons.visibility_outlined),

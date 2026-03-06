@@ -424,36 +424,7 @@ class _VendorRegistrationScreenState extends ConsumerState<VendorRegistrationScr
     );
   }
 
-  Widget _buildFileUploadCard(String title, String subtitle, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
-            child: Icon(Icons.cloud_upload_outlined, color: color, size: 24),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                Text(subtitle, style: const TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
-              ],
-            ),
-          ),
-          const Icon(Icons.add_circle_outline, color: Color(0xFF94A3B8)),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildStepChip(String label, IconData icon, bool isActive, Color activeColor) {
     bool isCompleted = false;

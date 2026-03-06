@@ -275,7 +275,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                   amount: amount,
                 );
 
-                if (context.mounted) {
+                if (mounted) {
                   Navigator.pop(context); // Close loading
 
                   if (success) {

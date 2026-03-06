@@ -563,12 +563,5 @@ class _DriverRegistrationScreenState extends ConsumerState<DriverRegistrationScr
     );
   }
 
-  Widget _buildPlaceholderStep(String title) {
-    return Center(
-      child: Text(
-        'Step for $title coming soon',
-        style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 16),
-      ),
-    );
-  }
+
 }

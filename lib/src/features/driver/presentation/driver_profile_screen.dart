@@ -8,7 +8,7 @@ class DriverProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     const kBrandGreen = Color(0xFF45A225);
     const kStatTextColor = Color(0xFF1E293B);
-    const kMenuTextColor = Color(0xFF1E293B);
+
     const kLightGrey = Color(0xFFF1F5F9);
     const kIconBgColor = Color(0xFFE8F5E9);
     const kIconColor = Color(0xFF4CAF50);

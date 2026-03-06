@@ -220,7 +220,9 @@ class ClientProfileScreen extends ConsumerWidget {
         onTap: () async {
           if (isLogout) {
             await ref.read(authProvider.notifier).logout();
-            context.go('/auth/login');
+            if (context.mounted) {
+              context.go('/auth/login');
+            }
           } else if (route.isNotEmpty) {
             context.push(route);
           }

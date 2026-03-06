@@ -354,27 +354,5 @@ class VendorOrderDetailScreen extends ConsumerWidget {
       ),
     );
   }
-  Widget _buildSummaryRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: Color(0xFF94A3B8),
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            color: Color(0xFF111827),
-            fontWeight: FontWeight.w700,
-            fontSize: 16,
-          ),
-        ),
-      ],
-    );
-  }
+
 }

@@ -36,7 +36,7 @@ class ChatState {
 class ChatNotifier extends Notifier<ChatState> {
   final _chatApi = ChatApi();
   final WebSocketService _wsService = WebSocketService();
-  StreamSubscription? _wsSubscription;
+
   String? _currentChatId;
 
   @override
@@ -50,7 +50,7 @@ class ChatNotifier extends Notifier<ChatState> {
   }
 
   void _init() {
-    _wsSubscription = _wsService.onNewMessage.listen((payload) {
+    _wsService.onNewMessage.listen((payload) {
       _handleIncomingMessage(payload);
     });
     

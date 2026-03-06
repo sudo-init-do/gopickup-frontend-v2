@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketService {
-  static const String wsUrl = 'ws://localhost:8080/api/v1/ws';
+  static const String wsUrl = 'wss://backend.gopickup.com.ng/api/v1/ws';
   WebSocketChannel? _channel;
   StreamSubscription? _subscription;
 
