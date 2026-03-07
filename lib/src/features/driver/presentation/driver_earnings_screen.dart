@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../client/data/wallet_repository.dart';
 
-class DriverEarningsScreen extends StatelessWidget {
+class DriverEarningsScreen extends ConsumerWidget {
   const DriverEarningsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF6B7280);
     const kOrangeColor = Color(0xFFF97316);
@@ -19,12 +21,13 @@ class DriverEarningsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(kDarkTextColor, kMidTextColor),
-              _buildBalanceCard(kOrangeColor),
+              _buildBalanceCard(kOrangeColor, ref),
               _buildStatsRow(kDarkTextColor, kGreenColor, kRedColor),
               _buildTransactionsSection(
                 kDarkTextColor,
                 kMidTextColor,
                 kGreenColor,
+                ref,
               ),
             ],
           ),
@@ -62,7 +65,9 @@ class DriverEarningsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBalanceCard(Color orange) {
+  Widget _buildBalanceCard(Color orange, WidgetRef ref) {
+    final balanceAsync = ref.watch(balanceProvider);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
       padding: const EdgeInsets.all(32),
@@ -89,13 +94,25 @@ class DriverEarningsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            '₦1,245.00',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 42,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -1,
+          balanceAsync.when(
+            data: (balance) => Text(
+              '₦${balance.toStringAsFixed(2)}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 42,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -1,
+              ),
+            ),
+            loading: () => const CircularProgressIndicator(color: Colors.white),
+            error: (err, stack) => const Text(
+              '₦0.00',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 42,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -1,
+              ),
             ),
           ),
           const SizedBox(height: 4),
@@ -216,7 +233,14 @@ class DriverEarningsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionsSection(Color darkText, Color midText, Color green) {
+  Widget _buildTransactionsSection(
+    Color darkText,
+    Color midText,
+    Color green,
+    WidgetRef ref,
+  ) {
+    final transactionsAsync = ref.watch(transactionsProvider);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -247,41 +271,51 @@ class DriverEarningsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        _buildTransactionItem(
-          'Cement Delivery - ORD-001',
-          'Today, 3:45 PM',
-          '+₦95.00',
-          green,
-          true,
-        ),
-        _buildTransactionItem(
-          'Steel Transport - ORD-002',
-          'Today, 11:20 AM',
-          '+₦175.00',
-          green,
-          true,
-        ),
-        _buildTransactionItem(
-          'Weekly Payout',
-          'Yesterday',
-          '₦500.00',
-          darkText,
-          false,
-        ),
-        _buildTransactionItem(
-          'Paint Supplies - ORD-003',
-          'Yesterday',
-          '+₦65.00',
-          green,
-          true,
-        ),
-        _buildTransactionItem(
-          'Completion Bonus',
-          '2 days ago',
-          '+₦25.00',
-          green,
-          true,
-          isBonus: true,
+        transactionsAsync.when(
+          data: (transactions) {
+            if (transactions.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    'No transactions yet',
+                    style: TextStyle(color: midText),
+                  ),
+                ),
+              );
+            }
+            return Column(
+              children: transactions.take(5).map((tx) {
+                final isIncoming = tx.type != 'withdrawal';
+                final sign = isIncoming ? '+' : '-';
+                return _buildTransactionItem(
+                  tx.reference.isNotEmpty
+                      ? 'Transaction: ${tx.reference}'
+                      : 'Wallet ${tx.type}',
+                  tx.createdAt.toLocal().toString().split('.')[0],
+                  '$sign₦${tx.amount.toStringAsFixed(2)}',
+                  isIncoming ? green : darkText,
+                  isIncoming,
+                  isBonus: tx.type == 'bonus',
+                );
+              }).toList(),
+            );
+          },
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24.0),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (err, stack) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Text(
+                'Failed to load transactions',
+                style: TextStyle(color: midText),
+              ),
+            ),
+          ),
         ),
         const SizedBox(height: 32),
       ],
