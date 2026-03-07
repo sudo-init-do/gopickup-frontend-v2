@@ -21,13 +21,10 @@ class DriverEarningsScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(kDarkTextColor, kMidTextColor),
-              _buildBalanceCard(kOrangeColor, ref),
-              _buildStatsRow(kDarkTextColor, kGreenColor, kRedColor),
-              _buildTransactionsSection(
-                kDarkTextColor,
-                kMidTextColor,
-                kGreenColor,
-                ref,
+              _buildBalanceCard(ref, kBrandGreen),
+              _buildStatsRow(ref, kDarkTextColor, kGreenColor, kRedColor),
+              Expanded(
+                child: _buildTransactionsSection(ref, kDarkTextColor),
               ),
             ],
           ),
@@ -156,18 +153,64 @@ class DriverEarningsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatsRow(Color darkText, Color green, Color red) {
+  Widget _buildStatsRow(
+    WidgetRef ref,
+    Color darkText,
+    Color green,
+    Color red,
+  ) {
+    final transactionsAsync = ref.watch(transactionsProvider);
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.fromLTRB(24, 32, 24, 32),
-      child: Row(
-        children: [
-          _buildStatCard('Today', '₦125', '+15%', green, true),
-          const SizedBox(width: 16),
-          _buildStatCard('This Week', '₦680', '+8%', green, true),
-          const SizedBox(width: 16),
-          _buildStatCard('This Month', '₦2,450', '-3%', red, false),
-        ],
+      child: transactionsAsync.when(
+        data: (transactions) {
+          final now = DateTime.now();
+          final todayAmount = transactions
+              .where(
+                (t) =>
+                    t.createdAt.day == now.day &&
+                    t.createdAt.month == now.month &&
+                    t.createdAt.year == now.year &&
+                    t.type == TransactionType.credit,
+              )
+              .fold(0.0, (sum, t) => sum + t.amount);
+
+          return Row(
+            children: [
+              _buildStatCard(
+                'Today',
+                '₦\${todayAmount.toStringAsFixed(0)}',
+                'Real-time',
+                green,
+                true,
+              ),
+              const SizedBox(width: 16),
+              _buildStatCard('This Week', '₦--', '---', green, true),
+              const SizedBox(width: 16),
+              _buildStatCard('This Month', '₦--', '---', red, false),
+            ],
+          );
+        },
+        loading: () => Row(
+          children: [
+            _buildStatCard('Today', '...', 'Loading', green, true),
+            const SizedBox(width: 16),
+            _buildStatCard('This Week', '...', 'Loading', green, true),
+            const SizedBox(width: 16),
+            _buildStatCard('This Month', '...', 'Loading', red, false),
+          ],
+        ),
+        error: (_, __) => Row(
+          children: [
+            _buildStatCard('Today', '₦--', 'Unavailable', red, false),
+            const SizedBox(width: 16),
+            _buildStatCard('This Week', '₦--', 'Unavailable', red, false),
+            const SizedBox(width: 16),
+            _buildStatCard('This Month', '₦--', 'Unavailable', red, false),
+          ],
+        ),
       ),
     );
   }

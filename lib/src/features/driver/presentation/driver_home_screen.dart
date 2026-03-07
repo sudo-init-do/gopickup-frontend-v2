@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../driver/data/job_repository.dart';
-import '../../../common/models/order.dart';
+import '../../../common/models/order.dart' as common_order;
+import '../../../models/order_models.dart';
+import '../../../state/order_provider.dart';
 
 class DriverHomeScreen extends ConsumerStatefulWidget {
   const DriverHomeScreen({super.key});
@@ -260,9 +262,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   color: midText.withValues(alpha: 0.5),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   'No available jobs at the moment',
-                  style: TextStyle(color: midText, fontSize: 16),
+                  style: TextStyle(
+                    color: Color(0xFF6B7280),
+                    fontSize: 16,
+                  ),
                 ),
               ],
             ),
@@ -281,7 +286,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error: $err')),
+      error: (err, stack) => Center(child: Text('Backend error: $err')),
     );
   }
 
@@ -291,35 +296,54 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     Color orange,
     Color green,
   ) {
-    final List<Map<String, dynamic>> jobs = [];
+    final driverOrdersAsync = ref.watch(driverOrdersProvider);
 
-    if (jobs.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.assignment_outlined,
-              size: 64,
-              color: midText.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No assigned jobs',
-              style: TextStyle(color: midText, fontSize: 16),
-            ),
-          ],
-        ),
-      );
-    }
+    return driverOrdersAsync.when(
+      data: (orders) {
+        final assignedJobs =
+            orders
+                .where(
+                  (o) =>
+                      o.status == 'assigned' ||
+                      o.status == 'processing' ||
+                      o.status == 'picked_up',
+                )
+                .toList();
 
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-      itemCount: jobs.length,
-      itemBuilder: (context, index) {
-        final job = jobs[index];
-        return _buildAssignedJobCard(job, darkText, midText, green);
+        if (assignedJobs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.assignment_outlined,
+                  size: 64,
+                  color: midText.withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'No assigned jobs',
+                  style: TextStyle(
+                    color: Color(0xFF6B7280),
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          itemCount: assignedJobs.length,
+          itemBuilder: (context, index) {
+            final job = assignedJobs[index];
+            return _buildAssignedOrderCard(job, darkText, midText, green);
+          },
+        );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text('Failed to load tasks')),
     );
   }
 
@@ -329,35 +353,51 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     Color orange,
     Color green,
   ) {
-    final List<Map<String, dynamic>> jobs = [];
+    final driverOrdersAsync = ref.watch(driverOrdersProvider);
 
-    if (jobs.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.history_rounded,
-              size: 64,
-              color: midText.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No history yet',
-              style: TextStyle(color: midText, fontSize: 16),
-            ),
-          ],
-        ),
-      );
-    }
+    return driverOrdersAsync.when(
+      data: (orders) {
+        final historyJobs =
+            orders
+                .where(
+                  (o) => o.status == 'delivered' || o.status == 'cancelled',
+                )
+                .toList();
 
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-      itemCount: jobs.length,
-      itemBuilder: (context, index) {
-        final job = jobs[index];
-        return _buildHistoryJobCard(job, darkText, midText, green);
+        if (historyJobs.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.history_rounded,
+                  size: 64,
+                  color: midText.withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'No history yet',
+                  style: TextStyle(
+                    color: Color(0xFF6B7280),
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          itemCount: historyJobs.length,
+          itemBuilder: (context, index) {
+            final job = historyJobs[index];
+            return _buildHistoryOrderCard(job, darkText, midText, green);
+          },
+        );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(child: Text('Failed to load history')),
     );
   }
 
@@ -468,8 +508,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildAssignedJobCard(
-    Map<String, dynamic> job,
+  Widget _buildAssignedOrderCard(
+    Order job,
     Color darkText,
     Color midText,
     Color green,
@@ -499,7 +539,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   color: green.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(job['icon'] as IconData, color: green, size: 24),
+                child: Icon(Icons.local_shipping_outlined, color: green, size: 24),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -507,7 +547,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      job['title'],
+                      job.items.isNotEmpty ? job.items.first.name ?? 'Load' : 'Task',
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
@@ -516,7 +556,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      job['status'],
+                      job.status.toUpperCase(),
                       style: TextStyle(
                         fontSize: 14,
                         color: green,
@@ -527,7 +567,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 ),
               ),
               Text(
-                job['price'],
+                '₦\${job.totalProductAmount.toStringAsFixed(0)}',
                 style: TextStyle(
                   fontSize: 18,
                   color: green,
@@ -551,7 +591,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'ETA: ',
+                    'Pickup: ',
                     style: TextStyle(
                       color: midText,
                       fontSize: 15,
@@ -559,7 +599,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                     ),
                   ),
                   Text(
-                    job['eta'],
+                    job.createdAt.toString().split(' ').first,
                     style: TextStyle(
                       color: darkText,
                       fontSize: 15,
@@ -583,7 +623,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   ),
                 ),
                 child: const Text(
-                  'Navigate',
+                  'Dashboard',
                   style: TextStyle(fontWeight: FontWeight.w800),
                 ),
               ),
@@ -594,24 +634,131 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildJobCard(
+  Widget _buildHistoryOrderCard(
     Order job,
+    Color darkText,
+    Color midText,
+    Color green,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF3F4F6),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.check_circle_rounded,
+                  color: Color(0xFF94A3B8),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      job.items.isNotEmpty ? job.items.first.name ?? 'Delivery' : 'Completed',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: darkText,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      job.createdAt.toString().split(' ').first,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: midText,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  job.status,
+                  style: TextStyle(
+                    color: green,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Container(height: 1, color: const Color(0xFFF1F5F9)),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '₦\${job.totalProductAmount.toStringAsFixed(0)}',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: darkText,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  'View Details',
+                  style: TextStyle(
+                    color: midText,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildJobCard(
+    common_order.Order job,
     Color darkText,
     Color midText,
     Color orange,
     Color green,
   ) {
     // For title, use the first product name or a generic title
-    final title = job.items.isNotEmpty
-        ? job.items.first.product.name
-        : 'Bulk Delivery';
-    final from = job.items.isNotEmpty
-        ? job.items.first.product.vendorName
-        : 'Vendor Depot';
-    final to = job.id.substring(
-      0,
-      8,
-    ); // Just a placeholder for destination address for now
+    final title =
+        job.items.isNotEmpty ? job.items.first.product.name : 'Bulk Delivery';
+    final from =
+        job.items.isNotEmpty
+            ? job.items.first.product.vendorName
+            : 'Vendor Depot';
+    final to =
+        job.id.length > 8
+            ? job.id.substring(0, 8)
+            : job.id; // Just a placeholder for destination address for now
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),

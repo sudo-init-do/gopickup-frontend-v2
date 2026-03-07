@@ -115,3 +115,7 @@ class OrderNotifier extends Notifier<OrderState> {
 final orderProvider = NotifierProvider<OrderNotifier, OrderState>(() {
   return OrderNotifier();
 });
+
+final driverOrdersProvider = FutureProvider<List<Order>>((ref) {
+  return ref.watch(ordersApiProvider).getDriverOrders();
+});

@@ -40,4 +40,26 @@ class ProfileApi {
       throw Exception(e.response?.data['error'] ?? 'Profile update failed');
     }
   }
+
+  Future<DriverProfile> getDriverProfile() async {
+    try {
+      final response = await ApiClient.dio.get('/profile/driver');
+      return DriverProfile.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to get driver profile',
+      );
+    }
+  }
+
+  Future<VendorProfile> getVendorProfile() async {
+    try {
+      final response = await ApiClient.dio.get('/profile/vendor');
+      return VendorProfile.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to get vendor profile',
+      );
+    }
+  }
 }

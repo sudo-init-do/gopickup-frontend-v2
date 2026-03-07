@@ -70,3 +70,11 @@ class ProfileNotifier extends Notifier<ProfileState> {
 final profileProvider = NotifierProvider<ProfileNotifier, ProfileState>(() {
   return ProfileNotifier();
 });
+
+final driverProfileProvider = FutureProvider<DriverProfile>((ref) {
+  return ref.watch(profileApiProvider).getDriverProfile();
+});
+
+final vendorProfileProvider = FutureProvider<VendorProfile>((ref) {
+  return ref.watch(profileApiProvider).getVendorProfile();
+});

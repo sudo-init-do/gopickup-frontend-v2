@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../state/profile_provider.dart';
+import '../../client/data/wallet_repository.dart';
 
-class DriverProfileScreen extends StatelessWidget {
+class DriverProfileScreen extends ConsumerWidget {
   const DriverProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     const kBrandGreen = Color(0xFF45A225);
     const kStatTextColor = Color(0xFF1E293B);
 
@@ -45,94 +48,107 @@ class DriverProfileScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      Row(
-                        children: [
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.person_outline_rounded,
-                                color: Colors.white,
-                                size: 50,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                      ref.watch(driverProfileProvider).when(
+                            data: (profile) => Row(
                               children: [
-                                const Text(
-                                  'ghfcytx',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w800,
+                                Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.person_outline_rounded,
+                                      color: Colors.white,
+                                      size: 50,
+                                    ),
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                const Text(
-                                  '+1234567890',
-                                  style: TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.2,
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        profile.fullName,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w800,
                                         ),
-                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                      child: const Row(
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        profile.phoneNumber,
+                                        style: const TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Row(
                                         children: [
-                                          Icon(
-                                            Icons.star,
-                                            color: Colors.orange,
-                                            size: 14,
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white.withValues(
+                                                alpha: 0.2,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: const Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.star,
+                                                  color: Colors.orange,
+                                                  size: 14,
+                                                ),
+                                                SizedBox(width: 4),
+                                                Text(
+                                                  '4.8',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 13,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            '4.8',
+                                          const SizedBox(width: 12),
+                                          const Text(
+                                            '0 deliveries',
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
                                             ),
                                           ),
                                         ],
                                       ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    const Text(
-                                      '156 deliveries',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
+                            loading: () => const Center(
+                                child: CircularProgressIndicator(
+                                    color: Colors.white)),
+                            error: (_, __) => const Row(
+                              children: [
+                                Text('Failed to load profile',
+                                    style: TextStyle(color: Colors.white)),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
                     ],
                   ),
                 ),
@@ -157,11 +173,20 @@ class DriverProfileScreen extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        _buildStatItem('156', 'Total Jobs', kStatTextColor),
+                        _buildStatItem('0', 'Total Jobs', kStatTextColor),
                         _buildDivider(),
-                        _buildStatItem('98%', 'Completion', kStatTextColor),
+                        _buildStatItem('0%', 'Completion', kStatTextColor),
                         _buildDivider(),
-                        _buildStatItem('₦12.4k', 'Earned', kBrandGreen),
+                        ref.watch(balanceProvider).when(
+                              data: (balance) => _buildStatItem(
+                                  '₦${(balance / 1000).toStringAsFixed(1)}k',
+                                  'Earned',
+                                  kBrandGreen),
+                              loading: () => _buildStatItem(
+                                  '...', 'Earned', kBrandGreen),
+                              error: (_, __) => _buildStatItem(
+                                  '₦0.0k', 'Earned', kBrandGreen),
+                            ),
                       ],
                     ),
                   ),

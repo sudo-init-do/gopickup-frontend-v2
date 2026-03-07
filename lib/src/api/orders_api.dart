@@ -74,4 +74,15 @@ class OrdersApi {
       throw Exception(e.response?.data['error'] ?? 'Failed to accept bid');
     }
   }
+
+  Future<List<Order>> getDriverOrders() async {
+    try {
+      final response = await ApiClient.dio.get('/driver/jobs');
+      return (response.data as List).map((o) => Order.fromJson(o)).toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to get driver orders',
+      );
+    }
+  }
 }
