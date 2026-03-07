@@ -247,37 +247,28 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 children: [
-                  InkWell(
+                  _QuickActionCard(
+                    icon: Icons.shopping_bag_outlined,
+                    color: AppColors.primary,
+                    title: 'Buy Materials',
+                    subtitle: 'Verified vendors',
                     onTap: () => context.go('/client/products'),
-                    borderRadius: BorderRadius.circular(28),
-                    child: _QuickActionCard(
-                      icon: Icons.shopping_bag_outlined,
-                      color: AppColors.primary,
-                      title: 'Buy Materials',
-                      subtitle: 'Verified vendors',
-                    ),
                   ),
                   const SizedBox(width: 16),
-                  InkWell(
+                  _QuickActionCard(
+                    icon: Icons.inventory_2_outlined,
+                    color: const Color(0xFFF59E0B),
+                    title: 'Post a Load',
+                    subtitle: 'Find drivers',
                     onTap: () => context.push('/client/create-job'),
-                    borderRadius: BorderRadius.circular(28),
-                    child: _QuickActionCard(
-                      icon: Icons.inventory_2_outlined,
-                      color: const Color(0xFFF59E0B),
-                      title: 'Post a Load',
-                      subtitle: 'Find drivers',
-                    ),
                   ),
                   const SizedBox(width: 16),
-                  InkWell(
+                  _QuickActionCard(
+                    icon: Icons.local_shipping_outlined,
+                    color: const Color(0xFF8B5CF6),
+                    title: 'Book a truck',
+                    subtitle: 'Schedule now',
                     onTap: () => context.push('/client/book-truck'),
-                    borderRadius: BorderRadius.circular(28),
-                    child: const _QuickActionCard(
-                      icon: Icons.local_shipping_outlined,
-                      color: Color(0xFF8B5CF6),
-                      title: 'Book a truck',
-                      subtitle: 'Schedule now',
-                    ),
                   ),
                 ],
               ),
@@ -698,19 +689,20 @@ class _QuickActionCard extends StatelessWidget {
   final Color color;
   final String title;
   final String subtitle;
+  final VoidCallback onTap;
 
   const _QuickActionCard({
     required this.icon,
     required this.color,
     required this.title,
     required this.subtitle,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 150, // Slightly wider
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(28),
@@ -723,34 +715,47 @@ class _QuickActionCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            child: Icon(icon, color: Colors.white, size: 24),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-              color: Color(0xFF1F2937),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(28),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 24),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Color(0xFF1F2937),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: Colors.grey[400],
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 6),
-          Text(
-            subtitle,
-            style: TextStyle(
-              color: Colors.grey[400],
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
