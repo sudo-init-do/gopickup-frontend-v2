@@ -269,11 +269,15 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  _QuickActionCard(
-                    icon: Icons.local_shipping_outlined,
-                    color: const Color(0xFF8B5CF6),
-                    title: 'Book a truck',
-                    subtitle: 'Schedule now',
+                  InkWell(
+                    onTap: () => context.push('/client/book-truck'),
+                    borderRadius: BorderRadius.circular(28),
+                    child: const _QuickActionCard(
+                      icon: Icons.local_shipping_outlined,
+                      color: Color(0xFF8B5CF6),
+                      title: 'Book a truck',
+                      subtitle: 'Schedule now',
+                    ),
                   ),
                 ],
               ),

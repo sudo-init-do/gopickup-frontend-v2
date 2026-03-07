@@ -16,6 +16,7 @@ import '../features/client/presentation/client_cart_screen.dart';
 import '../features/client/presentation/client_wallet_screen.dart';
 import '../features/client/presentation/order_detail_screen.dart';
 import '../features/client/presentation/create_job_screen.dart';
+import '../features/client/presentation/book_truck_screen.dart';
 import '../features/driver/presentation/driver_home_screen.dart';
 import '../features/driver/presentation/driver_bids_screen.dart';
 import '../features/driver/presentation/driver_earnings_screen.dart';
@@ -98,6 +99,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/client/create-job',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const CreateJobScreen(),
+      ),
+      GoRoute(
+        path: '/client/book-truck',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const BookTruckScreen(),
       ),
       GoRoute(
         path: '/notifications',
