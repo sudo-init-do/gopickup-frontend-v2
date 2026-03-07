@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/job_repository.dart';
 
 class DriverBidsScreen extends ConsumerStatefulWidget {
   const DriverBidsScreen({super.key});
@@ -119,47 +120,63 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
     Color orange,
     Color red,
   ) {
-    if (_selectedTabIndex != 0) {
-      return Center(
-        child: Text(
-          'No bids here yet',
-          style: TextStyle(
-            color: midText,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      );
-    }
+    final driverBidsAsync = ref.watch(driverBidsProvider);
 
-    final bids = [
-      {
-        'title': 'Cement Delivery',
-        'time': '10 mins ago',
-        'status': 'Pending',
-        'from': '123 Warehouse Rd',
-        'to': '456 Construction Site',
-        'yourBid': '₦95',
-        'budget': '₦80 - ₦120',
-      },
-      {
-        'title': 'Steel Bars Transport',
-        'time': '2 hours ago',
-        'status': 'Pending',
-        'from': 'Steel Works Factory',
-        'to': 'Metro Build Project',
-        'yourBid': '₦175',
-        'budget': '₦150 - ₦200',
-      },
-    ];
+    return driverBidsAsync.when(
+      data: (bids) {
+        // Filter bids by status based on the selected tab
+        // Tab 0: My Bids (pending)
+        // Tab 1: Won (accepted)
+        // Tab 2: Lost (rejected/archived)
+        List<dynamic> filteredBids = [];
+        if (_selectedTabIndex == 0) {
+          filteredBids = bids
+              .where((b) => b['status'] == 'pending' || b['status'] == null)
+              .toList();
+        } else if (_selectedTabIndex == 1) {
+          filteredBids = bids.where((b) => b['status'] == 'accepted').toList();
+        } else {
+          filteredBids = bids.where((b) => b['status'] == 'rejected').toList();
+        }
 
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-      itemCount: bids.length,
-      itemBuilder: (context, index) {
-        final bid = bids[index];
-        return _buildBidCard(bid, darkText, midText, orange, red);
+        if (filteredBids.isEmpty) {
+          return Center(
+            child: Text(
+              'No bids here yet',
+              style: TextStyle(
+                color: midText,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          itemCount: filteredBids.length,
+          itemBuilder: (context, index) {
+            final bid = filteredBids[index] as Map<String, dynamic>;
+
+            // Format data appropriately for _buildBidCard
+            final displayBid = {
+              'title': bid['title'] ?? 'Load Delivery',
+              'time': bid['created_at'] != null ? 'Recently' : 'Now',
+              'status': bid['status'] ?? 'Pending',
+              'from': bid['pickup_address'] ?? 'Pickup Location',
+              'to': bid['delivery_address'] ?? 'Destination Location',
+              'yourBid': bid['amount'] != null ? '₦${bid['amount']}' : '₦0',
+              'budget': bid['budget'] ?? 'Flexible',
+            };
+
+            return _buildBidCard(displayBid, darkText, midText, orange, red);
+          },
+        );
       },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, stack) => Center(
+        child: Text('Failed to load bids', style: TextStyle(color: midText)),
+      ),
     );
   }
 

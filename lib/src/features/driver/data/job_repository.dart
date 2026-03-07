@@ -38,6 +38,15 @@ class JobRepository {
       return false;
     }
   }
+
+  Future<List<dynamic>> getDriverBids() async {
+    try {
+      final response = await _apiClient.get('/driver/bids');
+      return response.data as List<dynamic>;
+    } catch (e) {
+      return [];
+    }
+  }
 }
 
 final jobRepositoryProvider = Provider<JobRepository>((ref) {
@@ -46,4 +55,8 @@ final jobRepositoryProvider = Provider<JobRepository>((ref) {
 
 final availableJobsProvider = FutureProvider<List<Order>>((ref) {
   return ref.watch(jobRepositoryProvider).getAvailableJobs();
+});
+
+final driverBidsProvider = FutureProvider<List<dynamic>>((ref) {
+  return ref.watch(jobRepositoryProvider).getDriverBids();
 });
