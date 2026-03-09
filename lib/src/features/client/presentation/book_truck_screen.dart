@@ -14,15 +14,15 @@ class _BookTruckScreenState extends State<BookTruckScreen> {
   final _dateController = TextEditingController();
   final _timeController = TextEditingController();
   final _noteController = TextEditingController();
-  String _selectedVehicle = 'Van';
+  String _selectedVehicle = 'Tricycle';
 
   final List<String> _vehicles = [
-    'Bicycle',
-    'Motorcycle',
-    'Car',
+    'Tricycle',
     'Van',
+    'Canter',
     'Truck',
-    'Large Truck',
+    'Flatbed',
+    'Tipper',
   ];
 
   @override

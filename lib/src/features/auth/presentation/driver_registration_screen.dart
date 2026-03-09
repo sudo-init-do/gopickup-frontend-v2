@@ -481,28 +481,33 @@ class _DriverRegistrationScreenState
     final vehicleTypes = [
       {
         'title': 'Tricycle',
-        'subtitle': 'Up to 500kg',
+        'subtitle': 'Up to 1 ton',
         'icon': Icons.electric_rickshaw,
       },
       {
         'title': 'Van',
-        'subtitle': 'Up to 1.5 tons',
+        'subtitle': 'Up to 2 tons',
         'icon': Icons.airport_shuttle,
       },
       {
-        'title': 'Trucks',
-        'subtitle': 'Up to 5 tons',
+        'title': 'Canter',
+        'subtitle': 'Up to 4 tons',
+        'icon': Icons.local_shipping_outlined,
+      },
+      {
+        'title': 'Truck',
+        'subtitle': 'Up to 10 tons',
         'icon': Icons.local_shipping,
       },
       {
-        'title': 'Flatbeds',
-        'subtitle': 'Up to 10 tons',
+        'title': 'Flatbed',
+        'subtitle': 'Up to 20 tons',
         'icon': Icons.rv_hookup,
       },
       {
-        'title': 'Trailer',
-        'subtitle': 'Up to 25 tons',
-        'icon': Icons.agriculture,
+        'title': 'Tipper',
+        'subtitle': 'Up to 30 tons',
+        'icon': Icons.local_shipping_rounded,
       },
     ];
 
