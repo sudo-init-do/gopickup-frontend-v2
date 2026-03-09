@@ -13,15 +13,15 @@ class _CreateJobScreenState extends State<CreateJobScreen> {
   final _deliveryController = TextEditingController();
   final _weightController = TextEditingController();
   final _descriptionController = TextEditingController();
-  String _selectedVehicle = 'Truck';
+  String _selectedVehicle = 'Tricycle';
 
   final List<String> _vehicles = [
-    'Bicycle',
-    'Motorcycle',
-    'Car',
+    'Tricycle',
     'Van',
+    'Canter',
     'Truck',
-    'Large Truck',
+    'Flatbed',
+    'Tipper',
   ];
 
   @override
