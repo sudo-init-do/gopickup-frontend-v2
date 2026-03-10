@@ -9,7 +9,7 @@ class DriverEarningsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF6B7280);
-    const kOrangeColor = Color(0xFFF97316);
+    const kBrandGreen = Color(0xFF3B7D23);
     const kGreenColor = Color(0xFF22C55E);
     const kRedColor = Color(0xFFEF4444);
 
@@ -21,10 +21,13 @@ class DriverEarningsScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(kDarkTextColor, kMidTextColor),
-              _buildBalanceCard(ref, kBrandGreen),
+              _buildBalanceCard(kBrandGreen, ref),
               _buildStatsRow(ref, kDarkTextColor, kGreenColor, kRedColor),
-              Expanded(
-                child: _buildTransactionsSection(ref, kDarkTextColor),
+              _buildTransactionsSection(
+                kDarkTextColor,
+                kMidTextColor,
+                kGreenColor,
+                ref,
               ),
             ],
           ),
@@ -173,7 +176,7 @@ class DriverEarningsScreen extends ConsumerWidget {
                     t.createdAt.day == now.day &&
                     t.createdAt.month == now.month &&
                     t.createdAt.year == now.year &&
-                    t.type == TransactionType.credit,
+                    t.type == 'credit',
               )
               .fold(0.0, (sum, t) => sum + t.amount);
 
