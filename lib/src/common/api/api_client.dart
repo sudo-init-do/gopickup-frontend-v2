@@ -64,4 +64,11 @@ class ApiClient {
   Future<Response> delete(String path) {
     return dio.delete(path);
   }
+
+  Future<Response> uploadImage(String path, {required MultipartFile file}) {
+    final formData = FormData.fromMap({
+      'image': file,
+    });
+    return dio.post(path, data: formData);
+  }
 }

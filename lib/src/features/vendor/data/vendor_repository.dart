@@ -3,6 +3,7 @@ import '../../../common/api/api_client.dart';
 import '../../../common/api/api_providers.dart';
 import '../../../common/models/product.dart';
 import '../../../common/models/order.dart';
+import 'package:dio/dio.dart';
 
 class VendorRepository {
   final ApiClient _apiClient;
@@ -20,7 +21,7 @@ class VendorRepository {
   }) async {
     try {
       final response = await _apiClient.post(
-        '/products',
+        '/vendor/products',
         data: {
           'name': name,
           'description': description,
@@ -31,9 +32,22 @@ class VendorRepository {
           'image_url': imageUrl ?? '',
         },
       );
-      return response.statusCode == 201;
+      return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<String?> uploadProductImage(String filePath, String fileName) async {
+    try {
+      final multipartFile = await MultipartFile.fromFile(filePath, filename: fileName);
+      final response = await _apiClient.uploadImage('/upload', file: multipartFile);
+      if (response.statusCode == 200) {
+        return response.data['image_url'];
+      }
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 

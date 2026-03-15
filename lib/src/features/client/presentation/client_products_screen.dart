@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../common/constants/app_constants.dart';
+import '../../../common/config/app_config.dart';
 import '../../../models/product_models.dart';
 import '../../../state/product_provider.dart';
 import '../data/cart_provider.dart';
@@ -515,19 +516,31 @@ class ProductCard extends ConsumerWidget {
                 flex: 4,
                 child: Container(
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.vertical(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(24),
                     ),
+                    image: product.imageUrl.isNotEmpty
+                        ? DecorationImage(
+                            image: NetworkImage(
+                              product.imageUrl.startsWith('http')
+                                  ? product.imageUrl
+                                  : '${AppConfig.apiBaseUrl}${product.imageUrl}',
+                            ),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
                   ),
-                  child: Center(
-                    child: Icon(
-                      Icons.image_outlined,
-                      size: 40,
-                      color: Colors.grey[300],
-                    ),
-                  ),
+                  child: product.imageUrl.isEmpty
+                      ? Center(
+                          child: Icon(
+                            Icons.image_outlined,
+                            size: 40,
+                            color: Colors.grey[300],
+                          ),
+                        )
+                      : null,
                 ),
               ),
               // Content Area

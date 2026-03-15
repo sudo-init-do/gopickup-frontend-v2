@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../data/cart_provider.dart';
 import '../../../models/order_models.dart';
 import '../../../state/order_provider.dart';
+import '../../../common/config/app_config.dart';
 
 class ClientCartScreen extends ConsumerWidget {
   const ClientCartScreen({super.key});
@@ -330,8 +331,20 @@ class ClientCartScreen extends ConsumerWidget {
             decoration: BoxDecoration(
               color: const Color(0xFFF3F4F6),
               borderRadius: BorderRadius.circular(16),
+              image: item.product.imageUrl.isNotEmpty
+                  ? DecorationImage(
+                      image: NetworkImage(
+                        item.product.imageUrl.startsWith('http')
+                            ? item.product.imageUrl
+                            : '${AppConfig.apiBaseUrl}${item.product.imageUrl}',
+                      ),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
             ),
-            child: const Icon(Icons.image_outlined, color: Color(0xFFD1D5DB)),
+            child: item.product.imageUrl.isEmpty
+                ? const Icon(Icons.image_outlined, color: Color(0xFFD1D5DB))
+                : null,
           ),
           const SizedBox(width: 16),
           Expanded(

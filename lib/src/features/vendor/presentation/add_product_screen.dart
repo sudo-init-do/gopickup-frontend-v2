@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../data/vendor_repository.dart';
 
 class AddProductScreen extends ConsumerStatefulWidget {
@@ -16,6 +18,8 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
   final _priceController = TextEditingController();
   final _stockController = TextEditingController();
   int _moq = 1;
+
+  File? _selectedImage;
 
   String _selectedCategory = 'Cement';
   final List<String> _categories = [
@@ -88,27 +92,46 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
           children: [
             _buildSectionLabel('Product Images', kDarkTextColor),
             const SizedBox(height: 12),
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
-              ),
-              child: const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add, color: Color(0xFF94A3B8), size: 28),
-                  SizedBox(height: 4),
-                  Text(
-                    'Add',
-                    style: TextStyle(
-                      color: kMidTextColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
+            GestureDetector(
+              onTap: () async {
+                final picker = ImagePicker();
+                final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+                if (pickedFile != null) {
+                  setState(() {
+                    _selectedImage = File(pickedFile.path);
+                  });
+                }
+              },
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+                  image: _selectedImage != null
+                      ? DecorationImage(
+                          image: FileImage(_selectedImage!),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+                child: _selectedImage == null
+                    ? const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add, color: Color(0xFF94A3B8), size: 28),
+                          SizedBox(height: 4),
+                          Text(
+                            'Add',
+                            style: TextStyle(
+                              color: kMidTextColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      )
+                    : null,
               ),
             ),
             const SizedBox(height: 32),
@@ -279,6 +302,25 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                       const Center(child: CircularProgressIndicator()),
                 );
 
+                String? imageUrl;
+                if (_selectedImage != null) {
+                  final fileName = _selectedImage!.path.split('/').last;
+                  imageUrl = await ref
+                      .read(vendorRepositoryProvider)
+                      .uploadProductImage(_selectedImage!.path, fileName);
+                  
+                  if (imageUrl == null && context.mounted) {
+                    Navigator.pop(context); // Close loading
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Failed to upload image'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+                }
+
                 final success = await ref
                     .read(vendorRepositoryProvider)
                     .addProduct(
@@ -288,6 +330,7 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                       price: price,
                       stock: stock,
                       moq: _moq,
+                      imageUrl: imageUrl,
                     );
 
                 if (context.mounted) {

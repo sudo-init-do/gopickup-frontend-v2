@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../data/vendor_repository.dart';
+import '../../../common/config/app_config.dart';
 
 class VendorInventoryScreen extends ConsumerWidget {
   const VendorInventoryScreen({super.key});
@@ -156,6 +157,7 @@ class VendorInventoryScreen extends ConsumerWidget {
                             '${product.id.toString() == 'dummy' ? 0 : 100}', // Mock soldier for now or use real data if available
                             '${product.moq}',
                             '0 sold', // Mock sold for now
+                            product.imageUrl,
                             kDarkTextColor,
                             kMidTextColor,
                             kLightBorderColor,
@@ -201,6 +203,7 @@ class VendorInventoryScreen extends ConsumerWidget {
     String stock,
     String moq,
     String sold,
+    String imageUrl,
     Color kDarkTextColor,
     Color kMidTextColor,
     Color kLightBorderColor,
@@ -230,12 +233,24 @@ class VendorInventoryScreen extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: const Color(0xFFF3F4F6),
                   borderRadius: BorderRadius.circular(20),
+                  image: imageUrl.isNotEmpty
+                      ? DecorationImage(
+                          image: NetworkImage(
+                            imageUrl.startsWith('http')
+                                ? imageUrl
+                                : '${AppConfig.apiBaseUrl}$imageUrl',
+                          ),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
-                child: const Icon(
-                  Icons.inventory_2_outlined,
-                  color: Color(0xFF94A3B8),
-                  size: 30,
-                ),
+                child: imageUrl.isEmpty
+                    ? const Icon(
+                        Icons.inventory_2_outlined,
+                        color: Color(0xFF94A3B8),
+                        size: 30,
+                      )
+                    : null,
               ),
               const SizedBox(width: 16),
               Expanded(
