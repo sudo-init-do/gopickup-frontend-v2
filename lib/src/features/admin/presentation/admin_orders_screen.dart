@@ -9,11 +9,13 @@ class AdminOrdersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(adminOrdersProvider);
+    final isMobile = MediaQuery.of(context).size.width < 768;
+    final padding = isMobile ? 16.0 : 32.0;
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(padding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -22,10 +24,12 @@ class AdminOrdersScreen extends ConsumerWidget {
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
+                    fontSize: isMobile ? 22 : null,
                   ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             Container(
+              width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -39,9 +43,7 @@ class AdminOrdersScreen extends ConsumerWidget {
               ),
               child: ordersAsync.when(
                 data: (orders) {
-                  if (orders.isEmpty) {
-                    return _buildEmptyState();
-                  }
+                  if (orders.isEmpty) return _buildEmptyState();
                   return ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -49,21 +51,15 @@ class AdminOrdersScreen extends ConsumerWidget {
                     separatorBuilder: (context, index) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final order = orders[index];
-                      return _buildOrderTile(context, order);
+                      return _buildOrderTile(context, order, isMobile);
                     },
                   );
                 },
                 loading: () => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(40.0),
-                    child: CircularProgressIndicator(),
-                  ),
+                  child: Padding(padding: EdgeInsets.all(40.0), child: CircularProgressIndicator()),
                 ),
                 error: (e, stack) => Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(40.0),
-                    child: Text('Error: $e'),
-                  ),
+                  child: Padding(padding: const EdgeInsets.all(40.0), child: Text('Error: $e')),
                 ),
               ),
             ),
@@ -73,86 +69,91 @@ class AdminOrdersScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildOrderTile(BuildContext context, Order order) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildOrderTile(BuildContext context, Order order, bool isMobile) {
+    return Padding(
+      padding: EdgeInsets.all(isMobile ? 14 : 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Order #${order.id.substring(0, 8)}',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          // Header row: Order ID + Status
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Order #${order.id.substring(0, 8)}',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: isMobile ? 14 : 16),
+                ),
+              ),
+              _StatusBadge(status: order.status),
+            ],
           ),
-          _StatusBadge(status: order.status),
+          const SizedBox(height: 10),
+
+          // Pickup address
+          Row(
+            children: [
+              Icon(Icons.location_on_outlined, size: isMobile ? 14 : 16, color: Colors.grey),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  'From: ${order.pickupAddress}',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: isMobile ? 12 : 13),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+
+          // Delivery address
+          Row(
+            children: [
+              Icon(Icons.home_outlined, size: isMobile ? 14 : 16, color: Colors.grey),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  'To: ${order.deliveryAddress}',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: isMobile ? 12 : 13),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Bottom row: Products + Total
+          isMobile
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Products: ${order.items.length}', style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13)),
+                    const SizedBox(height: 4),
+                    Text('Total: ₦${order.totalProductAmount}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 15)),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Products: ${order.items.length}', style: const TextStyle(fontWeight: FontWeight.w500)),
+                    Text('Total: ₦${order.totalProductAmount}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+                  ],
+                ),
         ],
       ),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-             Row(
-              children: [
-                const Icon(Icons.location_on_outlined, size: 14, color: Colors.grey),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    'From: ${order.pickupAddress}',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                const Icon(Icons.home_outlined, size: 14, color: Colors.grey),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    'To: ${order.deliveryAddress}',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Products: ${order.items.length}',
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
-                Text(
-                  'Total: ₦${order.totalProductAmount}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      onTap: () {
-        // Maybe open details
-      },
     );
   }
 
   Widget _buildEmptyState() {
-     return const Center(
+    return const Center(
       child: Padding(
-        padding: EdgeInsets.all(80.0),
+        padding: EdgeInsets.all(60.0),
         child: Column(
           children: [
             Icon(Icons.assignment_outlined, size: 64, color: Colors.grey),
             SizedBox(height: 16),
-            Text('No active orders found', style: TextStyle(color: Colors.grey, fontSize: 18)),
+            Text('No active orders found', style: TextStyle(color: Colors.grey, fontSize: 16)),
           ],
         ),
       ),
@@ -184,12 +185,8 @@ class _StatusBadge extends StatelessWidget {
         border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Text(
-        status.toUpperCase(),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: color,
-        ),
+        status.replaceAll('_', ' ').toUpperCase(),
+        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
       ),
     );
   }

@@ -19,7 +19,6 @@ class AdminScaffold extends ConsumerWidget {
     final authState = ref.watch(authProvider);
     final user = authState.user;
 
-    // Protect admin routes: redirect to admin login if not authenticated or not admin
     if (!authState.isLoading && (user == null || user.role != 'admin')) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.go('/admin/login');
@@ -27,28 +26,178 @@ class AdminScaffold extends ConsumerWidget {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    return Scaffold(
-      body: Row(
-        children: [
-          // Sidebar
-          _AdminSidebar(currentLocation: currentLocation),
-          // Main Content
-          Expanded(
-            child: Column(
-              children: [
-                // Header
-                _AdminHeader(userName: user?.email ?? 'Admin'),
-                // Content Area
-                Expanded(child: child),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isMobile = constraints.maxWidth < 768;
+
+        if (isMobile) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 1,
+              iconTheme: const IconThemeData(color: Colors.black87),
+              title: const Text(
+                'GoPickup Admin',
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              actions: [
+                const Icon(Icons.notifications_none, color: Colors.grey),
+                const SizedBox(width: 12),
+                CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.grey.shade200,
+                  child: const Icon(Icons.person_outline, size: 18, color: Colors.grey),
+                ),
+                const SizedBox(width: 16),
               ],
             ),
+            drawer: _AdminDrawer(currentLocation: currentLocation),
+            body: child,
+          );
+        }
+
+        // Desktop layout
+        return Scaffold(
+          body: Row(
+            children: [
+              _AdminSidebar(currentLocation: currentLocation),
+              Expanded(
+                child: Column(
+                  children: [
+                    _AdminHeader(userName: user?.email ?? 'Admin'),
+                    Expanded(child: child),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        );
+      },
+    );
+  }
+}
+
+// Mobile drawer
+class _AdminDrawer extends ConsumerWidget {
+  final String currentLocation;
+
+  const _AdminDrawer({required this.currentLocation});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Drawer(
+      backgroundColor: Colors.black87,
+      child: SafeArea(
+        child: Column(
+          children: [
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.admin_panel_settings, color: Colors.black87),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Go Pickup',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 36),
+            _DrawerItem(
+              icon: Icons.dashboard_outlined,
+              label: 'Dashboard',
+              route: '/admin',
+              isSelected: currentLocation == '/admin',
+            ),
+            _DrawerItem(
+              icon: Icons.people_outline,
+              label: 'User Management',
+              route: '/admin/users',
+              isSelected: currentLocation == '/admin/users',
+            ),
+            _DrawerItem(
+              icon: Icons.local_shipping_outlined,
+              label: 'Order Monitoring',
+              route: '/admin/orders',
+              isSelected: currentLocation == '/admin/orders',
+            ),
+            const Spacer(),
+            const Divider(color: Colors.white24),
+            _DrawerItem(
+              icon: Icons.logout,
+              label: 'Logout',
+              route: '/',
+              isSelected: false,
+              onTap: () {
+                ref.read(authProvider.notifier).logout();
+                context.go('/');
+              },
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
       ),
     );
   }
 }
 
+class _DrawerItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String route;
+  final bool isSelected;
+  final VoidCallback? onTap;
+
+  const _DrawerItem({
+    required this.icon,
+    required this.label,
+    required this.route,
+    required this.isSelected,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        tileColor: isSelected ? Colors.white.withOpacity(0.1) : Colors.transparent,
+        leading: Icon(icon, color: isSelected ? Colors.white : Colors.white70),
+        title: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.white70,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+        onTap: onTap ?? () {
+          Navigator.pop(context); // Close drawer
+          context.go(route);
+        },
+      ),
+    );
+  }
+}
+
+// Desktop sidebar
 class _AdminSidebar extends ConsumerWidget {
   final String currentLocation;
 
@@ -62,7 +211,6 @@ class _AdminSidebar extends ConsumerWidget {
       child: Column(
         children: [
           const SizedBox(height: 48),
-          // Branding
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Row(
@@ -88,7 +236,6 @@ class _AdminSidebar extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 48),
-          // Navigation
           _SidebarItem(
             icon: Icons.dashboard_outlined,
             label: 'Dashboard',
