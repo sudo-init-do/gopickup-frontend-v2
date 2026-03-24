@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../api/admin_api.dart';
+import '../../../api/admin_api.dart';
 import '../domain/admin_stats.dart';
 
 final adminApiProvider = Provider<AdminApi>((ref) => AdminApi());

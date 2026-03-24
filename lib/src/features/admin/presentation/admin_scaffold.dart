@@ -45,13 +45,13 @@ class AdminScaffold extends ConsumerWidget {
   }
 }
 
-class _AdminSidebar extends StatelessWidget {
+class _AdminSidebar extends ConsumerWidget {
   final String currentLocation;
 
   const _AdminSidebar({required this.currentLocation});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       width: 250,
       color: Colors.black87,
