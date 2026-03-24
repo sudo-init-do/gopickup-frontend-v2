@@ -76,6 +76,25 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
+  Future<bool> adminLogin(String email, String password) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final response = await _authApi.adminLogin(email, password);
+      final token = response['token'] as String;
+      final userDict = response['user'] as Map<String, dynamic>;
+
+      await ApiClient.secureStorage.write(key: 'jwt_token', value: token);
+      final user = User.fromJson(userDict);
+
+      state = state.copyWith(user: user, isLoading: false);
+      ref.read(websocketServiceProvider).connect(token);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
   Future<bool> register(String email, String password, String role) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {

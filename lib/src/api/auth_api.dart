@@ -43,6 +43,18 @@ class AuthApi {
     }
   }
 
+  Future<Map<String, dynamic>> adminLogin(String email, String password) async {
+    try {
+      final response = await ApiClient.dio.post(
+        '/auth/admin-login',
+        data: {'email': email, 'password': password},
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Admin login failed');
+    }
+  }
+
   Future<User> getCurrentUser() async {
     try {
       final response = await ApiClient.dio.get('/auth/me');

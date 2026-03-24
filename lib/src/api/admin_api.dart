@@ -1,0 +1,52 @@
+import 'package:dio/dio.dart';
+import '../features/admin/domain/admin_stats.dart';
+import '../models/order_models.dart';
+import '../models/user_models.dart';
+import 'api_client.dart';
+
+class AdminApi {
+  Future<AdminStats> getStats() async {
+    try {
+      final response = await ApiClient.dio.get('/admin/stats');
+      return AdminStats.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to load stats');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getUsers({String? role}) async {
+    try {
+      final queryParams = role != null ? {'role': role} : <String, dynamic>{};
+      final response = await ApiClient.dio.get('/admin/users', queryParameters: queryParams);
+      return List<Map<String, dynamic>>.from(response.data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to load users');
+    }
+  }
+
+  Future<void> approveDriver(String userId) async {
+    try {
+      await ApiClient.dio.patch('/admin/drivers/$userId/approve');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to approve driver');
+    }
+  }
+
+  Future<void> approveVendor(String userId) async {
+    try {
+      await ApiClient.dio.patch('/admin/vendors/$userId/approve');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to approve vendor');
+    }
+  }
+
+  Future<List<Order>> getOrders() async {
+    try {
+      final response = await ApiClient.dio.get('/admin/orders');
+      final List<dynamic> ordersJson = response.data;
+      return ordersJson.map((json) => Order.fromJson(json)).toList();
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to load orders');
+    }
+  }
+}

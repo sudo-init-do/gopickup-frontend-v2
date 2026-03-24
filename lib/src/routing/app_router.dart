@@ -38,6 +38,13 @@ import '../features/shared/presentation/settings_screen.dart';
 import '../models/order_models.dart';
 import '../models/chat_models.dart';
 
+import '../features/auth/presentation/admin_login_screen.dart';
+import '../features/admin/presentation/admin_dashboard_screen.dart';
+import '../features/admin/presentation/admin_users_screen.dart';
+import '../features/admin/presentation/admin_orders_screen.dart';
+import '../features/admin/presentation/admin_scaffold.dart';
+import '../state/auth_provider.dart';
+
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -45,8 +52,38 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: true,
+    redirect: (context, state) {
+      final authState = ref.watch(authProvider);
+      final isLoggedIn = authState.user != null;
+      final isLoggingIn = state.uri.path == '/' || state.uri.path == '/admin/login';
+
+      if (!isLoggedIn) {
+        if (!isLoggingIn) return '/';
+        return null;
+      }
+
+      // If logged in and on login page, redirect to respective home
+      if (isLoggingIn) {
+        final role = authState.user!.role;
+        if (role == 'admin') return '/admin';
+        if (role == 'vendor') return '/vendor';
+        if (role == 'driver') return '/driver';
+        return '/client';
+      }
+
+      // Role protection for admin routes
+      if (state.uri.path.startsWith('/admin') && authState.user!.role != 'admin') {
+         return '/';
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(path: '/', builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: '/admin/login',
+        builder: (context, state) => const AdminLoginScreen(),
+      ),
       GoRoute(
         path: '/signup',
         builder: (context, state) => const SignupScreen(),
@@ -347,6 +384,30 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/vendor/profile',
             builder: (context, state) => const VendorProfileScreen(),
+          ),
+        ],
+      ),
+
+      // Admin Shell
+      ShellRoute(
+        builder: (context, state, child) {
+          return AdminScaffold(
+            currentLocation: state.uri.path,
+            child: child,
+          );
+        },
+        routes: [
+          GoRoute(
+            path: '/admin',
+            builder: (context, state) => const AdminDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/admin/users',
+            builder: (context, state) => const AdminUsersScreen(),
+          ),
+          GoRoute(
+            path: '/admin/orders',
+            builder: (context, state) => const AdminOrdersScreen(),
           ),
         ],
       ),
