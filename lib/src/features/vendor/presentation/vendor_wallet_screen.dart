@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../shared/presentation/coming_soon_screen.dart';
+import '../../shared/presentation/coming_soon_screen.dart';
 
 // Original vendor wallet implementation preserved in git history.
 
