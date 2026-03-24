@@ -16,11 +16,15 @@ class AdminScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(authProvider).user;
-    
-    // Safety check - redirect to login if not admin (handled in router too)
-    if (user != null && user.role != 'admin') {
-       // redirect handled in router redirection logic usually
+    final authState = ref.watch(authProvider);
+    final user = authState.user;
+
+    // Protect admin routes: redirect to admin login if not authenticated or not admin
+    if (!authState.isLoading && (user == null || user.role != 'admin')) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.go('/admin/login');
+      });
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(

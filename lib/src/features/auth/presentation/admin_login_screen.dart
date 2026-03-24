@@ -17,6 +17,18 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
   bool _obscurePassword = true;
   bool _isFormValid = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // If already logged in as admin, go to dashboard
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = ref.read(authProvider).user;
+      if (user != null && user.role == 'admin') {
+        context.go('/admin');
+      }
+    });
+  }
+
   void _validateForm() {
     setState(() {
       _isFormValid =

@@ -52,32 +52,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: true,
-    redirect: (context, state) {
-      final authState = ref.watch(authProvider);
-      final isLoggedIn = authState.user != null;
-      final isLoggingIn = state.uri.path == '/' || state.uri.path == '/admin/login';
-
-      if (!isLoggedIn) {
-        if (!isLoggingIn) return '/';
-        return null;
-      }
-
-      // If logged in and on login page, redirect to respective home
-      if (isLoggingIn) {
-        final role = authState.user!.role;
-        if (role == 'admin') return '/admin';
-        if (role == 'vendor') return '/vendor';
-        if (role == 'driver') return '/driver';
-        return '/client';
-      }
-
-      // Role protection for admin routes
-      if (state.uri.path.startsWith('/admin') && authState.user!.role != 'admin') {
-         return '/';
-      }
-
-      return null;
-    },
     routes: [
       GoRoute(path: '/', builder: (context, state) => const LoginScreen()),
       GoRoute(
