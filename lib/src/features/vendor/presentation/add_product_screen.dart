@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
 import '../data/vendor_repository.dart';
 
 class AddProductScreen extends ConsumerStatefulWidget {
@@ -19,7 +20,8 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
   final _stockController = TextEditingController();
   int _moq = 1;
 
-  File? _selectedImage;
+  XFile? _selectedImage;
+  Uint8List? _imageBytes;
 
   String _selectedCategory = 'Cement';
   final List<String> _categories = [
@@ -96,11 +98,13 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
               onTap: () async {
                 final picker = ImagePicker();
                 final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-                if (pickedFile != null) {
-                  setState(() {
-                    _selectedImage = File(pickedFile.path);
-                  });
-                }
+                  if (pickedFile != null) {
+                    final bytes = await pickedFile.readAsBytes();
+                    setState(() {
+                      _selectedImage = pickedFile;
+                      _imageBytes = bytes;
+                    });
+                  }
               },
               child: Container(
                 width: 100,
@@ -108,9 +112,9 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
-                  image: _selectedImage != null
+                  image: _imageBytes != null
                       ? DecorationImage(
-                          image: FileImage(_selectedImage!),
+                          image: MemoryImage(_imageBytes!),
                           fit: BoxFit.cover,
                         )
                       : null,
@@ -303,11 +307,11 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                 );
 
                 String? imageUrl;
-                if (_selectedImage != null) {
-                  final fileName = _selectedImage!.path.split('/').last;
+                if (_imageBytes != null) {
+                  final fileName = _selectedImage!.name;
                   imageUrl = await ref
                       .read(vendorRepositoryProvider)
-                      .uploadProductImage(_selectedImage!.path, fileName);
+                      .uploadProductImage(_imageBytes!, fileName);
                   
                   if (imageUrl == null && context.mounted) {
                     Navigator.pop(context); // Close loading

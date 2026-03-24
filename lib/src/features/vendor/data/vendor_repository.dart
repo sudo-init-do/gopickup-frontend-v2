@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:typed_data';
 import '../../../common/api/api_client.dart';
 import '../../../common/api/api_providers.dart';
 import '../../../common/models/product.dart';
@@ -38,9 +39,9 @@ class VendorRepository {
     }
   }
 
-  Future<String?> uploadProductImage(String filePath, String fileName) async {
+  Future<String?> uploadProductImage(Uint8List bytes, String fileName) async {
     try {
-      final multipartFile = await MultipartFile.fromFile(filePath, filename: fileName);
+      final multipartFile = MultipartFile.fromBytes(bytes, filename: fileName);
       final response = await _apiClient.uploadImage('/upload', file: multipartFile);
       if (response.statusCode == 200) {
         return response.data['image_url'];
