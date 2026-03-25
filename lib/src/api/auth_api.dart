@@ -10,7 +10,7 @@ class AuthApi {
   ) async {
     try {
       final response = await ApiClient.dio.post(
-        '/auth/register',
+        'auth/register',
         data: {'email': email, 'password': password, 'role': role},
       );
       return response.data; // Expected { "token": "jwt...", "user": { ... } }
@@ -22,7 +22,7 @@ class AuthApi {
   Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
     try {
       final response = await ApiClient.dio.post(
-        '/auth/verify-otp',
+        'auth/verify-otp',
         data: {'email': email, 'otp': otp},
       );
       return response.data;
@@ -34,7 +34,7 @@ class AuthApi {
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
       final response = await ApiClient.dio.post(
-        '/auth/login',
+        'auth/login',
         data: {'email': email, 'password': password},
       );
       return response.data; // Expected { "token": "jwt...", "user": { ... } }
@@ -46,7 +46,7 @@ class AuthApi {
   Future<Map<String, dynamic>> adminLogin(String email, String password) async {
     try {
       final response = await ApiClient.dio.post(
-        '/auth/admin-login',
+        'auth/admin-login',
         data: {'email': email, 'password': password},
       );
       return response.data;
@@ -57,7 +57,7 @@ class AuthApi {
 
   Future<User> getCurrentUser() async {
     try {
-      final response = await ApiClient.dio.get('/auth/me');
+      final response = await ApiClient.dio.get('auth/me');
       return User.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(
@@ -69,7 +69,7 @@ class AuthApi {
   Future<void> forgotPassword(String email) async {
     try {
       await ApiClient.dio.post(
-        '/auth/forgot-password',
+        'auth/forgot-password',
         data: {'email': email},
       );
     } on DioException catch (e) {
@@ -80,7 +80,7 @@ class AuthApi {
   Future<void> resetPassword(String email, String otp, String newPassword) async {
     try {
       await ApiClient.dio.post(
-        '/auth/reset-password',
+        'auth/reset-password',
         data: {
           'email': email,
           'otp': otp,

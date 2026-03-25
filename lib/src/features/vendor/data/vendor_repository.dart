@@ -42,7 +42,7 @@ class VendorRepository {
   Future<String?> uploadProductImage(Uint8List bytes, String fileName) async {
     try {
       final multipartFile = MultipartFile.fromBytes(bytes, filename: fileName);
-      final response = await _apiClient.uploadImage('/upload', file: multipartFile);
+      final response = await _apiClient.uploadImage('upload', file: multipartFile);
       if (response.statusCode == 200) {
         return response.data['image_url'];
       }
@@ -54,7 +54,7 @@ class VendorRepository {
 
   Future<List<Product>> getInventory() async {
     try {
-      final response = await _apiClient.get('/products/vendor/me');
+      final response = await _apiClient.get('products/vendor/me');
       if (response.statusCode == 200) {
         final dynamic respData = response.data;
         if (respData is List) {
@@ -77,7 +77,7 @@ class VendorRepository {
 
   Future<List<Order>> getOrders() async {
     try {
-      final response = await _apiClient.get('/orders');
+      final response = await _apiClient.get('orders');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         return data.map((json) => Order.fromJson(json)).toList();

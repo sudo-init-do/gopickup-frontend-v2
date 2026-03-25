@@ -13,7 +13,7 @@ class OrdersApi {
   }) async {
     try {
       final response = await ApiClient.dio.post(
-        '/orders/checkout',
+        'orders/checkout',
         data: {
           'items': items.map((i) => i.toJson()).toList(),
           'payment_method': paymentMethod,
@@ -32,7 +32,7 @@ class OrdersApi {
   Future<Map<String, dynamic>> getOrders({int page = 1, int limit = 10}) async {
     try {
       final response = await ApiClient.dio.get(
-        '/orders',
+        'orders',
         queryParameters: {'page': page, 'limit': limit},
       );
       List<Order> orders = (response.data['data'] as List)
@@ -46,7 +46,7 @@ class OrdersApi {
 
   Future<Order> getOrderDetails(String id) async {
     try {
-      final response = await ApiClient.dio.get('/orders/$id');
+      final response = await ApiClient.dio.get('orders/$id');
       return Order.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(
@@ -57,7 +57,7 @@ class OrdersApi {
 
   Future<List<JobBid>> getBids(String orderId) async {
     try {
-      final response = await ApiClient.dio.get('/orders/$orderId/bids');
+      final response = await ApiClient.dio.get('orders/$orderId/bids');
       return (response.data as List).map((b) => JobBid.fromJson(b)).toList();
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Failed to get bids');
@@ -67,7 +67,7 @@ class OrdersApi {
   Future<Order> acceptBid(String orderId, String bidId) async {
     try {
       final response = await ApiClient.dio.post(
-        '/orders/$orderId/bids/$bidId/accept',
+        'orders/$orderId/bids/$bidId/accept',
       );
       return Order.fromJson(response.data);
     } on DioException catch (e) {
@@ -77,7 +77,7 @@ class OrdersApi {
 
   Future<List<Order>> getDriverOrders() async {
     try {
-      final response = await ApiClient.dio.get('/driver/jobs');
+      final response = await ApiClient.dio.get('driver/jobs');
       return (response.data as List).map((o) => Order.fromJson(o)).toList();
     } on DioException catch (e) {
       throw Exception(

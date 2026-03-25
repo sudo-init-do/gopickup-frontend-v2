@@ -29,7 +29,7 @@ class ProductRepository {
   }
 
   Future<Product> getProduct(String id) async {
-    final response = await _apiClient.get('/products/$id');
+    final response = await _apiClient.get('products/$id');
     return Product.fromJson(response.data);
   }
 }

@@ -35,7 +35,7 @@ class WalletRepository {
 
   Future<double> getBalance() async {
     try {
-      final response = await _apiClient.get('/wallet/balance');
+      final response = await _apiClient.get('wallet/balance');
       return (response.data['balance'] as num).toDouble();
     } catch (e) {
       return 0.0;
@@ -44,7 +44,7 @@ class WalletRepository {
 
   Future<List<WalletTransaction>> getTransactions() async {
     try {
-      final response = await _apiClient.get('/wallet/transactions');
+      final response = await _apiClient.get('wallet/transactions');
       final List<dynamic> data = response.data;
       return data.map((json) => WalletTransaction.fromJson(json)).toList();
     } catch (e) {

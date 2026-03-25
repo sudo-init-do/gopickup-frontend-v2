@@ -3,7 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiClient {
   static const String baseUrl =
-      'https://backend.gopickup.com.ng/api/v1'; // Update to exact IP for physical devices or production URL
+      'https://backend.gopickup.com.ng/api/v1/'; // Update to exact IP for physical devices or production URL
   static final Dio dio = Dio(
     BaseOptions(
       baseUrl: baseUrl,

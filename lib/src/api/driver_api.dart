@@ -9,7 +9,7 @@ class DriverApi {
   }) async {
     try {
       await ApiClient.dio.patch(
-        '/driver/location',
+        'driver/location',
         data: {'lat': lat, 'lng': lng},
       );
     } on DioException catch (e) {
@@ -19,7 +19,7 @@ class DriverApi {
 
   Future<List<Order>> getAvailableJobs() async {
     try {
-      final response = await ApiClient.dio.get('/jobs/available');
+      final response = await ApiClient.dio.get('jobs/available');
       return (response.data as List).map((o) => Order.fromJson(o)).toList();
     } on DioException catch (e) {
       throw Exception(
@@ -31,7 +31,7 @@ class DriverApi {
   Future<JobBid> placeBid(String orderId, double amount) async {
     try {
       final response = await ApiClient.dio.post(
-        '/jobs/$orderId/bid',
+        'jobs/$orderId/bid',
         data: {'amount': amount},
       );
       return JobBid.fromJson(response.data);

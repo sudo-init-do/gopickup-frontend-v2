@@ -5,7 +5,7 @@ class NotificationsApi {
   Future<void> updateFcmToken(String token) async {
     try {
       await ApiClient.dio.put(
-        '/notifications/fcm-token',
+        'notifications/fcm-token',
         data: {'token': token},
       );
     } on DioException catch (e) {

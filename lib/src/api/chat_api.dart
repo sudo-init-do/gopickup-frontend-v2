@@ -9,7 +9,7 @@ class ChatApi {
   }) async {
     try {
       final response = await ApiClient.dio.post(
-        '/chats/initiate',
+        'chats/initiate',
         data: {'recipient_user_id': recipientUserId, 'order_id': ?orderId},
       );
       return Conversation.fromJson(response.data);
@@ -20,7 +20,7 @@ class ChatApi {
 
   Future<List<Conversation>> getChats() async {
     try {
-      final response = await ApiClient.dio.get('/chats');
+      final response = await ApiClient.dio.get('chats');
       return (response.data as List)
           .map((c) => Conversation.fromJson(c))
           .toList();
@@ -36,7 +36,7 @@ class ChatApi {
   }) async {
     try {
       final response = await ApiClient.dio.get(
-        '/chats/$chatId/messages',
+        'chats/$chatId/messages',
         queryParameters: {'page': page, 'limit': limit},
       );
       List<Message> messages = (response.data['data'] as List)
@@ -50,7 +50,7 @@ class ChatApi {
 
   Future<void> markRead(String chatId) async {
     try {
-      await ApiClient.dio.patch('/chats/$chatId/read');
+      await ApiClient.dio.patch('chats/$chatId/read');
     } on DioException catch (e) {
       throw Exception(
         e.response?.data['error'] ?? 'Failed to mark chat as read',

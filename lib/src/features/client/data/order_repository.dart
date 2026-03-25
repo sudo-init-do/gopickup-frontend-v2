@@ -10,7 +10,7 @@ class OrderRepository {
 
   Future<List<Order>> getOrders() async {
     try {
-      final response = await _apiClient.get('/orders');
+      final response = await _apiClient.get('orders');
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
         return data.map((json) => Order.fromJson(json)).toList();
@@ -22,7 +22,7 @@ class OrderRepository {
   }
 
   Future<Order> getOrder(String id) async {
-    final response = await _apiClient.get('/orders/$id');
+    final response = await _apiClient.get('orders/$id');
     return Order.fromJson(response.data);
   }
 

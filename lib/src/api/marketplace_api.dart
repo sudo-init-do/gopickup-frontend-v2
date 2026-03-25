@@ -15,7 +15,7 @@ class MarketplaceApi {
   }) async {
     try {
       final response = await ApiClient.dio.get(
-        '/products',
+        'products',
         queryParameters: {
           'category': ?category,
           'min_price': ?minPrice,
@@ -38,7 +38,7 @@ class MarketplaceApi {
 
   Future<Product> getProductDetails(String id) async {
     try {
-      final response = await ApiClient.dio.get('/products/$id');
+      final response = await ApiClient.dio.get('products/$id');
       return Product.fromJson(response.data);
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Failed to get product');
@@ -53,7 +53,7 @@ class MarketplaceApi {
   }) async {
     try {
       final response = await ApiClient.dio.get(
-        '/vendors',
+        'vendors',
         queryParameters: {
           'business_type': ?businessType,
           'search': ?search,

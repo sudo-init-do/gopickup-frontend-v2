@@ -10,7 +10,7 @@ class JobRepository {
 
   Future<List<Order>> getAvailableJobs() async {
     try {
-      final response = await _apiClient.get('/jobs/available');
+      final response = await _apiClient.get('jobs/available');
       final List<dynamic> data = response.data;
       return data.map((json) => Order.fromJson(json)).toList();
     } catch (e) {
@@ -41,7 +41,7 @@ class JobRepository {
 
   Future<List<dynamic>> getDriverBids() async {
     try {
-      final response = await _apiClient.get('/driver/bids');
+      final response = await _apiClient.get('driver/bids');
       return response.data as List<dynamic>;
     } catch (e) {
       return [];
