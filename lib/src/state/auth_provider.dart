@@ -131,6 +131,34 @@ class AuthNotifier extends Notifier<AuthState> {
     ref.read(websocketServiceProvider).disconnect();
     state = AuthState(); // Reset state
   }
+
+  Future<bool> forgotPassword(String email) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await _authApi.forgotPassword(email);
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> resetPassword(
+    String email,
+    String otp,
+    String newPassword,
+  ) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await _authApi.resetPassword(email, otp, newPassword);
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
 }
 
 final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {

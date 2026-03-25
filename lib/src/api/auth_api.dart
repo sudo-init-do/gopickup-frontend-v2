@@ -65,4 +65,30 @@ class AuthApi {
       );
     }
   }
+
+  Future<void> forgotPassword(String email) async {
+    try {
+      await ApiClient.dio.post(
+        '/auth/forgot-password',
+        data: {'email': email},
+      );
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Forgot password failed');
+    }
+  }
+
+  Future<void> resetPassword(String email, String otp, String newPassword) async {
+    try {
+      await ApiClient.dio.post(
+        '/auth/reset-password',
+        data: {
+          'email': email,
+          'otp': otp,
+          'password': newPassword,
+        },
+      );
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Reset password failed');
+    }
+  }
 }
