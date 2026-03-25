@@ -84,7 +84,7 @@ class AuthApi {
         data: {
           'email': email,
           'otp': otp,
-          'password': newPassword,
+          'new_password': newPassword,
         },
       );
     } on DioException catch (e) {

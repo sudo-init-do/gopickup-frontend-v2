@@ -56,8 +56,18 @@ class VendorRepository {
     try {
       final response = await _apiClient.get('/products/vendor/me');
       if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
-        return data.map((json) => Product.fromJson(json)).toList();
+        final dynamic respData = response.data;
+        if (respData is List) {
+          return respData.map((json) => Product.fromJson(json)).toList();
+        } else if (respData is Map && respData['products'] is List) {
+          return (respData['products'] as List)
+              .map((json) => Product.fromJson(json))
+              .toList();
+        } else if (respData is Map && respData['data'] is List) {
+          return (respData['data'] as List)
+              .map((json) => Product.fromJson(json))
+              .toList();
+        }
       }
       return [];
     } catch (e) {

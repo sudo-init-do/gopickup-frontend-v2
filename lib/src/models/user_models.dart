@@ -150,4 +150,13 @@ class VendorProfile {
       'is_approved': isApproved,
     };
   }
+
+  Map<String, dynamic> toCreateJson() {
+    return {
+      'store_name': storeName,
+      'phone_number': phoneNumber,
+      'business_type': businessType,
+      'address': address,
+    };
+  }
 }

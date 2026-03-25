@@ -25,7 +25,7 @@ class ProfileApi {
 
   Future<void> createVendorProfile(VendorProfile profile) async {
     try {
-      await ApiClient.dio.post('/profile/vendor', data: profile.toJson());
+      await ApiClient.dio.post('/profile/vendor', data: profile.toCreateJson());
     } on DioException catch (e) {
       throw Exception(
         e.response?.data['error'] ?? 'Vendor profile creation failed',

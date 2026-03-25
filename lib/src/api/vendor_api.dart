@@ -76,4 +76,26 @@ class VendorApi {
       );
     }
   }
+
+  Future<List<Product>> getMyProducts() async {
+    try {
+      final response = await ApiClient.dio.get('/products/vendor/me');
+      
+      // Handle potential pagination or list response
+      final dynamic data = response.data;
+      if (data is List) {
+        return data.map((json) => Product.fromJson(json)).toList();
+      } else if (data is Map && data['products'] is List) {
+        return (data['products'] as List).map((json) => Product.fromJson(json)).toList();
+      } else if (data is Map && data['data'] is List) {
+         return (data['data'] as List).map((json) => Product.fromJson(json)).toList();
+      }
+      
+      return [];
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to fetch vendor products',
+      );
+    }
+  }
 }

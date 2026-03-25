@@ -20,15 +20,13 @@ class _VendorRegistrationScreenState
   final _storeNameController = TextEditingController();
   final _ownerNameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _phoneController = TextEditingController();
   String _selectedCategory = 'Building Materials';
 
   // Location Controllers
   final _addressController = TextEditingController();
   final _cityController = TextEditingController();
   // Assume state is captured somehow or omitted
-
-  // Custom mock since UI missing
-  final String _mockPhone = '000-000-0000';
 
   // Verification Controllers
   final _registrationController = TextEditingController();
@@ -49,6 +47,7 @@ class _VendorRegistrationScreenState
     _storeNameController.addListener(_validateForm);
     _ownerNameController.addListener(_validateForm);
     _descriptionController.addListener(_validateForm);
+    _phoneController.addListener(_validateForm);
     _addressController.addListener(_validateForm);
     _registrationController.addListener(_validateForm);
   }
@@ -60,6 +59,7 @@ class _VendorRegistrationScreenState
   bool get _isStep1Valid =>
       _storeNameController.text.isNotEmpty &&
       _ownerNameController.text.isNotEmpty &&
+      _phoneController.text.isNotEmpty &&
       _descriptionController.text.isNotEmpty;
 
   bool get _isStep2Valid => _addressController.text.isNotEmpty;
@@ -71,6 +71,7 @@ class _VendorRegistrationScreenState
     _storeNameController.dispose();
     _ownerNameController.dispose();
     _descriptionController.dispose();
+    _phoneController.dispose();
     _addressController.dispose();
     _cityController.dispose();
     _registrationController.dispose();
@@ -237,7 +238,7 @@ class _VendorRegistrationScreenState
         storeName: _storeNameController.text.trim(),
         businessType: _selectedCategory,
         address: _addressController.text.trim(),
-        phoneNumber: _mockPhone,
+        phoneNumber: _phoneController.text.trim(),
         isApproved: false,
       );
 
@@ -315,6 +316,9 @@ class _VendorRegistrationScreenState
         const SizedBox(height: 24),
         _buildInputLabel('Owner Name', kDarkTextColor),
         _buildTextField(_ownerNameController, 'Enter your full name'),
+        const SizedBox(height: 24),
+        _buildInputLabel('Phone Number', kDarkTextColor),
+        _buildTextField(_phoneController, 'Enter phone number'),
         const SizedBox(height: 24),
         _buildInputLabel('Category', kDarkTextColor),
         const SizedBox(height: 12),
