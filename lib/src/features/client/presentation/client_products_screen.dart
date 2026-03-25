@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../common/constants/app_constants.dart';
 import '../../../common/config/app_config.dart';
@@ -19,6 +20,7 @@ class ClientProductsScreen extends ConsumerStatefulWidget {
 
 class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
   bool _hasAddress = false;
+  bool _isInit = true;
   String _selectedCategory = 'All';
   String _searchQuery = '';
   late final TextEditingController _searchController;
@@ -29,9 +31,29 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
     _searchQuery = widget.initialSearchQuery ?? '';
     _searchController = TextEditingController(text: _searchQuery);
 
+    _checkAddressStatus();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(productProvider.notifier).fetchProducts();
     });
+  }
+
+  Future<void> _checkAddressStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _hasAddress = prefs.getBool('has_selected_address') ?? false;
+        _isInit = false;
+      });
+    }
+  }
+
+  Future<void> _setAddressSelected() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('has_selected_address', true);
+    if (mounted) {
+      setState(() => _hasAddress = true);
+    }
   }
 
   @override
@@ -42,6 +64,9 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isInit) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     if (!_hasAddress) {
       return _buildAddressSelection();
     }
@@ -130,7 +155,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () => setState(() => _hasAddress = true),
+                  onPressed: _setAddressSelected,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -161,7 +186,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                 width: double.infinity,
                 height: 56,
                 child: OutlinedButton(
-                  onPressed: () => setState(() => _hasAddress = true),
+                  onPressed: _setAddressSelected,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF1F2937),
                     side: const BorderSide(color: Color(0xFFF3F4F6)),
@@ -214,7 +239,13 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                         ),
                         child: IconButton(
                           icon: const Icon(Icons.arrow_back_rounded, size: 24),
-                          onPressed: () => setState(() => _hasAddress = false),
+                          onPressed: () async {
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.remove('has_selected_address');
+                            if (mounted) {
+                              setState(() => _hasAddress = false);
+                            }
+                          },
                         ),
                       ),
                       const Text(
