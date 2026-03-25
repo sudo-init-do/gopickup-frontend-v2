@@ -149,7 +149,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   onPressed: (_isFormValid && !authState.isLoading) ? _requestReset : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    highlightColor: Colors.transparent,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
