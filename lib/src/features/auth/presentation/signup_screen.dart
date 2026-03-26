@@ -17,6 +17,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isFormValid = false;
   bool _obscurePassword = true;
+  bool _agreeToPolicy = false;
 
   @override
   void dispose() {
@@ -28,9 +29,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   void _validateForm() {
     setState(() {
       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-      _isFormValid =
-          emailRegex.hasMatch(_emailController.text) &&
-          _passwordController.text.length >= 6;
+      _isFormValid = emailRegex.hasMatch(_emailController.text) &&
+          _passwordController.text.length >= 6 &&
+          _agreeToPolicy;
     });
   }
 
@@ -45,7 +46,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,9 +72,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   Text(
                     'Go Pickup',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1F2937),
-                    ),
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1F2937),
+                        ),
                   ),
                 ],
               ),
@@ -177,41 +178,50 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              // Terms and Policy
-              Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: const TextStyle(
-                      color: Color(0xFF6B7280),
-                      fontSize: 13,
-                      height: 1.5,
+              // Policy Checkbox
+              Row(
+                children: [
+                  Checkbox(
+                    value: _agreeToPolicy,
+                    activeColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    children: [
-                      const TextSpan(text: 'By continuing, you agree to our '),
-                      TextSpan(
-                        text: 'Terms of Service',
-                        style: const TextStyle(
-                          color: Color(0xFF3B7D23),
-                          fontWeight: FontWeight.w500,
-                        ),
-                        recognizer: TapGestureRecognizer()..onTap = () {},
-                      ),
-                      const TextSpan(text: ' and '),
-                      TextSpan(
-                        text: 'Privacy Policy',
-                        style: const TextStyle(
-                          color: Color(0xFF3B7D23),
-                          fontWeight: FontWeight.w500,
-                        ),
-                        recognizer: TapGestureRecognizer()..onTap = () {},
-                      ),
-                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _agreeToPolicy = value ?? false;
+                        _validateForm();
+                      });
+                    },
                   ),
-                ),
+                  Expanded(
+                    child: Text.rich(
+                      TextSpan(
+                        style: const TextStyle(
+                          color: Color(0xFF6B7280),
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                        children: [
+                          const TextSpan(text: 'By continuing, you agree to our '),
+                          TextSpan(
+                            text: 'Privacy Policy',
+                            style: const TextStyle(
+                              color: Color(0xFF3B7D23),
+                              fontWeight: FontWeight.w700,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => context.push('/privacy-policy'),
+                          ),
+                          const TextSpan(text: ' and terms of use.'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const Spacer(),
-              // Send Code Button
+              const SizedBox(height: 40),
+              // Next Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -219,9 +229,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   onPressed: _isFormValid ? _onNext : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primarySage.withValues(
-                      alpha: 0.5,
-                    ),
+                    disabledBackgroundColor:
+                        AppColors.primarySage.withValues(alpha: 0.5),
                     foregroundColor: Colors.white,
                     disabledForegroundColor: Colors.white,
                     elevation: 0,
@@ -245,7 +254,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -253,3 +262,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     );
   }
 }
+
+// Dummy remove old build method
+void _unused() {
