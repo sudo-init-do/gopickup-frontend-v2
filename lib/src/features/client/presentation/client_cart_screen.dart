@@ -333,11 +333,7 @@ class ClientCartScreen extends ConsumerWidget {
               borderRadius: BorderRadius.circular(16),
               image: item.product.imageUrl.isNotEmpty
                   ? DecorationImage(
-                      image: NetworkImage(
-                        item.product.imageUrl.startsWith('http')
-                            ? item.product.imageUrl
-                            : '${AppConfig.apiBaseUrl}${item.product.imageUrl}',
-                      ),
+                      image: NetworkImage(item.product.imageUrl),
                       fit: BoxFit.cover,
                     )
                   : null,

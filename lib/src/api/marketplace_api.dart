@@ -17,11 +17,11 @@ class MarketplaceApi {
       final response = await ApiClient.dio.get(
         'products',
         queryParameters: {
-          'category': ?category,
-          'min_price': ?minPrice,
-          'max_price': ?maxPrice,
-          'vendor_id': ?vendorId,
-          'search': ?search,
+          if (category != null) 'category': category,
+          if (minPrice != null) 'min_price': minPrice,
+          if (maxPrice != null) 'max_price': maxPrice,
+          if (vendorId != null) 'vendor_id': vendorId,
+          if (search != null) 'search': search,
           'page': page,
           'limit': limit,
         },
@@ -55,8 +55,8 @@ class MarketplaceApi {
       final response = await ApiClient.dio.get(
         'vendors',
         queryParameters: {
-          'business_type': ?businessType,
-          'search': ?search,
+          if (businessType != null) 'business_type': businessType,
+          if (search != null) 'search': search,
           'page': page,
           'limit': limit,
         },

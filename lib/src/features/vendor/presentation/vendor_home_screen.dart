@@ -112,7 +112,7 @@ class VendorHomeScreen extends ConsumerWidget {
                                     'Products',
                                     Icons.inventory_2_outlined,
                                   ),
-                                  error: (_, _) => _buildStatCard(
+                                  error: (_, __) => _buildStatCard(
                                     '0',
                                     'Products',
                                     Icons.inventory_2_outlined,
@@ -130,7 +130,7 @@ class VendorHomeScreen extends ConsumerWidget {
                                 'Orders',
                                 Icons.shopping_cart_outlined,
                               ),
-                              error: (_, _) => _buildStatCard(
+                              error: (_, __) => _buildStatCard(
                                 '0',
                                 'Orders',
                                 Icons.shopping_cart_outlined,
@@ -148,7 +148,7 @@ class VendorHomeScreen extends ConsumerWidget {
                                 'Revenue',
                                 Icons.attach_money_rounded,
                               ),
-                              error: (_, _) => _buildStatCard(
+                              error: (_, __) => _buildStatCard(
                                 '₦0',
                                 'Revenue',
                                 Icons.attach_money_rounded,

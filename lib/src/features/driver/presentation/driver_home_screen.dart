@@ -27,7 +27,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     }
   }
 
-  void _showAcceptJobDialog(Order job) {
+  void _showAcceptJobDialog(common_order.Order job) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -59,15 +59,15 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Please negotiate your cut on WhatsApp before clicking accept.',
-              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+              'Assignment ID: ${job.shortId}',
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
             ),
             const SizedBox(height: 32),
-            _buildDialogSection('From:', job.pickupAddress, Icons.storefront_outlined),
-            const SizedBox(height: 16),
-            _buildDialogSection('To:', job.deliveryAddress, Icons.location_on_outlined),
-            const SizedBox(height: 16),
-            _buildDialogSection('Estimated Price:', "₦${job.agreedPrice ?? 0}", Icons.payments_outlined),
+            _buildDialogSection('VENDOR', job.items.isNotEmpty ? job.items.first.product.vendorName : 'Marketplace', Icons.storefront_rounded),
+            const SizedBox(height: 24),
+            _buildDialogSection('AGREED PRICE', '₦${job.total.toStringAsFixed(2)}', Icons.payments_outlined),
+            const SizedBox(height: 24),
+            _buildDialogSection('PAYMENT METHOD', 'Wallet (Prepaid)', Icons.wallet_rounded),
             const Spacer(),
             ElevatedButton(
               onPressed: () => _launchWhatsApp(job.id),
@@ -77,32 +77,101 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              child: const Text('Chat with Support (WhatsApp)', style: TextStyle(fontWeight: FontWeight.w800)),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Icon(Icons.chat_bubble_outline_rounded),
+                   SizedBox(width: 12),
+                   Text('Negotiate Price on WhatsApp', style: TextStyle(fontWeight: FontWeight.w800)),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () async {
+                // Show loading
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => const Center(child: CircularProgressIndicator()),
+                );
+
                 final success = await ref.read(jobRepositoryProvider).acceptJob(job.id);
-                if (success) {
-                  if (context.mounted) {
-                    Navigator.pop(context);
+
+                if (context.mounted) {
+                  Navigator.pop(context); // Close loading
+                  Navigator.pop(context); // Close sheet
+
+                  if (success) {
                     ref.invalidate(assignedJobsProvider);
                     ref.invalidate(driverOrdersProvider);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Job accepted! Order status: in_progress')),
+                      const SnackBar(content: Text('Job accepted successfully!')),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to accept job.')),
                     );
                   }
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF111827),
+                backgroundColor: const Color(0xFF388E3C),
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
-              child: const Text('Accept Task in App', style: TextStyle(fontWeight: FontWeight.w800)),
+              child: const Text('Accept Assignment in App', style: TextStyle(fontWeight: FontWeight.w800)),
             ),
             const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const orange = Color(0xFFF97316);
+    const darkText = Color(0xFF111827);
+    const midText = Color(0xFF64748B);
+    const green = Color(0xFF388E3C);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Driver Portal',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: midText),
+                      ),
+                      const Text(
+                        'GoPickup Delivery',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: darkText),
+                      ),
+                    ],
+                  ),
+                  _buildStatusToggle(),
+                ],
+              ),
+            ),
+            _buildSearchAndFilter(),
+            _buildTabs(_selectedTabIndex, (index) {
+              setState(() => _selectedTabIndex = index);
+            }, orange),
+            Expanded(
+              child: _buildJobList(darkText, midText, orange, green),
+            ),
           ],
         ),
       ),

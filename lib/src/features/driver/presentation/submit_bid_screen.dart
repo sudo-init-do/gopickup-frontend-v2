@@ -322,29 +322,21 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                       const Center(child: CircularProgressIndicator()),
                 );
 
-                final success = await ref
-                    .read(jobRepositoryProvider)
-                    .submitBid(orderId: widget.job.id, amount: amount);
-
+                // final success = await ref
+                //     .read(jobRepositoryProvider)
+                //     .submitBid(orderId: widget.job.id, amount: amount);
+                final success = false;
+                
                 if (mounted) {
                   Navigator.pop(context); // Close loading
 
-                  if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Bid submitted successfully!'),
-                        backgroundColor: Color(0xFF45A225),
-                      ),
-                    );
-                    context.go('/driver');
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Failed to submit bid.'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Bidding is currently disabled for this task. Please check assigned jobs.'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                  context.go('/driver');
                 }
               }
             : null,

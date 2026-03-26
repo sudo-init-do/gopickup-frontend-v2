@@ -554,11 +554,7 @@ class ProductCard extends ConsumerWidget {
                     ),
                     image: product.imageUrl.isNotEmpty
                         ? DecorationImage(
-                            image: NetworkImage(
-                              product.imageUrl.startsWith('http')
-                                  ? product.imageUrl
-                                  : '${AppConfig.apiBaseUrl}${product.imageUrl}',
-                            ),
+                            image: NetworkImage(product.imageUrl),
                             fit: BoxFit.cover,
                           )
                         : null,

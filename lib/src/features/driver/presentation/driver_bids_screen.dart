@@ -120,64 +120,29 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
     Color orange,
     Color red,
   ) {
-    final driverBidsAsync = ref.watch(driverBidsProvider);
-
-    return driverBidsAsync.when(
-      data: (bids) {
-        // Filter bids by status based on the selected tab
-        // Tab 0: My Bids (pending)
-        // Tab 1: Won (accepted)
-        // Tab 2: Lost (rejected/archived)
-        List<dynamic> filteredBids = [];
-        if (_selectedTabIndex == 0) {
-          filteredBids = bids
-              .where((b) => b['status'] == 'pending' || b['status'] == null)
-              .toList();
-        } else if (_selectedTabIndex == 1) {
-          filteredBids = bids.where((b) => b['status'] == 'accepted').toList();
-        } else {
-          filteredBids = bids.where((b) => b['status'] == 'rejected').toList();
-        }
-
-        if (filteredBids.isEmpty) {
-          return Center(
-            child: Text(
-              'No bids here yet',
+    const bids = []; // Bidding system is replaced by direct assignment
+    
+    if (bids.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.gavel_outlined, size: 64, color: midText.withOpacity(0.5)),
+            const SizedBox(height: 16),
+            Text(
+              'Bidding systems are currently disabled.\nCheck "New Jobs" for assigned tasks.',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: midText,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
-          );
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-          itemCount: filteredBids.length,
-          itemBuilder: (context, index) {
-            final bid = filteredBids[index] as Map<String, dynamic>;
-
-            // Format data appropriately for _buildBidCard
-            final displayBid = {
-              'title': bid['title'] ?? 'Load Delivery',
-              'time': bid['created_at'] != null ? 'Recently' : 'Now',
-              'status': bid['status'] ?? 'Pending',
-              'from': bid['pickup_address'] ?? 'Pickup Location',
-              'to': bid['delivery_address'] ?? 'Destination Location',
-              'yourBid': bid['amount'] != null ? '₦${bid['amount']}' : '₦0',
-              'budget': bid['budget'] ?? 'Flexible',
-            };
-
-            return _buildBidCard(displayBid, darkText, midText, orange, red);
-          },
-        );
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(
-        child: Text('Failed to load bids', style: TextStyle(color: midText)),
-      ),
-    );
+          ],
+        ),
+      );
+    }
+    
   }
 
   Widget _buildBidCard(

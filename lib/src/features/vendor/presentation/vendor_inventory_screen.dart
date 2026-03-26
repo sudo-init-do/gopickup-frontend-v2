@@ -235,11 +235,7 @@ class VendorInventoryScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(20),
                   image: imageUrl.isNotEmpty
                       ? DecorationImage(
-                          image: NetworkImage(
-                            imageUrl.startsWith('http')
-                                ? imageUrl
-                                : '${AppConfig.apiBaseUrl}$imageUrl',
-                          ),
+                          image: NetworkImage(imageUrl),
                           fit: BoxFit.cover,
                         )
                       : null,

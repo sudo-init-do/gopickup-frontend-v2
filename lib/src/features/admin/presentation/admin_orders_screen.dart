@@ -49,10 +49,7 @@ class AdminOrdersScreen extends ConsumerWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: orders.length,
                     separatorBuilder: (context, index) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final order = orders[index];
-                      return _buildOrderTile(context, order, isMobile);
-                    },
+                    itemBuilder: (context, index) => _buildOrderTile(context, ref, orders[index], isMobile),
                   );
                 },
                 loading: () => const Center(
@@ -69,7 +66,7 @@ class AdminOrdersScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildOrderTile(BuildContext context, Order order, bool isMobile) {
+  Widget _buildOrderTile(BuildContext context, WidgetRef ref, Order order, bool isMobile) {
     return Padding(
       padding: EdgeInsets.all(isMobile ? 14 : 20),
       child: Column(

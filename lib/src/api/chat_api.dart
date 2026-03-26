@@ -10,7 +10,10 @@ class ChatApi {
     try {
       final response = await ApiClient.dio.post(
         'chats/initiate',
-        data: {'recipient_user_id': recipientUserId, 'order_id': ?orderId},
+        data: {
+          'recipient_user_id': recipientUserId,
+          if (orderId != null) 'order_id': orderId,
+        },
       );
       return Conversation.fromJson(response.data);
     } on DioException catch (e) {
