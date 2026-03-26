@@ -178,6 +178,45 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
+  Widget _buildStatusToggle() {
+    return GestureDetector(
+      onTap: () => setState(() => _isOnline = !_isOnline),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: _isOnline ? const Color(0xFFDCFCE7) : const Color(0xFFFEE2E2),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: _isOnline ? const Color(0xFF22C55E).withOpacity(0.2) : const Color(0xFFEF4444).withOpacity(0.2),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: _isOnline ? const Color(0xFF22C55E) : const Color(0xFFEF4444),
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              _isOnline ? 'Online' : 'Offline',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: _isOnline ? const Color(0xFF166534) : const Color(0xFF991B1B),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildDialogSection(String label, String value, IconData icon) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

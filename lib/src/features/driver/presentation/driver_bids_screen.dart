@@ -142,7 +142,7 @@ class _DriverBidsScreenState extends ConsumerState<DriverBidsScreen> {
         ),
       );
     }
-    
+    return const SizedBox.shrink();
   }
 
   Widget _buildBidCard(
