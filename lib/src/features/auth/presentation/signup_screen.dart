@@ -262,6 +262,3 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     );
   }
 }
-
-// Dummy remove old build method
-void _unused() {
