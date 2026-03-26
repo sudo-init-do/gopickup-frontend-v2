@@ -17,26 +17,22 @@ class DriverApi {
     }
   }
 
-  Future<List<Order>> getAvailableJobs() async {
+  Future<List<Order>> getAssignedJobs() async {
     try {
-      final response = await ApiClient.dio.get('jobs/available');
+      final response = await ApiClient.dio.get('jobs/assigned');
       return (response.data as List).map((o) => Order.fromJson(o)).toList();
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data['error'] ?? 'Failed to get available jobs',
+        e.response?.data['error'] ?? 'Failed to get assigned jobs',
       );
     }
   }
 
-  Future<JobBid> placeBid(String orderId, double amount) async {
+  Future<void> acceptJob(String jobId) async {
     try {
-      final response = await ApiClient.dio.post(
-        'jobs/$orderId/bid',
-        data: {'amount': amount},
-      );
-      return JobBid.fromJson(response.data);
+      await ApiClient.dio.post('jobs/$jobId/accept');
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Failed to place bid');
+      throw Exception(e.response?.data['error'] ?? 'Failed to accept job');
     }
   }
 }

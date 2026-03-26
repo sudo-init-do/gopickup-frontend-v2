@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../driver/data/job_repository.dart';
 import '../../../common/models/order.dart' as common_order;
 import '../../../models/order_models.dart';
@@ -17,121 +18,113 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   bool _isOnline = true;
   int _selectedTabIndex = 0;
 
-  @override
-  Widget build(BuildContext context) {
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
-    const kOrangeColor = Color(0xFFF97316);
-    const kGreenColor = Color(0xFF22C55E);
+  Future<void> _launchWhatsApp(String orderId) async {
+    const phone = "2348000000000"; // Admin Support
+    final message = "Hello, I am agreeing to the delivery for Order #$orderId";
+    final url = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
+  }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
-      body: SafeArea(
+  void _showAcceptJobDialog(Order job) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(
-              _isOnline,
-              (val) => setState(() => _isOnline = val),
-              kDarkTextColor,
-              kMidTextColor,
-              kGreenColor,
-            ),
-            _buildSearchAndFilter(),
-            _buildTabs(
-              _selectedTabIndex,
-              (index) => setState(() => _selectedTabIndex = index),
-              kOrangeColor,
-            ),
-            Expanded(
-              child: _buildJobList(
-                kDarkTextColor,
-                kMidTextColor,
-                kOrangeColor,
-                kGreenColor,
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
             ),
+            const SizedBox(height: 24),
+            const Text(
+              'Accept Assignment',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF111827)),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Please negotiate your cut on WhatsApp before clicking accept.',
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+            ),
+            const SizedBox(height: 32),
+            _buildDialogSection('From:', job.pickupAddress, Icons.storefront_outlined),
+            const SizedBox(height: 16),
+            _buildDialogSection('To:', job.deliveryAddress, Icons.location_on_outlined),
+            const SizedBox(height: 16),
+            _buildDialogSection('Estimated Price:', "₦${job.agreedPrice ?? 0}", Icons.payments_outlined),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: () => _launchWhatsApp(job.id),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF25D366),
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 56),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: const Text('Chat with Support (WhatsApp)', style: TextStyle(fontWeight: FontWeight.w800)),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () async {
+                final success = await ref.read(jobRepositoryProvider).acceptJob(job.id);
+                if (success) {
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    ref.invalidate(assignedJobsProvider);
+                    ref.invalidate(driverOrdersProvider);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Job accepted! Order status: in_progress')),
+                    );
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF111827),
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 56),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
+              child: const Text('Accept Task in App', style: TextStyle(fontWeight: FontWeight.w800)),
+            ),
+            const SizedBox(height: 12),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(
-    bool isOnline,
-    Function(bool) onToggle,
-    Color darkText,
-    Color midText,
-    Color green,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
+  Widget _buildDialogSection(String label, String value, IconData icon) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: Colors.grey[400], size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Jobs',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
-                  color: darkText,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Find and manage deliveries',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: midText,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              Text(label, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Colors.grey)),
+              Text(value, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF111827))),
             ],
           ),
-          GestureDetector(
-            onTap: () => onToggle(!isOnline),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: isOnline ? green : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: isOnline
-                    ? [
-                        BoxShadow(
-                          color: green.withValues(alpha: 0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.power_settings_new_rounded,
-                    color: isOnline ? Colors.white : const Color(0xFF94A3B8),
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    isOnline ? 'Online' : 'Offline',
-                    style: TextStyle(
-                      color: isOnline ? Colors.white : const Color(0xFF64748B),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -189,7 +182,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   }
 
   Widget _buildTabs(int selectedIndex, Function(int) onSelect, Color orange) {
-    final tabs = ['Available', 'Assigned', 'History'];
+    final tabs = ['New Jobs', 'Active', 'History'];
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
       child: Row(
@@ -235,21 +228,22 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     Color green,
   ) {
     if (_selectedTabIndex == 0)
-      return _buildAvailableJobList(darkText, midText, orange, green);
+      return _buildNewAssignmentsList(darkText, midText, orange, green);
     if (_selectedTabIndex == 1)
-      return _buildAssignedJobList(darkText, midText, orange, green);
+      return _buildActiveTasksList(darkText, midText, orange, green);
     return _buildHistoryJobList(darkText, midText, orange, green);
   }
 
-  Widget _buildAvailableJobList(
+  Widget _buildNewAssignmentsList(
     Color darkText,
     Color midText,
     Color orange,
     Color green,
   ) {
-    final availableJobsAsync = ref.watch(availableJobsProvider);
+    // These are jobs with status 'assigned' but not yet 'in_progress'
+    final assignedJobsAsync = ref.watch(assignedJobsProvider);
 
-    return availableJobsAsync.when(
+    return assignedJobsAsync.when(
       data: (jobs) {
         if (jobs.isEmpty) {
           return Center(
@@ -263,11 +257,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'No available jobs at the moment',
-                  style: TextStyle(
-                    color: Color(0xFF6B7280),
-                    fontSize: 16,
-                  ),
+                  'No new assignments',
+                  style: TextStyle(color: Color(0xFF6B7280), fontSize: 16),
                 ),
               ],
             ),
@@ -279,18 +270,18 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
           itemBuilder: (context, index) {
             final job = jobs[index];
             return GestureDetector(
-              onTap: () => context.push('/driver/submit-bid', extra: job),
+              onTap: () => _showAcceptJobDialog(job),
               child: _buildJobCard(job, darkText, midText, orange, green),
             );
           },
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Backend error: $err')),
+      error: (err, stack) => Center(child: Text('Error: $err')),
     );
   }
 
-  Widget _buildAssignedJobList(
+  Widget _buildActiveTasksList(
     Color darkText,
     Color midText,
     Color orange,
@@ -300,17 +291,14 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
     return driverOrdersAsync.when(
       data: (orders) {
-        final assignedJobs =
-            orders
-                .where(
-                  (o) =>
-                      o.status == 'assigned' ||
-                      o.status == 'processing' ||
-                      o.status == 'picked_up',
-                )
-                .toList();
+        final activeJobs = orders
+            .where((o) =>
+                o.status == 'in_progress' ||
+                o.status == 'picked_up' ||
+                o.status == 'on_the_way')
+            .toList();
 
-        if (assignedJobs.isEmpty) {
+        if (activeJobs.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -322,11 +310,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'No assigned jobs',
-                  style: TextStyle(
-                    color: Color(0xFF6B7280),
-                    fontSize: 16,
-                  ),
+                  'No active tasks',
+                  style: TextStyle(color: Color(0xFF6B7280), fontSize: 16),
                 ),
               ],
             ),
@@ -335,15 +320,15 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-          itemCount: assignedJobs.length,
+          itemCount: activeJobs.length,
           itemBuilder: (context, index) {
-            final job = assignedJobs[index];
+            final job = activeJobs[index];
             return _buildAssignedOrderCard(job, darkText, midText, green);
           },
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Failed to load tasks')),
+      error: (err, stack) => Center(child: Text('Error loading tasks')),
     );
   }
 

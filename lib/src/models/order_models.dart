@@ -60,12 +60,13 @@ class Order {
   final String? driverId;
   final List<OrderItem> items;
   final double totalProductAmount;
-  final String
-  status; // pending, processing, searching_driver, assigned, picked_up, delivered, cancelled
+  final String status; // pending, processing, assigned, in_progress, picked_up, on_the_way, delivered, cancelled
   final String pickupAddress;
   final String deliveryAddress;
   final double? deliveryLat;
   final double? deliveryLng;
+  final double? agreedPrice;
+  final double? agreedDeliveryFee;
   final DateTime createdAt;
 
   Order({
@@ -80,6 +81,8 @@ class Order {
     required this.deliveryAddress,
     this.deliveryLat,
     this.deliveryLng,
+    this.agreedPrice,
+    this.agreedDeliveryFee,
     required this.createdAt,
   });
 
@@ -104,6 +107,8 @@ class Order {
       deliveryAddress: json['delivery_address'] as String? ?? '',
       deliveryLat: (json['delivery_lat'] as num?)?.toDouble(),
       deliveryLng: (json['delivery_lng'] as num?)?.toDouble(),
+      agreedPrice: (json['agreed_price'] as num?)?.toDouble(),
+      agreedDeliveryFee: (json['agreed_delivery_fee'] as num?)?.toDouble(),
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),

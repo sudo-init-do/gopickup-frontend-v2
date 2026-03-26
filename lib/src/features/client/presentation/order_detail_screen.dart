@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../models/order_models.dart';
+import '../../../common/styles/app_colors.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final Order order;
 
   const OrderDetailScreen({super.key, required this.order});
 
+  Future<void> _launchWhatsApp() async {
+    const phone = "2348000000000"; // Real admin number should be used here
+    final message = "Hello GoPickup Support, I have an inquiry about my order: ${order.id}";
+    final url = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF6B7280);
     const kLightTextColor = Color(0xFF9CA3AF);
-    const kBrandGreen = Color(0xFF3B7D23);
-
+    final kBrandGreen = AppColors.primary;
+ 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       body: SafeArea(
@@ -40,6 +51,25 @@ class OrderDetailScreen extends StatelessWidget {
                       kLightTextColor,
                       kBrandGreen,
                     ),
+                    const SizedBox(height: 24),
+                    if (order.status != 'delivered' && order.status != 'cancelled')
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: ElevatedButton.icon(
+                          onPressed: _launchWhatsApp,
+                          icon: const Icon(Icons.chat_bubble_outline_rounded),
+                          label: const Text('Chat with Support (WhatsApp)'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF25D366),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 56),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
@@ -191,6 +221,48 @@ class OrderDetailScreen extends StatelessWidget {
     Color lightText,
     Color brandGreen,
   ) {
+    final List<Map<String, dynamic>> stages = [
+      {
+        'status': 'pending',
+        'label': 'Order Placed',
+        'desc': 'Waiting for price estimation',
+      },
+      {
+        'status': 'processing',
+        'label': 'Negotiation',
+        'desc': 'Contact support to finalize price',
+      },
+      {
+        'status': 'assigned',
+        'label': 'Driver Assigned',
+        'desc': 'We found a driver for you',
+      },
+      {
+        'status': 'in_progress',
+        'label': 'Accepted',
+        'desc': 'Driver is heading to vendor',
+      },
+      {
+        'status': 'picked_up',
+        'label': 'Picked Up',
+        'desc': 'Goods in possession of driver',
+      },
+      {
+        'status': 'on_the_way',
+        'label': 'In Transit',
+        'desc': 'Driver is heading to you',
+      },
+      {
+        'status': 'delivered',
+        'label': 'Delivered',
+        'desc': 'Order completed successfully',
+      },
+    ];
+
+    // Status priority for determining progress
+    final statusList = stages.map((s) => s['status'] as String).toList();
+    final currentIdx = statusList.indexOf(order.status);
+
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -211,63 +283,26 @@ class OrderDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-          _buildTimelineItem(
-            'Order Placed',
-            'Your order has been confirmed',
-            '10:30 AM',
-            true,
-            true,
-            brandGreen,
-            darkText,
-            midText,
-            lightText,
-          ),
-          _buildTimelineItem(
-            'Processing',
-            'Vendor is preparing your order',
-            '11:00 AM',
-            true,
-            true,
-            brandGreen,
-            darkText,
-            midText,
-            lightText,
-          ),
-          _buildTimelineItem(
-            'Picked Up',
-            'Driver picked up your order',
-            '2:15 PM',
-            true,
-            true,
-            brandGreen,
-            darkText,
-            midText,
-            lightText,
-          ),
-          _buildTimelineItem(
-            'In Transit',
-            'Your order is on the way',
-            'Now',
-            true,
-            false,
-            brandGreen.withValues(alpha: 0.6),
-            darkText,
-            midText,
-            lightText,
-            isActive: true,
-          ),
-          _buildTimelineItem(
-            'Delivered',
-            'Estimated arrival: 4:30 PM',
-            '',
-            false,
-            false,
-            lightText.withValues(alpha: 0.3),
-            darkText.withValues(alpha: 0.5),
-            midText.withValues(alpha: 0.5),
-            lightText,
-            isLast: true,
-          ),
+          ...List.generate(stages.length, (index) {
+            final stage = stages[index];
+            final bool isDone = index < currentIdx || order.status == 'delivered';
+            final bool isActive = index == currentIdx;
+            final bool isLast = index == stages.length - 1;
+
+            return _buildTimelineItem(
+              stage['label'],
+              stage['desc'],
+              isActive ? 'Now' : '',
+              isDone,
+              isDone || isActive,
+              brandGreen,
+              darkText,
+              midText,
+              lightText,
+              isActive: isActive,
+              isLast: isLast,
+            );
+          }),
         ],
       ),
     );

@@ -49,4 +49,36 @@ class AdminApi {
       throw Exception(e.response?.data['error'] ?? 'Failed to load orders');
     }
   }
+
+  Future<void> assignDriver({
+    required String orderId,
+    required String driverId,
+    required double agreedPrice,
+    required double deliveryFee,
+  }) async {
+    try {
+      await ApiClient.dio.post(
+        'admin/orders/assign-driver',
+        data: {
+          'order_id': orderId,
+          'driver_id': driverId,
+          'agreed_price': agreedPrice,
+          'delivery_fee': deliveryFee,
+        },
+      );
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to assign driver');
+    }
+  }
+
+  Future<void> updateOrderStatus(String orderId, String status) async {
+    try {
+      await ApiClient.dio.patch(
+        'admin/orders/status',
+        data: {'order_id': orderId, 'status': status},
+      );
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to update status');
+    }
+  }
 }

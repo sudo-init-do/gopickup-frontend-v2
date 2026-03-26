@@ -4,10 +4,11 @@ import 'product.dart';
 
 enum OrderStatus {
   pending,
-  searching_driver,
-  bidding_open,
+  processing,
   assigned,
-  in_transit,
+  in_progress,
+  picked_up,
+  on_the_way,
   delivered,
   cancelled,
 }
@@ -17,14 +18,16 @@ extension OrderStatusExtension on OrderStatus {
     switch (this) {
       case OrderStatus.pending:
         return 'Pending';
-      case OrderStatus.searching_driver:
-        return 'Searching Driver';
-      case OrderStatus.bidding_open:
-        return 'Bidding Open';
+      case OrderStatus.processing:
+        return 'Price Negotiation';
       case OrderStatus.assigned:
-        return 'Assigned';
-      case OrderStatus.in_transit:
-        return 'In Transit';
+        return 'Driver Assigned';
+      case OrderStatus.in_progress:
+        return 'In Progress';
+      case OrderStatus.picked_up:
+        return 'Picked Up';
+      case OrderStatus.on_the_way:
+        return 'On the Way';
       case OrderStatus.delivered:
         return 'Delivered';
       case OrderStatus.cancelled:
@@ -36,14 +39,16 @@ extension OrderStatusExtension on OrderStatus {
     switch (this) {
       case OrderStatus.pending:
         return const Color(0xFF6B7280);
-      case OrderStatus.searching_driver:
-        return const Color(0xFF9333EA);
-      case OrderStatus.bidding_open:
+      case OrderStatus.processing:
         return const Color(0xFF2563EB);
       case OrderStatus.assigned:
         return const Color(0xFF0D9488);
-      case OrderStatus.in_transit:
+      case OrderStatus.in_progress:
+        return const Color(0xFF9333EA);
+      case OrderStatus.picked_up:
         return const Color(0xFFD97706);
+      case OrderStatus.on_the_way:
+        return const Color(0xFFF59E0B);
       case OrderStatus.delivered:
         return const Color(0xFF059669);
       case OrderStatus.cancelled:
@@ -55,14 +60,16 @@ extension OrderStatusExtension on OrderStatus {
     switch (this) {
       case OrderStatus.pending:
         return const Color(0xFFF3F4FB);
-      case OrderStatus.searching_driver:
-        return const Color(0xFFF5F3FF);
-      case OrderStatus.bidding_open:
+      case OrderStatus.processing:
         return const Color(0xFFEFF6FF);
       case OrderStatus.assigned:
         return const Color(0xFFF0FDFA);
-      case OrderStatus.in_transit:
+      case OrderStatus.in_progress:
+        return const Color(0xFFF5F3FF);
+      case OrderStatus.picked_up:
         return const Color(0xFFFFFBEB);
+      case OrderStatus.on_the_way:
+        return const Color(0xFFFEF3C7);
       case OrderStatus.delivered:
         return const Color(0xFFECFDF5);
       case OrderStatus.cancelled:
@@ -91,7 +98,9 @@ class Order {
   final List<OrderItem> items;
   final DateTime placedAt;
   final String clientId;
-  final String driverId;
+  final String? driverId;
+  final double? agreedPrice;
+  final double? agreedDeliveryFee;
 
   Order({
     required this.id,
@@ -99,7 +108,9 @@ class Order {
     required this.items,
     required this.placedAt,
     required this.clientId,
-    this.driverId = '',
+    this.driverId,
+    this.agreedPrice,
+    this.agreedDeliveryFee,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -116,16 +127,20 @@ class Order {
     }
 
     return Order(
-      id: json['id'],
+      id: json['id'] ?? '',
       status: status,
       items:
           (json['items'] as List?)
               ?.map((i) => OrderItem.fromJson(i))
               .toList() ??
           [],
-      placedAt: DateTime.parse(json['created_at']),
+      placedAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
       clientId: json['client_id'] ?? '',
-      driverId: json['driver_id'] ?? '',
+      driverId: json['driver_id'],
+      agreedPrice: (json['agreed_price'] as num?)?.toDouble(),
+      agreedDeliveryFee: (json['agreed_delivery_fee'] as num?)?.toDouble(),
     );
   }
 

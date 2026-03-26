@@ -19,8 +19,8 @@ class OrdersApi {
           'payment_method': paymentMethod,
           'pickup_address': pickupAddress,
           'delivery_address': deliveryAddress,
-          'delivery_lat': ?deliveryLat,
-          'delivery_lng': ?deliveryLng,
+          'delivery_lat': deliveryLat,
+          'delivery_lng': deliveryLng,
         },
       );
       return Order.fromJson(response.data);
@@ -55,29 +55,9 @@ class OrdersApi {
     }
   }
 
-  Future<List<JobBid>> getBids(String orderId) async {
-    try {
-      final response = await ApiClient.dio.get('orders/$orderId/bids');
-      return (response.data as List).map((b) => JobBid.fromJson(b)).toList();
-    } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Failed to get bids');
-    }
-  }
-
-  Future<Order> acceptBid(String orderId, String bidId) async {
-    try {
-      final response = await ApiClient.dio.post(
-        'orders/$orderId/bids/$bidId/accept',
-      );
-      return Order.fromJson(response.data);
-    } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Failed to accept bid');
-    }
-  }
-
   Future<List<Order>> getDriverOrders() async {
     try {
-      final response = await ApiClient.dio.get('driver/jobs');
+      final response = await ApiClient.dio.get('jobs/assigned');
       return (response.data as List).map((o) => Order.fromJson(o)).toList();
     } on DioException catch (e) {
       throw Exception(

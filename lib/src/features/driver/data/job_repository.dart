@@ -8,9 +8,9 @@ class JobRepository {
 
   JobRepository(this._apiClient);
 
-  Future<List<Order>> getAvailableJobs() async {
+  Future<List<Order>> getAssignedJobs() async {
     try {
-      final response = await _apiClient.get('jobs/available');
+      final response = await _apiClient.get('jobs/assigned');
       final List<dynamic> data = response.data;
       return data.map((json) => Order.fromJson(json)).toList();
     } catch (e) {
@@ -18,33 +18,12 @@ class JobRepository {
     }
   }
 
-  Future<bool> submitBid({
-    required String orderId,
-    required double amount,
-    String? pickupTime,
-    String? deliveryTime,
-  }) async {
+  Future<bool> acceptJob(String orderId) async {
     try {
-      final response = await _apiClient.post(
-        '/jobs/$orderId/bid',
-        data: {
-          'amount': amount,
-          'estimated_pickup_time': pickupTime,
-          'estimated_delivery_time': deliveryTime,
-        },
-      );
-      return response.statusCode == 201;
+      final response = await _apiClient.post('jobs/$orderId/accept');
+      return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
       return false;
-    }
-  }
-
-  Future<List<dynamic>> getDriverBids() async {
-    try {
-      final response = await _apiClient.get('driver/bids');
-      return response.data as List<dynamic>;
-    } catch (e) {
-      return [];
     }
   }
 }
@@ -53,10 +32,6 @@ final jobRepositoryProvider = Provider<JobRepository>((ref) {
   return JobRepository(ref.watch(apiClientProvider));
 });
 
-final availableJobsProvider = FutureProvider<List<Order>>((ref) {
-  return ref.watch(jobRepositoryProvider).getAvailableJobs();
-});
-
-final driverBidsProvider = FutureProvider<List<dynamic>>((ref) {
-  return ref.watch(jobRepositoryProvider).getDriverBids();
+final assignedJobsProvider = FutureProvider<List<Order>>((ref) {
+  return ref.watch(jobRepositoryProvider).getAssignedJobs();
 });

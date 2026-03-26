@@ -85,6 +85,12 @@ class AdminOrdersScreen extends ConsumerWidget {
                 ),
               ),
               _StatusBadge(status: order.status),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: () => _showManageOrderDialog(context, ref, order),
+                icon: const Icon(Icons.settings_outlined, size: 20),
+                tooltip: 'Manage Flow',
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -145,6 +151,13 @@ class AdminOrdersScreen extends ConsumerWidget {
     );
   }
 
+  void _showManageOrderDialog(BuildContext context, WidgetRef ref, Order order) {
+    showDialog(
+      context: context,
+      builder: (context) => _ManageOrderDialog(order: order),
+    );
+  }
+
   Widget _buildEmptyState() {
     return const Center(
       child: Padding(
@@ -161,6 +174,155 @@ class AdminOrdersScreen extends ConsumerWidget {
   }
 }
 
+class _ManageOrderDialog extends ConsumerStatefulWidget {
+  final Order order;
+  const _ManageOrderDialog({required this.order});
+
+  @override
+  ConsumerState<_ManageOrderDialog> createState() => _ManageOrderDialogState();
+}
+
+class _ManageOrderDialogState extends ConsumerState<_ManageOrderDialog> {
+  String? _selectedDriverId;
+  final _priceController = TextEditingController();
+  final _feeController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _priceController.text = (widget.order.agreedPrice ?? 0).toString();
+    _feeController.text = (widget.order.agreedDeliveryFee ?? 0).toString();
+  }
+
+  @override
+  void dispose() {
+    _priceController.dispose();
+    _feeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final driversAsync = ref.watch(adminUsersProvider('driver'));
+    final order = widget.order;
+
+    return AlertDialog(
+      title: Text('Manage Order #${order.id.substring(0, 8)}'),
+      content: SizedBox(
+        width: 400,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (order.status == 'pending' || order.status == 'processing') ...[
+                const Text('Assign Driver & Set Prices', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                driversAsync.when(
+                  data: (drivers) => DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(labelText: 'Select Driver', border: OutlineInputBorder()),
+                    items: drivers.map((d) => DropdownMenuItem(
+                      value: d['id'] as String,
+                      child: Text(d['full_name'] ?? d['email']),
+                    )).toList(),
+                    onChanged: (val) => setState(() => _selectedDriverId = val),
+                    value: _selectedDriverId,
+                  ),
+                  loading: () => const Center(child: CircularProgressIndicator()),
+                  error: (e, s) => Text('Error loading drivers: $e'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _priceController,
+                  decoration: const InputDecoration(labelText: 'Agreed Price (₦)', border: OutlineInputBorder()),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _feeController,
+                  decoration: const InputDecoration(labelText: 'Delivery Fee (₦)', border: OutlineInputBorder()),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : () async {
+                    if (_selectedDriverId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a driver')));
+                      return;
+                    }
+                    setState(() => _isLoading = true);
+                    try {
+                      await ref.read(adminApiProvider).assignDriver(
+                        orderId: order.id,
+                        driverId: _selectedDriverId!,
+                        agreedPrice: double.parse(_priceController.text),
+                        deliveryFee: double.parse(_feeController.text),
+                      );
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        ref.invalidate(adminOrdersProvider);
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                      }
+                    } finally {
+                      setState(() => _isLoading = false);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
+                  child: const Text('Confirm Assignment'),
+                ),
+              ] else if (order.status != 'delivered' && order.status != 'cancelled') ...[
+                const Text('Update Delivery Status', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                _buildStatusButton('picked_up', 'Mark as Picked Up'),
+                const SizedBox(height: 8),
+                _buildStatusButton('on_the_way', 'Mark as On the Way'),
+                const SizedBox(height: 8),
+                _buildStatusButton('delivered', 'Mark as Delivered', color: Colors.green),
+              ] else ...[
+                const Center(child: Text('This order is completed and cannot be modified.')),
+              ],
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+      ],
+    );
+  }
+
+  Widget _buildStatusButton(String status, String label, {Color? color}) {
+    return ElevatedButton(
+      onPressed: _isLoading ? null : () async {
+        setState(() => _isLoading = true);
+        try {
+          await ref.read(adminApiProvider).updateOrderStatus(widget.order.id, status);
+          if (context.mounted) {
+             Navigator.pop(context);
+             ref.invalidate(adminOrdersProvider);
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+          }
+        } finally {
+          setState(() => _isLoading = false);
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: color != null ? Colors.white : null,
+        minimumSize: const Size(double.infinity, 44),
+      ),
+      child: Text(label),
+    );
+  }
+}
+
 class _StatusBadge extends StatelessWidget {
   final String status;
 
@@ -172,7 +334,11 @@ class _StatusBadge extends StatelessWidget {
     switch (status) {
       case 'delivered': color = Colors.green; break;
       case 'pending': color = Colors.amber; break;
-      case 'searching_driver': color = Colors.blue; break;
+      case 'processing': color = Colors.blue; break;
+      case 'assigned': color = Colors.purple; break;
+      case 'in_progress': color = Colors.indigo; break;
+      case 'picked_up': color = Colors.deepOrange; break;
+      case 'on_the_way': color = Colors.orange; break;
       case 'cancelled': color = Colors.red; break;
       default: color = Colors.grey;
     }

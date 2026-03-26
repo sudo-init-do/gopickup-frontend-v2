@@ -53,7 +53,6 @@ class OrderNotifier extends Notifier<OrderState> {
 
     final updatedList = state.orders.map((order) {
       if (order.id == orderId) {
-        // Simple immutable state update simulating an update
         return Order(
           id: order.id,
           clientId: order.clientId,
@@ -67,6 +66,8 @@ class OrderNotifier extends Notifier<OrderState> {
           createdAt: order.createdAt,
           deliveryLat: order.deliveryLat,
           deliveryLng: order.deliveryLng,
+          agreedPrice: order.agreedPrice,
+          agreedDeliveryFee: order.agreedDeliveryFee,
         );
       }
       return order;
