@@ -68,16 +68,25 @@ class SettingsScreen extends StatelessWidget {
                     Icons.help_outline_rounded,
                     'Help Center',
                     'FAQs and customer support',
+                    onTap: () {},
                   ),
                   _buildSettingItem(
                     Icons.shield_outlined,
                     'Privacy Policy',
                     'How we handle your data',
+                    onTap: () => context.push('/privacy-policy'),
+                  ),
+                  _buildSettingItem(
+                    Icons.description_outlined,
+                    'Terms of Service',
+                    'Platform usage rules',
+                    onTap: () => context.push('/terms-of-service'),
                   ),
                   _buildSettingItem(
                     Icons.info_outline_rounded,
                     'About App',
                     'Version 1.0.0',
+                    onTap: () {},
                   ),
 
                   const SizedBox(height: 32),
@@ -154,6 +163,7 @@ class SettingsScreen extends StatelessWidget {
     String title,
     String subtitle, {
     String? suffix,
+    VoidCallback? onTap,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -204,7 +214,7 @@ class SettingsScreen extends StatelessWidget {
             const Icon(Icons.chevron_right_rounded, color: Color(0xFFCBD5E1)),
           ],
         ),
-        onTap: () {},
+        onTap: onTap,
       ),
     );
   }

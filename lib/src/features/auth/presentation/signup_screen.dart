@@ -213,7 +213,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                             recognizer: TapGestureRecognizer()
                               ..onTap = () => context.push('/privacy-policy'),
                           ),
-                          const TextSpan(text: ' and terms of use.'),
+                          const TextSpan(text: ' and '),
+                          TextSpan(
+                            text: 'terms of use',
+                            style: const TextStyle(
+                              color: Color(0xFF3B7D23),
+                              fontWeight: FontWeight.w700,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => context.push('/terms-of-service'),
+                          ),
+                          const TextSpan(text: '.'),
                         ],
                       ),
                     ),

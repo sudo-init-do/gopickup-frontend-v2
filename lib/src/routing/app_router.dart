@@ -5,6 +5,7 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/forgot_password_screen.dart';
 import '../features/auth/presentation/reset_password_screen.dart';
 import '../features/auth/presentation/privacy_policy_screen.dart';
+import '../features/auth/presentation/terms_of_service_screen.dart';
 import '../features/auth/presentation/signup_screen.dart';
 import '../features/auth/presentation/otp_verification_screen.dart';
 import '../features/auth/presentation/role_picker_screen.dart';
@@ -79,6 +80,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/privacy-policy',
         builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: '/terms-of-service',
+        builder: (context, state) => const TermsOfServiceScreen(),
       ),
       GoRoute(
         path: '/verify',

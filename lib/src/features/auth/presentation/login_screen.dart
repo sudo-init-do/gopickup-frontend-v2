@@ -286,7 +286,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         color: AppColors.primarySage,
                         fontWeight: FontWeight.bold,
                       ),
-                      recognizer: TapGestureRecognizer()..onTap = () {},
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => context.push('/terms-of-service'),
                     ),
                     const TextSpan(text: ' and\n'),
                     TextSpan(
@@ -295,7 +296,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         color: AppColors.primarySage,
                         fontWeight: FontWeight.bold,
                       ),
-                      recognizer: TapGestureRecognizer()..onTap = () {},
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => context.push('/privacy-policy'),
                     ),
                   ],
                 ),
