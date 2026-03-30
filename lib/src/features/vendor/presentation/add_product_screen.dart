@@ -325,7 +325,7 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                   }
                 }
 
-                final success = await ref
+                final (success, error) = await ref
                     .read(vendorRepositoryProvider)
                     .addProduct(
                       name: name,
@@ -338,7 +338,7 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                     );
 
                 if (context.mounted) {
-                  Navigator.pop(context); // Close loading
+                   Navigator.pop(context); // Close loading
 
                   if (success) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -350,8 +350,8 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                     context.pop();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Failed to add product.'),
+                      SnackBar(
+                        content: Text(error ?? 'Failed to add product.'),
                         backgroundColor: Colors.red,
                       ),
                     );

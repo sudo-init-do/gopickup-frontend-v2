@@ -11,7 +11,7 @@ class VendorRepository {
 
   VendorRepository(this._apiClient);
 
-  Future<bool> addProduct({
+  Future<(bool, String?)> addProduct({
     required String name,
     required String description,
     required String category,
@@ -21,21 +21,35 @@ class VendorRepository {
     String? imageUrl,
   }) async {
     try {
+      final data = {
+        'name': name,
+        'description': description,
+        'category': category,
+        'price': price,
+        'stock': stock,
+        'moq': moq, // Sending both to avoid compatibility issues
+        'minimum_order_quantity': moq, 
+      };
+
+      if (imageUrl != null && imageUrl.isNotEmpty) {
+        data['image_url'] = imageUrl;
+      }
+
       final response = await _apiClient.post(
-        '/vendor/products',
-        data: {
-          'name': name,
-          'description': description,
-          'category': category,
-          'price': price,
-          'stock': stock,
-          'minimum_order_quantity': moq,
-          'image_url': imageUrl ?? '',
-        },
+        'vendor/products', // Removed leading slash for consistency
+        data: data,
       );
-      return response.statusCode == 200 || response.statusCode == 201;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (true, null);
+      }
+      return (false, 'Server returned ${response.statusCode}');
+    } on DioException catch (e) {
+      final msg = e.response?.data is Map 
+          ? (e.response?.data['error'] ?? e.response?.data['message'] ?? e.message)
+          : e.message;
+      return (false, msg.toString());
     } catch (e) {
-      return false;
+      return (false, e.toString());
     }
   }
 
