@@ -8,6 +8,11 @@ class GoPickupApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Attach global 401 listener to force logout on session expiration
+    ApiClient.onUnauthorized = () {
+      ref.read(authProvider.notifier).logout();
+    };
+
     final goRouter = ref.watch(goRouterProvider);
     return MaterialApp.router(
       title: 'GoPickup Unity',

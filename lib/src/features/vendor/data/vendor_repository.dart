@@ -29,7 +29,7 @@ class VendorRepository {
           'category': category,
           'price': price,
           'stock': stock,
-          'moq': moq,
+          'minimum_order_quantity': moq,
           'image_url': imageUrl ?? '',
         },
       );

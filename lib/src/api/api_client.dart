@@ -17,6 +17,7 @@ class ApiClient {
   );
 
   static const FlutterSecureStorage secureStorage = FlutterSecureStorage();
+  static void Function()? onUnauthorized;
 
   static void initialize() {
     dio.interceptors.add(
@@ -24,15 +25,18 @@ class ApiClient {
         onRequest: (options, handler) async {
           // Read token from secure storage
           String? token = await secureStorage.read(key: 'jwt_token');
-          if (token != null) {
+          if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
         },
         onError: (DioException e, handler) async {
-          // Here you can handle global errors like 401 Unauthorized
-          // For instance, triggering a logout event
-          // Or handle 429 rate limit
+          if (e.response?.statusCode == 401) {
+            // Handle global 401 Unauthorized errors by clearing the token
+            await secureStorage.delete(key: 'jwt_token');
+            // Trigger a logout event if a listener is attached
+            onUnauthorized?.call();
+          }
           return handler.next(e);
         },
       ),

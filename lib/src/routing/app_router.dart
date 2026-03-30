@@ -52,10 +52,51 @@ import '../state/auth_provider.dart';
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final goRouterProvider = Provider<GoRouter>((ref) {
+  final authState = ref.watch(authProvider);
+
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     debugLogDiagnostics: true,
+    redirect: (context, state) {
+      final subpath = state.uri.path;
+      final isLoading = authState.isLoading;
+      final isLoggedIn = authState.user != null;
+
+      // Avoid redirecting while checking session
+      if (isLoading) {
+        return null;
+      }
+
+      // Public routes that don't require authentication
+      final publicRoutes = [
+        '/',
+        '/admin/login',
+        '/signup',
+        '/forgot-password',
+        '/reset-password',
+        '/privacy-policy',
+        '/terms-of-service',
+        '/verify',
+      ];
+
+      final isPublicRoute = publicRoutes.contains(subpath);
+
+      if (!isLoggedIn && !isPublicRoute) {
+        // Not logged in and trying to access a restricted route
+        return '/';
+      }
+
+      if (isLoggedIn && subpath == '/') {
+        // Logged in and trying to access login page, redirect to their dashboard
+        final role = authState.user?.role;
+        if (role == 'vendor') return '/vendor';
+        if (role == 'driver') return '/driver';
+        return '/client';
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(path: '/', builder: (context, state) => const LoginScreen()),
       GoRoute(

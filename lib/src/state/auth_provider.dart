@@ -33,8 +33,8 @@ class AuthNotifier extends Notifier<AuthState> {
   @override
   AuthState build() {
     // Schedule checkLoginStatus after the first frame / build phase
-    Future.microtask(() => _checkLoginStatus());
-    return AuthState();
+    Future.microtask(_checkLoginStatus);
+    return AuthState(isLoading: true);
   }
 
   Future<void> _checkLoginStatus() async {

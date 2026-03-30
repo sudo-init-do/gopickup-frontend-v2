@@ -5,8 +5,13 @@ import 'mock_interceptor.dart';
 class ApiClient {
   late final Dio dio;
   final storage = const FlutterSecureStorage();
+  final void Function()? onUnauthorized;
 
-  ApiClient({required String baseUrl, bool useMock = false}) {
+  ApiClient({
+    required String baseUrl,
+    bool useMock = false,
+    this.onUnauthorized,
+  }) {
     dio = Dio(
       BaseOptions(
         baseUrl: baseUrl,
@@ -28,15 +33,17 @@ class ApiClient {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final token = await storage.read(key: 'jwt_token');
-          if (token != null) {
+          if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
           return handler.next(options);
         },
-        onError: (DioException e, handler) {
+        onError: (DioException e, handler) async {
           if (e.response?.statusCode == 401) {
-            // Handle token expiration (e.g., redirect to login)
-            // This should ideally trigger a provider event
+            // Handle global 401 Unauthorized by clearing local token
+            await storage.delete(key: 'jwt_token');
+            // Trigger the onUnauthorized callback if provided
+            onUnauthorized?.call();
           }
           return handler.next(e);
         },
@@ -49,8 +56,8 @@ class ApiClient {
     return dio.get(path, queryParameters: queryParameters);
   }
 
-  Future<Response> post(String path, {dynamic data}) {
-    return dio.post(path, data: data);
+  Future<Response> post(String path, {dynamic data, Options? options}) {
+    return dio.post(path, data: data, options: options);
   }
 
   Future<Response> put(String path, {dynamic data}) {
@@ -65,10 +72,23 @@ class ApiClient {
     return dio.delete(path);
   }
 
-  Future<Response> uploadImage(String path, {required MultipartFile file}) {
+  Future<Response> uploadImage(String path, {required MultipartFile file}) async {
+    final token = await storage.read(key: 'jwt_token');
     final formData = FormData.fromMap({
       'image': file,
     });
-    return dio.post(path, data: formData);
+    
+    // Explicitly add token to URL to bypass header-stripping issues in some environments
+    final uploadPath = token != null ? '$path?token=$token' : path;
+
+    return dio.post(
+      uploadPath,
+      data: formData,
+      options: Options(
+        headers: {
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
+      ),
+    );
   }
 }
