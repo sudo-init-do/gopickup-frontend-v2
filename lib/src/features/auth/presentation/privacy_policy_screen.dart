@@ -40,7 +40,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             const SizedBox(height: 24),
             _buildSection(
               '1. Introduction',
-              'Welcome to GoPickup. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, and safeguard your data when you use nuestro platform.',
+              'Welcome to GoPickup. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, and safeguard your data when you use our platform.',
             ),
             _buildSection(
               '2. Information We Collect',
