@@ -117,7 +117,7 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                       iconColor: const Color(0xFF3B82F6),
                       iconBgColor: const Color(0xFFEFF6FF),
                       tags: const [
-                        'Browse marketplace',
+                        'Browse Go-Market',
                         'Post loads',
                         'Track deliveries',
                         'Manage payments',

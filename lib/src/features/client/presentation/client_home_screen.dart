@@ -254,7 +254,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                   _QuickActionCard(
                     icon: Icons.shopping_bag_outlined,
                     color: AppColors.primary,
-                    title: 'Buy Materials',
+                    title: 'Go-Market',
                     subtitle: 'Verified vendors',
                     onTap: () => context.go('/client/products'),
                   ),

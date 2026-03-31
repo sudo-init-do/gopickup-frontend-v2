@@ -249,7 +249,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                         ),
                       ),
                       const Text(
-                        'Marketplace',
+                        'Go-Market',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
@@ -650,7 +650,7 @@ class ProductCard extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                '${product.stockQuantity} in',
+                                '${product.stock} in',
                                 style: const TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,

@@ -58,7 +58,7 @@ class ClientCartScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Browse the marketplace to add products',
+                  'Browse Go-Market to add products',
                   style: TextStyle(fontSize: 15, color: Color(0xFF6B7280)),
                 ),
                 const SizedBox(height: 32),
@@ -75,7 +75,7 @@ class ClientCartScreen extends ConsumerWidget {
                       elevation: 0,
                     ),
                     child: const Text(
-                      'Continue Shopping',
+                      'Explore Go-Market',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

@@ -63,7 +63,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
             ),
             const SizedBox(height: 32),
-            _buildDialogSection('VENDOR', job.items.isNotEmpty ? job.items.first.product.vendorName : 'Marketplace', Icons.storefront_rounded),
+            _buildDialogSection('VENDOR', job.items.isNotEmpty ? job.items.first.product.vendorName : 'Go-Market', Icons.storefront_rounded),
             const SizedBox(height: 24),
             _buildDialogSection('AGREED PRICE', '₦${job.total.toStringAsFixed(2)}', Icons.payments_outlined),
             const SizedBox(height: 24),
