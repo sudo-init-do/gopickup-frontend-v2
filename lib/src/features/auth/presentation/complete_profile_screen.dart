@@ -20,8 +20,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
 
   // Profile Step Controllers
   final TextEditingController _nameController = TextEditingController();
-  // We can add a phone number field here but let's mock it for now since the UI doesn't have it
-  final String _mockPhoneNumber = '000-000-0000';
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _businessTypeController = TextEditingController(); // For Vendors
+  final TextEditingController _licenseController = TextEditingController(); // For Drivers
 
   // Address Step Controllers
   final TextEditingController _addressController = TextEditingController();
@@ -31,12 +32,26 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   void dispose() {
     _pageController.dispose();
     _nameController.dispose();
+    _phoneController.dispose();
+    _businessTypeController.dispose();
+    _licenseController.dispose();
     _addressController.dispose();
     _cityController.dispose();
     super.dispose();
   }
 
-  bool get _isProfileValid => _nameController.text.trim().length >= 3;
+  bool get _isProfileValid {
+    final role = ref.read(authProvider).user?.role ?? 'client';
+    final nameValid = _nameController.text.trim().length >= 3;
+    final phoneValid = _phoneController.text.trim().length >= 10;
+    
+    if (role == 'vendor') {
+      return nameValid && phoneValid && _businessTypeController.text.trim().isNotEmpty;
+    } else if (role == 'driver') {
+      return nameValid && phoneValid && _licenseController.text.trim().isNotEmpty;
+    }
+    return nameValid && phoneValid;
+  }
   bool get _isAddressValid =>
       _addressController.text.trim().isNotEmpty &&
       _cityController.text.trim().isNotEmpty;
@@ -51,21 +66,47 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     } else if (_currentStep == 1 && _isAddressValid) {
       setState(() => _isLoading = true);
 
-      final profile = ClientProfile(
-        fullName: _nameController.text.trim(),
-        phoneNumber: _mockPhoneNumber,
-        address:
-            '${_addressController.text.trim()}, ${_cityController.text.trim()}',
-      );
+      final role = ref.read(authProvider).user?.role ?? 'client';
+      final address = '${_addressController.text.trim()}, ${_cityController.text.trim()}';
+      final notifier = ref.read(profileProvider.notifier);
+      bool success = false;
 
-      final success = await ref
-          .read(profileProvider.notifier)
-          .createClientProfile(profile);
+      if (role == 'vendor') {
+        final profile = VendorProfile(
+          storeName: _nameController.text.trim(),
+          businessType: _businessTypeController.text.trim(),
+          address: address,
+          phoneNumber: _phoneController.text.trim(),
+          isApproved: false,
+        );
+        success = await notifier.createVendorProfile(profile);
+      } else if (role == 'driver') {
+        final profile = DriverProfile(
+          fullName: _nameController.text.trim(),
+          phoneNumber: _phoneController.text.trim(),
+          licenseNumber: _licenseController.text.trim(),
+          vehicleType: 'Truck', // Default
+          plateNumber: 'PENDING',
+          vehicleCapacity: 0.0,
+          isApproved: false,
+        );
+        success = await notifier.createDriverProfile(profile);
+      } else {
+        // Client
+        final profile = ClientProfile(
+          fullName: _nameController.text.trim(),
+          phoneNumber: _phoneController.text.trim(),
+          address: address,
+        );
+        success = await notifier.createClientProfile(profile);
+      }
 
       setState(() => _isLoading = false);
 
       if (success && mounted) {
-        context.go('/client');
+        if (role == 'vendor') context.go('/vendor');
+        else if (role == 'driver') context.go('/driver/home');
+        else context.go('/client');
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -151,6 +192,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   }
 
   Widget _buildProfileStep() {
+    final role = ref.read(authProvider).user?.role ?? 'client';
+    
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -163,7 +206,72 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
           const SizedBox(height: 56),
           _buildProfilePhotoPicker(),
           const SizedBox(height: 56),
-          _buildNameField(),
+          // Name Field
+          Text(
+            role == 'vendor' ? 'Store Name' : 'Full Name',
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1F2937),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildCustomTextField(
+            controller: _nameController,
+            hintText: role == 'vendor' ? 'Enter your store name' : 'Enter your full name',
+            isValid: _nameController.text.trim().length >= 3,
+          ),
+          const SizedBox(height: 32),
+          // Phone Number Field
+          const Text(
+            'Phone Number',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1F2937),
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildCustomTextField(
+            controller: _phoneController,
+            hintText: 'e.g. 08087042206',
+            isValid: _phoneController.text.trim().length >= 10,
+          ),
+          if (role == 'vendor') ...[
+            const SizedBox(height: 32),
+            const Text(
+              'Business Type',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1F2937),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildCustomTextField(
+              controller: _businessTypeController,
+              hintText: 'e.g. Construction Materials',
+              isValid: _businessTypeController.text.trim().isNotEmpty,
+            ),
+          ],
+          if (role == 'driver') ...[
+             const SizedBox(height: 32),
+            const Text(
+              'Driver License Number',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1F2937),
+              ),
+            ),
+            const SizedBox(height: 16),
+            _buildCustomTextField(
+              controller: _licenseController,
+              hintText: 'e.g. ABC-123456',
+              isValid: _licenseController.text.trim().isNotEmpty,
+            ),
+          ],
+          const SizedBox(height: 40),
         ],
       ),
     );
@@ -349,27 +457,6 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     );
   }
 
-  Widget _buildNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Full Name',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1F2937),
-          ),
-        ),
-        const SizedBox(height: 16),
-        _buildCustomTextField(
-          controller: _nameController,
-          hintText: 'Enter your full name',
-          isValid: _isProfileValid,
-        ),
-      ],
-    );
-  }
 
   Widget _buildCustomTextField({
     required TextEditingController controller,

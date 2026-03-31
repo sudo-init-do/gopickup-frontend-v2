@@ -3,12 +3,14 @@ class User {
   final String email;
   final String role;
   final DateTime createdAt;
+  final bool isProfileComplete;
 
   User({
     required this.id,
     required this.email,
     required this.role,
     required this.createdAt,
+    this.isProfileComplete = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -19,6 +21,7 @@ class User {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
+      isProfileComplete: json['is_profile_complete'] as bool? ?? false,
     );
   }
 
@@ -28,6 +31,7 @@ class User {
       'email': email,
       'role': role,
       'created_at': createdAt.toIso8601String(),
+      'is_profile_complete': isProfileComplete,
     };
   }
 }

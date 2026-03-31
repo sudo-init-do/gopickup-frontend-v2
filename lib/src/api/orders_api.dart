@@ -3,7 +3,7 @@ import '../models/order_models.dart';
 import 'api_client.dart';
 
 class OrdersApi {
-  Future<Order> checkout({
+  Future<Map<String, dynamic>> checkout({
     required List<OrderItem> items,
     required String paymentMethod,
     required String pickupAddress,
@@ -23,7 +23,10 @@ class OrdersApi {
           'delivery_lng': deliveryLng,
         },
       );
-      return Order.fromJson(response.data);
+      return {
+        'order': Order.fromJson(response.data['order'] ?? response.data),
+        'whatsapp_url': response.data['whatsapp_url'] as String?,
+      };
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Checkout failed');
     }

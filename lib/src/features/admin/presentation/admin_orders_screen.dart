@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../models/order_models.dart';
 import 'admin_providers.dart';
 
@@ -213,8 +214,56 @@ class _ManageOrderDialogState extends ConsumerState<_ManageOrderDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (order.status == 'pending' || order.status == 'processing') ...[
+              if (order.status == 'awaiting payment') ...[
+                const Text('Manual Payment (WhatsApp)', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  onPressed: _isLoading ? null : () async {
+                    setState(() => _isLoading = true);
+                    try {
+                      await ref.read(adminApiProvider).confirmPayment(order.id);
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                        ref.invalidate(adminOrdersProvider);
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment Confirmed')));
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                      }
+                    } finally {
+                      setState(() => _isLoading = false);
+                    }
+                  },
+                  icon: const Icon(Icons.check_circle_outline),
+                  label: const Text('Confirm Payment Received'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber.shade700,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+              if (order.status != 'pending' && order.status != 'awaiting payment' && order.whatsappNotifyVendorUrl != null) ...[
+                 ElevatedButton.icon(
+                  onPressed: () async {
+                    final url = Uri.parse(order.whatsappNotifyVendorUrl!);
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  },
+                  icon: const Icon(Icons.chat_bubble_outline),
+                  label: const Text('Notify Vendor (WhatsApp)'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green.shade600,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+              if (order.status == 'pending' || order.status == 'processing' || order.status == 'awaiting payment') ...[
                 const Text('Assign Driver & Set Prices', style: TextStyle(fontWeight: FontWeight.bold)),
+                // ... same as before but including awaiting payment
                 const SizedBox(height: 12),
                 driversAsync.when(
                   data: (drivers) => DropdownButtonFormField<String>(
@@ -330,7 +379,10 @@ class _StatusBadge extends StatelessWidget {
     Color color;
     switch (status) {
       case 'delivered': color = Colors.green; break;
-      case 'pending': color = Colors.amber; break;
+      case 'pending':
+      case 'awaiting payment':
+        color = Colors.amber;
+        break;
       case 'processing': color = Colors.blue; break;
       case 'assigned': color = Colors.purple; break;
       case 'in_progress': color = Colors.indigo; break;

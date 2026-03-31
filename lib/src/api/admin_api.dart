@@ -81,4 +81,12 @@ class AdminApi {
       throw Exception(e.response?.data['error'] ?? 'Failed to update status');
     }
   }
+
+  Future<void> confirmPayment(String orderId) async {
+    try {
+      await ApiClient.dio.post('vendor/orders/$orderId/confirm-payment');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to confirm payment');
+    }
+  }
 }

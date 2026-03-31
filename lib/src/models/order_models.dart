@@ -68,6 +68,7 @@ class Order {
   final double? agreedPrice;
   final double? agreedDeliveryFee;
   final DateTime createdAt;
+  final String? whatsappNotifyVendorUrl;
 
   Order({
     required this.id,
@@ -112,6 +113,7 @@ class Order {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
+      whatsappNotifyVendorUrl: json['whatsapp_notify_vendor_url'] as String?,
     );
   }
 }

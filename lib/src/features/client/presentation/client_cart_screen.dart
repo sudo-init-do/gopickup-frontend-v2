@@ -216,29 +216,36 @@ class ClientCartScreen extends ConsumerWidget {
                           return;
                         }
 
-                        // 2. Format WhatsApp Message
-                        final buffer = StringBuffer();
-                        buffer.writeln('Hello GoPickup, I would like to place an order:');
-                        buffer.writeln('');
-                        for (final item in cart.values) {
-                          buffer.writeln(
-                              '- ${item.quantity}x ${item.product.name} (₦${item.product.price.toStringAsFixed(2)})');
-                        }
-                        buffer.writeln('');
-                        buffer.writeln('Total Amount: ₦${subtotal.toStringAsFixed(2)}');
-                        buffer.writeln('');
-                        buffer.writeln('Please confirm my order.');
+                        // 2. Call Checkout API
+                        final notifier = ref.read(orderProvider.notifier);
+                        final result = await notifier.checkout(
+                          items: cart.values.toList().map((e) => OrderItem(
+                            productId: e.product.id,
+                            quantity: e.quantity,
+                            name: e.product.name,
+                            price: e.product.price,
+                          )).toList(),
+                          paymentMethod: 'WhatsApp',
+                          pickupAddress: 'Pending Office', // Default for now
+                          deliveryAddress: 'Default Address', // Should be fetched from profile
+                        );
 
-                        final message = buffer.toString();
-                        final encodedMessage = Uri.encodeComponent(message);
-                        final whatsappUrl =
-                            Uri.parse('whatsapp://send?phone=2348087042206&text=$encodedMessage');
-                        final webUrl = Uri.parse(
-                            'https://wa.me/2348087042206?text=$encodedMessage');
-
-                        // 3. Redirect
-                        if (!await launchUrl(whatsappUrl)) {
-                          await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+                        if (result != null && result['whatsapp_url'] != null) {
+                          final url = Uri.parse(result['whatsapp_url']);
+                          if (await canLaunchUrl(url)) {
+                             await launchUrl(url, mode: LaunchMode.externalApplication);
+                          } else {
+                             // Fallback to direct support
+                             final supportUrl = Uri.parse('https://wa.me/2348087042206');
+                             await launchUrl(supportUrl, mode: LaunchMode.externalApplication);
+                          }
+                          // Clear cart after successful checkout initiate
+                          ref.read(cartProvider.notifier).clear();
+                        } else if (result == null) {
+                           // Error handled by state but show snackbar here too
+                           ScaffoldMessenger.of(context).showSnackBar(
+                             const SnackBar(content: Text('Checkout failed. Please try again.')),
+                           );
                         }
                       },
                       style: ElevatedButton.styleFrom(

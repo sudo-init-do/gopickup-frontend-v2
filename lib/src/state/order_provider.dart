@@ -89,7 +89,7 @@ class OrderNotifier extends Notifier<OrderState> {
     }
   }
 
-  Future<Order?> checkout({
+  Future<Map<String, dynamic>?> checkout({
     required List<OrderItem> items,
     required String paymentMethod,
     required String pickupAddress,
@@ -97,7 +97,7 @@ class OrderNotifier extends Notifier<OrderState> {
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
-      final newOrder = await _api.checkout(
+      final result = await _api.checkout(
         items: items,
         paymentMethod: paymentMethod,
         pickupAddress: pickupAddress,
@@ -105,7 +105,7 @@ class OrderNotifier extends Notifier<OrderState> {
       );
       // Fetch fresh orders
       await fetchOrders();
-      return newOrder;
+      return result;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       return null;

@@ -112,6 +112,7 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
         badgeTextColor = const Color(0xFF059669);
         break;
       case 'pending':
+      case 'awaiting payment':
         badgeColor = const Color(0xFFFFFBEB);
         badgeTextColor = const Color(0xFFD97706);
         break;
