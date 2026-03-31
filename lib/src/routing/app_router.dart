@@ -79,6 +79,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         '/privacy-policy',
         '/terms-of-service',
         '/verify',
+        '/roles',
       ];
 
       final isPublicRoute = publicRoutes.contains(subpath);
