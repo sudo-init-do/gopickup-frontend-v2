@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../state/signup_provider.dart';
 
@@ -18,6 +19,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _isFormValid = false;
   bool _obscurePassword = true;
   bool _agreeToPolicy = false;
+
+  Future<void> _launchSupport() async {
+    final Uri url = Uri.parse('whatsapp://send?phone=2348087042206');
+    if (!await launchUrl(url)) {
+      final Uri webUrl = Uri.parse('https://wa.me/2348087042206');
+      await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+    }
+  }
 
   @override
   void dispose() {
@@ -264,7 +273,23 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
+              Center(
+                child: GestureDetector(
+                  onTap: _launchSupport,
+                  child: Text(
+                    'Need help? Contact Support',
+                    style: TextStyle(
+                      color: Colors.grey.shade500,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.grey.shade300,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 48),
             ],
           ),
         ),

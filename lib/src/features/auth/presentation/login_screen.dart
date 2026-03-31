@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../state/auth_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -17,6 +18,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isFormValid = false;
+
+  Future<void> _launchSupport() async {
+    final Uri url = Uri.parse('whatsapp://send?phone=2348087042206');
+    if (!await launchUrl(url)) {
+      final Uri webUrl = Uri.parse('https://wa.me/2348087042206');
+      await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+    }
+  }
 
   @override
   void initState() {
@@ -300,6 +309,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ..onTap = () => context.push('/privacy-policy'),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: _launchSupport,
+                child: Text(
+                  'Need help? Contact Support',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.grey.shade400,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),

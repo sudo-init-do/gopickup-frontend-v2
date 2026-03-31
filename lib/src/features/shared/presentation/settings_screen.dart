@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
+  Future<void> _launchWhatsApp() async {
+    final Uri url = Uri.parse('whatsapp://send?phone=2348087042206');
+    if (!await launchUrl(url)) {
+      // Fallback to web link if app not installed
+      final Uri webUrl = Uri.parse('https://wa.me/2348087042206');
+      await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +78,7 @@ class SettingsScreen extends StatelessWidget {
                     Icons.help_outline_rounded,
                     'Help Center',
                     'FAQs and customer support',
-                    onTap: () {},
+                    onTap: _launchWhatsApp,
                   ),
                   _buildSettingItem(
                     Icons.shield_outlined,
