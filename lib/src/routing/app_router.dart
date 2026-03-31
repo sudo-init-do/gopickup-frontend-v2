@@ -88,29 +88,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         // Not logged in and trying to access a restricted route
         return '/';
       }
-
       if (isLoggedIn && subpath == '/') {
-        // Logged in and trying to access login page, redirect to their dashboard or completion screen
-        final user = authState.user;
-        final role = user?.role;
-        
-        // Skip for admin as they don't have profiles
-        if (role != 'admin' && !(user?.isProfileComplete ?? false)) {
-            return '/complete-profile';
-        }
-
+        final role = authState.user?.role;
         if (role == 'vendor') return '/vendor';
         if (role == 'driver') return '/driver';
         return '/client';
-      }
-
-      // If already logged in but hasn't completed profile, and tries to visit a dashboard
-      if (isLoggedIn && (subpath.startsWith('/client') || subpath.startsWith('/vendor') || subpath.startsWith('/driver')) && subpath != '/complete-profile') {
-          final user = authState.user;
-          final role = user?.role;
-          if (role != 'admin' && !(user?.isProfileComplete ?? false)) {
-              return '/complete-profile';
-          }
       }
 
       return null;
