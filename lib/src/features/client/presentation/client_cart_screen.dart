@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../data/cart_provider.dart';
 import '../../../models/order_models.dart';
 import '../../../state/order_provider.dart';
@@ -174,53 +175,70 @@ class ClientCartScreen extends ConsumerWidget {
                   builder: (context, ref, _) {
                     return ElevatedButton(
                       onPressed: () async {
-                        final orderNotifier = ref.read(orderProvider.notifier);
-                        final cartItems = cart.values
-                            .map(
-                              (item) => OrderItem(
-                                productId: item.product.id,
-                                name: item.product.name,
-                                quantity: item.quantity,
-                                price: item.product.price,
-                              ),
-                            )
+                        // 1. Check Stock for all items
+                        final outOfStockItems = cart.values
+                            .where((item) => item.product.stock < item.quantity)
                             .toList();
 
-                        // Show loading
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) =>
-                              const Center(child: CircularProgressIndicator()),
-                        );
+                        if (outOfStockItems.isNotEmpty) {
+                          // Show better out-of-stock message
+                          final itemNames = outOfStockItems
+                              .map((e) => e.product.name)
+                              .take(2)
+                              .join(', ');
+                          final suffix = outOfStockItems.length > 2
+                              ? ' and ${outOfStockItems.length - 2} more'
+                              : '';
 
-                        final order = await orderNotifier.checkout(
-                          items: cartItems,
-                          paymentMethod: 'wallet',
-                          pickupAddress: 'Vendor Address', // Temporary stub
-                          deliveryAddress:
-                              'Client Selected Address', // Temporary stub
-                        );
-
-                        if (context.mounted) {
-                          Navigator.pop(context); // Close loading
-
-                          if (order != null) {
-                            ref.read(cartProvider.notifier).clear();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Order placed successfully!'),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  const Icon(Icons.error_outline,
+                                      color: Colors.white),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'Sorry, $itemNames$suffix ${outOfStockItems.length > 1 ? 'are' : 'is'} currently out of stock.',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            );
-                            context.go('/client/orders');
-                          } else {
-                            final errorMsg =
-                                ref.read(orderProvider).error ??
-                                'Failed to place order.';
-                            ScaffoldMessenger.of(
-                              context,
-                            ).showSnackBar(SnackBar(content: Text(errorMsg)));
-                          }
+                              backgroundColor: const Color(0xFFEF4444),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16)),
+                              margin: const EdgeInsets.all(20),
+                            ),
+                          );
+                          return;
+                        }
+
+                        // 2. Format WhatsApp Message
+                        final buffer = StringBuffer();
+                        buffer.writeln('Hello GoPickup, I would like to place an order:');
+                        buffer.writeln('');
+                        for (final item in cart.values) {
+                          buffer.writeln(
+                              '- ${item.quantity}x ${item.product.name} (₦${item.product.price.toStringAsFixed(2)})');
+                        }
+                        buffer.writeln('');
+                        buffer.writeln('Total Amount: ₦${subtotal.toStringAsFixed(2)}');
+                        buffer.writeln('');
+                        buffer.writeln('Please confirm my order.');
+
+                        final message = buffer.toString();
+                        final encodedMessage = Uri.encodeComponent(message);
+                        final whatsappUrl =
+                            Uri.parse('whatsapp://send?phone=2348087042206&text=$encodedMessage');
+                        final webUrl = Uri.parse(
+                            'https://wa.me/2348087042206?text=$encodedMessage');
+
+                        // 3. Redirect
+                        if (!await launchUrl(whatsappUrl)) {
+                          await launchUrl(webUrl, mode: LaunchMode.externalApplication);
                         }
                       },
                       style: ElevatedButton.styleFrom(

@@ -3,6 +3,7 @@ class Product {
   final String name;
   final double price;
   final int moq;
+  final int stock;
   final String vendorId;
   final String category;
   final String imageUrl;
@@ -13,6 +14,7 @@ class Product {
     required this.name,
     required this.price,
     required this.moq,
+    this.stock = 0,
     required this.vendorId,
     required this.category,
     required this.imageUrl,
@@ -30,6 +32,7 @@ class Product {
       name: json['name'] as String,
       price: (json['price'] as num).toDouble(),
       moq: json['moq'] as int,
+      stock: json['stock'] as int? ?? 0,
       vendorId: json['vendor_id'] as String,
       category: json['category'] as String,
       imageUrl: json['image_url'] ?? '',
@@ -43,6 +46,7 @@ class Product {
       'name': name,
       'price': price,
       'moq': moq,
+      'stock': stock,
       'vendor_id': vendorId,
       'category': category,
       'image_url': imageUrl,
