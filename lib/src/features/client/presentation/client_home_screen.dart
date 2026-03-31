@@ -21,6 +21,20 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
     });
   }
 
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  }
+
+  String _getGreetingEmoji() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return '🌅';
+    if (hour < 17) return '☀️';
+    return '🌙';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,7 +113,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                     Row(
                                       children: [
                                         Text(
-                                          'GOOD MORNING',
+                                          _getGreeting().toUpperCase(),
                                           style: TextStyle(
                                             color: Colors.white.withValues(
                                               alpha: 0.9,
@@ -110,9 +124,9 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                           ),
                                         ),
                                         const SizedBox(width: 6),
-                                        const Text(
-                                          '👋',
-                                          style: TextStyle(fontSize: 14),
+                                        Text(
+                                          _getGreetingEmoji(),
+                                          style: const TextStyle(fontSize: 14),
                                         ),
                                       ],
                                     ),
