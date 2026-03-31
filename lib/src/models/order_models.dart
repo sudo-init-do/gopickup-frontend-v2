@@ -85,6 +85,7 @@ class Order {
     this.agreedPrice,
     this.agreedDeliveryFee,
     required this.createdAt,
+    this.whatsappNotifyVendorUrl,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {

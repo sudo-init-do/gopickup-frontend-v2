@@ -68,6 +68,7 @@ class OrderNotifier extends Notifier<OrderState> {
           deliveryLng: order.deliveryLng,
           agreedPrice: order.agreedPrice,
           agreedDeliveryFee: order.agreedDeliveryFee,
+          whatsappNotifyVendorUrl: order.whatsappNotifyVendorUrl,
         );
       }
       return order;
