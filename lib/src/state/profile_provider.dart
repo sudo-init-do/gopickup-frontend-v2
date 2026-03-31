@@ -65,7 +65,24 @@ class ProfileNotifier extends Notifier<ProfileState> {
       return false;
     }
   }
+
+  Future<bool> updateProfile(Map<String, dynamic> updates) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await _api.updateProfile(updates);
+      state = state.copyWith(isLoading: false);
+      ref.invalidate(fullProfileProvider);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
+    }
+  }
 }
+
+final fullProfileProvider = FutureProvider<Map<String, dynamic>>((ref) {
+  return ref.watch(profileApiProvider).getFullProfile();
+});
 
 final profileProvider = NotifierProvider<ProfileNotifier, ProfileState>(() {
   return ProfileNotifier();

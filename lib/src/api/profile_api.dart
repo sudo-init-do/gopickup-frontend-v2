@@ -62,4 +62,26 @@ class ProfileApi {
       );
     }
   }
+
+  Future<ClientProfile> getClientProfile() async {
+    try {
+      final response = await ApiClient.dio.get('profile/client');
+      return ClientProfile.fromJson(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to get client profile',
+      );
+    }
+  }
+
+  Future<Map<String, dynamic>> getFullProfile() async {
+    try {
+      final response = await ApiClient.dio.get('profile');
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to get full profile',
+      );
+    }
+  }
 }

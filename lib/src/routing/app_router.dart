@@ -12,6 +12,7 @@ import '../features/auth/presentation/role_picker_screen.dart';
 import '../features/auth/presentation/complete_profile_screen.dart';
 import '../features/auth/presentation/driver_registration_screen.dart';
 import '../features/auth/presentation/vendor_registration_screen.dart';
+import '../features/shared/presentation/profile_screen.dart';
 import '../features/client/presentation/client_home_screen.dart';
 import '../features/client/presentation/client_products_screen.dart';
 import '../features/client/presentation/client_orders_screen.dart';
@@ -244,6 +245,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 label: 'Wallet',
                 route: '/client/wallet',
               ),
+              NavigationItem(
+                unselectedIcon: Icons.person_outline_rounded,
+                selectedIcon: Icons.person_rounded,
+                label: 'Profile',
+                route: '/client/profile',
+              ),
             ],
             child: child,
           );
@@ -284,7 +291,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/client/profile',
-            builder: (context, state) => const ClientProfileScreen(),
+            builder: (context, state) => const ProfileScreen(),
           ),
           GoRoute(
             path: '/client/addresses',
@@ -352,7 +359,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/driver/profile',
-            builder: (context, state) => const DriverProfileScreen(),
+            builder: (context, state) => const ProfileScreen(),
           ),
         ],
       ),
@@ -392,6 +399,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 selectedIcon: Icons.account_balance_wallet_rounded,
                 label: 'Wallet',
                 route: '/vendor/wallet',
+              ),
+              NavigationItem(
+                unselectedIcon: Icons.person_outline_rounded,
+                selectedIcon: Icons.person_rounded,
+                label: 'Profile',
+                route: '/vendor/profile',
               ),
             ],
             child: child,
@@ -437,7 +450,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/vendor/profile',
-            builder: (context, state) => const VendorProfileScreen(),
+            builder: (context, state) => const ProfileScreen(),
           ),
         ],
       ),
