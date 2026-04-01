@@ -1,8 +1,10 @@
+version: '3.8'
+
 services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile.web
+      dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "3030:3030"
     restart: always
