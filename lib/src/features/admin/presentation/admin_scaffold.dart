@@ -14,6 +14,30 @@ class AdminScaffold extends ConsumerWidget {
     required this.currentLocation,
   });
 
+  int _getSelectedIndex(String location) {
+    if (location.startsWith('/admin/orders')) return 2;
+    if (location.startsWith('/admin/products')) return 3;
+    if (location.startsWith('/admin/users')) return 1;
+    return 0; // '/admin'
+  }
+
+  void _onItemTapped(int index, BuildContext context) {
+    switch (index) {
+      case 0:
+        context.go('/admin');
+        break;
+      case 1:
+        context.go('/admin/users');
+        break;
+      case 2:
+        context.go('/admin/orders');
+        break;
+      case 3:
+        context.go('/admin/products');
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
@@ -32,12 +56,14 @@ class AdminScaffold extends ConsumerWidget {
 
         if (isMobile) {
           return Scaffold(
+            backgroundColor: const Color(0xFFF9FAFB),
             appBar: AppBar(
-              backgroundColor: Colors.white,
-              elevation: 1,
-              iconTheme: const IconThemeData(color: Colors.black87),
+              backgroundColor: Colors.white, type: BottomNavigationBarType.fixed,
+              elevation: 0,
+              iconTheme: const IconThemeData(color: Colors.blueAccent),
+              centerTitle: true,
               title: const Text(
-                'GoPickup Admin',
+                'Admin Console',
                 style: TextStyle(
                   color: Colors.black87,
                   fontWeight: FontWeight.bold,
@@ -45,18 +71,34 @@ class AdminScaffold extends ConsumerWidget {
                 ),
               ),
               actions: [
-                const Icon(Icons.notifications_none, color: Colors.grey),
-                const SizedBox(width: 12),
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.grey.shade200,
-                  child: const Icon(Icons.person_outline, size: 18, color: Colors.grey),
+                TextButton(
+                  onPressed: () {
+                    ref.read(authProvider.notifier).logout();
+                    context.go('/');
+                  },
+                  child: const Text('Logout', style: TextStyle(color: Colors.blueAccent)),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 8),
               ],
             ),
             drawer: _AdminDrawer(currentLocation: currentLocation),
             body: child,
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: _getSelectedIndex(currentLocation),
+              onTap: (index) => _onItemTapped(index, context),
+              selectedItemColor: Colors.blueAccent,
+              unselectedItemColor: Colors.grey,
+              backgroundColor: Colors.white, type: BottomNavigationBarType.fixed,
+              elevation: 8,
+              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+              unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+              items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'DASHBOARD'),
+                BottomNavigationBarItem(icon: Icon(Icons.people), label: 'USERS'),
+                BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'ORDERS'),
+                BottomNavigationBarItem(icon: Icon(Icons.storefront), label: 'MARKET'),
+              ],
+            ),
           );
         }
 
@@ -137,6 +179,12 @@ class _AdminDrawer extends ConsumerWidget {
               label: 'Order Monitoring',
               route: '/admin/orders',
               isSelected: currentLocation == '/admin/orders',
+            ),
+            _DrawerItem(
+              icon: Icons.storefront_outlined,
+              label: 'Product Management',
+              route: '/admin/products',
+              isSelected: currentLocation == '/admin/products',
             ),
             const Spacer(),
             const Divider(color: Colors.white24),
@@ -253,6 +301,12 @@ class _AdminSidebar extends ConsumerWidget {
             label: 'Order Monitoring',
             route: '/admin/orders',
             isSelected: currentLocation == '/admin/orders',
+          ),
+          _SidebarItem(
+            icon: Icons.storefront_outlined,
+            label: 'Product Management',
+            route: '/admin/products',
+            isSelected: currentLocation == '/admin/products',
           ),
           const Spacer(),
           const Divider(color: Colors.white24),

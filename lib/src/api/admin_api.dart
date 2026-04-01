@@ -89,4 +89,20 @@ class AdminApi {
       throw Exception(e.response?.data['error'] ?? 'Failed to confirm payment');
     }
   }
+
+  Future<void> deleteUser(String userId) async {
+    try {
+      await ApiClient.dio.delete('admin/users/$userId');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to delete user');
+    }
+  }
+
+  Future<void> deleteProduct(String productId) async {
+    try {
+      await ApiClient.dio.delete('admin/products/$productId');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to delete product');
+    }
+  }
 }

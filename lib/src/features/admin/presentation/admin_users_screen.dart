@@ -13,6 +13,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   String? _selectedRole;
   final _searchController = TextEditingController();
   final Set<String> _selectedIds = {};
+  final Set<String> _deletedIds = {};
   bool _isLoading = false;
 
   @override
@@ -22,7 +23,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   }
 
   List<Map<String, dynamic>> _getFilteredUsers(List<Map<String, dynamic>> users) {
-    var filtered = users;
+    var filtered = users.where((u) => !_deletedIds.contains(u['id'])).toList();
     if (_searchController.text.isNotEmpty) {
       final q = _searchController.text.toLowerCase();
       filtered = filtered.where((u) {
@@ -75,6 +76,45 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
       ref.invalidate(adminStatsProvider);
     }
   }
+
+  Future<void> _confirmDeleteUser(String id) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete User'),
+        content: const Text(
+          'Warning: Deleting this user will permanently erase their profile and all associated data from the system.',
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete Permanently'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      setState(() => _isLoading = true);
+      try {
+        await ref.read(adminApiProvider).deleteUser(id);
+        setState(() => _deletedIds.add(id));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User permanently deleted'), backgroundColor: Colors.green));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete user: $e'), backgroundColor: Colors.red));
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -329,6 +369,13 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               role.toUpperCase(),
               style: TextStyle(color: badgeText, fontSize: 10, fontWeight: FontWeight.bold),
             ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: () => _confirmDeleteUser(id),
           ),
         ],
       ),
