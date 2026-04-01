@@ -30,7 +30,7 @@ class _AdminOrdersScreenState extends ConsumerState<AdminOrdersScreen> {
     // Search filter
     if (_searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
-      filtered = filtered.where((o) => o.id.toLowerCase().contains(query) || (o.clientName?.toLowerCase().contains(query) ?? false)).toList();
+      filtered = filtered.where((o) => o.id.toLowerCase().contains(query) || o.clientId.toLowerCase().contains(query)).toList();
     }
 
     return filtered;
@@ -206,7 +206,7 @@ class _OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Generate type based on items count for UI matching
-    final isLogistics = order.items.isEmpty || order.storeId == null;
+    final isLogistics = order.items.isEmpty || order.vendorId.isEmpty;
     
     // Convert status to visual group
     String statusLabel = 'Pending';
@@ -323,7 +323,7 @@ class _OrderCard extends StatelessWidget {
                   children: [
                     const Icon(Icons.person, size: 14, color: Colors.grey),
                     const SizedBox(width: 4),
-                    Text(order.clientName ?? 'Customer', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                    Text(order.clientId.substring(0, 8), style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
                   ],
                 ),
                 Row(
@@ -516,7 +516,7 @@ class _FocusedView extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(order.clientName ?? 'Customer', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                    Text('Client: ${order.clientId.substring(0, 8)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                                     const Text('Contact provided', style: TextStyle(fontSize: 11, color: Colors.grey)),
                                   ],
                                 ),
