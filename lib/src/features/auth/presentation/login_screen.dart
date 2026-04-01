@@ -325,6 +325,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () => context.go('/admin/login'),
+                child: Text(
+                  'Admin Portal',
+                  style: TextStyle(
+                    color: Colors.grey.shade400,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
             ],
           ),
