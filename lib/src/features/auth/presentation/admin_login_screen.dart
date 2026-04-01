@@ -40,7 +40,7 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
   Future<void> _adminLogin() async {
     final success = await ref
         .read(authProvider.notifier)
-        .adminLogin(_emailController.text, _passwordController.text);
+        .adminLogin(_emailController.text.trim(), _passwordController.text);
 
     if (success && mounted) {
       context.go('/admin');

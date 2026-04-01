@@ -50,7 +50,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _signIn() async {
     final success = await ref
         .read(authProvider.notifier)
-        .login(_emailController.text, _passwordController.text);
+        .login(_emailController.text.trim(), _passwordController.text);
 
     if (success && mounted) {
       final user = ref.read(authProvider).user;
