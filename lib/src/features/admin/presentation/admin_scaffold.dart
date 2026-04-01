@@ -58,7 +58,7 @@ class AdminScaffold extends ConsumerWidget {
           return Scaffold(
             backgroundColor: const Color(0xFFF9FAFB),
             appBar: AppBar(
-              backgroundColor: Colors.white, type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.white,
               elevation: 0,
               iconTheme: const IconThemeData(color: Colors.blueAccent),
               centerTitle: true,
