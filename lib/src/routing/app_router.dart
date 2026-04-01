@@ -52,14 +52,26 @@ import '../state/auth_provider.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
+class RouterNotifier extends ChangeNotifier {
+  RouterNotifier(Ref ref) {
+    ref.listen<AuthState>(authProvider, (_, __) => notifyListeners());
+  }
+}
+
+final routerNotifierProvider = Provider<RouterNotifier>((ref) {
+  return RouterNotifier(ref);
+});
+
 final goRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
+  final notifier = ref.watch(routerNotifierProvider);
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
+    refreshListenable: notifier,
     debugLogDiagnostics: true,
     redirect: (context, state) {
+      final authState = ref.read(authProvider);
       final subpath = state.uri.path;
       final isLoading = authState.isLoading;
       final isLoggedIn = authState.user != null;
