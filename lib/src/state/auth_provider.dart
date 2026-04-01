@@ -38,23 +38,10 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> _checkLoginStatus() async {
-    state = state.copyWith(isLoading: true);
-    try {
-      final token = await ApiClient.secureStorage.read(key: 'jwt_token');
-      if (token != null) {
-        final user = await _authApi.getCurrentUser();
-        state = state.copyWith(user: user, isLoading: false);
-        // Automatically connect to websocket if a valid token exists
-        ref.read(websocketServiceProvider).connect(token);
-      } else {
-        state = state.copyWith(isLoading: false);
-      }
-    } catch (e) {
-      // Token might be expired or invalid
-      await ApiClient.secureStorage.delete(key: 'jwt_token');
-      ref.read(websocketServiceProvider).disconnect();
-      state = state.copyWith(isLoading: false, error: e.toString());
-    }
+    // Clear any existing session to enforce manual login
+    await ApiClient.secureStorage.delete(key: 'jwt_token');
+    ref.read(websocketServiceProvider).disconnect();
+    state = state.copyWith(isLoading: false, user: null, error: null);
   }
 
   Future<bool> login(String email, String password) async {

@@ -85,11 +85,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       final isPublicRoute = publicRoutes.contains(subpath);
 
       if (!isLoggedIn && !isPublicRoute) {
+        if (subpath.startsWith('/admin')) {
+          return '/admin/login';
+        }
         // Not logged in and trying to access a restricted route
         return '/';
       }
-      if (isLoggedIn && subpath == '/') {
+      
+      if (isLoggedIn && (subpath == '/' || subpath == '/admin/login')) {
         final role = authState.user?.role;
+        if (role == 'admin') return '/admin';
         if (role == 'vendor') return '/vendor';
         if (role == 'driver') return '/driver';
         return '/client';
