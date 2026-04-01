@@ -306,7 +306,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           const SizedBox(width: 16),
           CircleAvatar(
             backgroundColor: Colors.grey.shade200,
-            backgroundImage: NetworkImage('https://i.pravatar.cc/150?u=$id'), // Avatar placeholder
+            child: Icon(Icons.person, color: Colors.grey.shade600),
           ),
           const SizedBox(width: 12),
           Expanded(
