@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/profile_api.dart';
 import '../models/user_models.dart';
+import 'auth_provider.dart';
 
 final profileApiProvider = Provider((ref) => ProfileApi());
 
