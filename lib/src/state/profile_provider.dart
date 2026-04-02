@@ -80,8 +80,36 @@ class ProfileNotifier extends Notifier<ProfileState> {
   }
 }
 
-final fullProfileProvider = FutureProvider<Map<String, dynamic>>((ref) {
-  return ref.watch(profileApiProvider).getFullProfile();
+final fullProfileProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  final user = ref.watch(authProvider).user;
+  final api = ref.watch(profileApiProvider);
+  
+  if (user == null) {
+    throw Exception('User not logged in');
+  }
+
+  try {
+    if (user.role == 'client') {
+      final profile = await api.getClientProfile();
+      return profile.toJson();
+    } else if (user.role == 'driver') {
+      final profile = await api.getDriverProfile();
+      return profile.toJson();
+    } else if (user.role == 'vendor') {
+      final profile = await api.getVendorProfile();
+      return profile.toJson();
+    }
+    
+    // Fallback to generic if role is something else or above fails
+    return await api.getFullProfile();
+  } catch (e) {
+    // If specific one fails, try generic as last resort before giving up
+    try {
+      return await api.getFullProfile();
+    } catch (_) {
+      rethrow;
+    }
+  }
 });
 
 final profileProvider = NotifierProvider<ProfileNotifier, ProfileState>(() {

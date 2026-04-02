@@ -7,9 +7,8 @@ class ProfileApi {
     try {
       await ApiClient.dio.post('profile/client', data: profile.toJson());
     } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['error'] ?? 'Client profile creation failed',
-      );
+      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Client profile creation failed');
+      throw Exception(msg);
     }
   }
 
@@ -17,9 +16,8 @@ class ProfileApi {
     try {
       await ApiClient.dio.post('profile/driver', data: profile.toJson());
     } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['error'] ?? 'Driver profile creation failed',
-      );
+      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Driver profile creation failed');
+      throw Exception(msg);
     }
   }
 
@@ -27,9 +25,8 @@ class ProfileApi {
     try {
       await ApiClient.dio.post('profile/vendor', data: profile.toCreateJson());
     } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['error'] ?? 'Vendor profile creation failed',
-      );
+      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Vendor profile creation failed');
+      throw Exception(msg);
     }
   }
 
@@ -37,7 +34,8 @@ class ProfileApi {
     try {
       await ApiClient.dio.put('profile', data: updates);
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Profile update failed');
+      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Profile update failed');
+      throw Exception(msg);
     }
   }
 
@@ -46,9 +44,8 @@ class ProfileApi {
       final response = await ApiClient.dio.get('profile/driver');
       return DriverProfile.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['error'] ?? 'Failed to get driver profile',
-      );
+      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Failed to get driver profile');
+      throw Exception(msg);
     }
   }
 
@@ -57,9 +54,8 @@ class ProfileApi {
       final response = await ApiClient.dio.get('profile/vendor');
       return VendorProfile.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['error'] ?? 'Failed to get vendor profile',
-      );
+      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Failed to get vendor profile');
+      throw Exception(msg);
     }
   }
 
@@ -68,9 +64,8 @@ class ProfileApi {
       final response = await ApiClient.dio.get('profile/client');
       return ClientProfile.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['error'] ?? 'Failed to get client profile',
-      );
+      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Failed to get client profile');
+      throw Exception(msg);
     }
   }
 
@@ -79,9 +74,10 @@ class ProfileApi {
       final response = await ApiClient.dio.get('profile');
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['error'] ?? 'Failed to get full profile',
-      );
+      final error = (e.response?.data is Map) 
+        ? e.response?.data['error'] 
+        : (e.response?.data?.toString() ?? 'Failed to get full profile');
+      throw Exception(error);
     }
   }
 }

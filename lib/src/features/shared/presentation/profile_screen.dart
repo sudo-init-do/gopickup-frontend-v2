@@ -57,7 +57,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             child: Column(
               children: [
                 // Header
-                _buildHeader(user?.email ?? '', profile['profile_picture_url']),
+                _buildHeader(
+                  user?.email ?? '', 
+                  profile['profile_picture_url'] ?? profile['store_banner_url']
+                ),
                 
                 const SizedBox(height: 24),
                 
