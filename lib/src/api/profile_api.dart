@@ -44,6 +44,12 @@ class ProfileApi {
       final response = await ApiClient.dio.get('profile/driver');
       return DriverProfile.fromJson(response.data);
     } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        try {
+          final response = await ApiClient.dio.get('auth/me');
+          return DriverProfile.fromJson(response.data);
+        } catch (_) {}
+      }
       final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Failed to get driver profile');
       throw Exception(msg);
     }
@@ -54,6 +60,12 @@ class ProfileApi {
       final response = await ApiClient.dio.get('profile/vendor');
       return VendorProfile.fromJson(response.data);
     } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        try {
+          final response = await ApiClient.dio.get('auth/me');
+          return VendorProfile.fromJson(response.data);
+        } catch (_) {}
+      }
       final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Failed to get vendor profile');
       throw Exception(msg);
     }
@@ -64,6 +76,12 @@ class ProfileApi {
       final response = await ApiClient.dio.get('profile/client');
       return ClientProfile.fromJson(response.data);
     } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        try {
+          final response = await ApiClient.dio.get('auth/me');
+          return ClientProfile.fromJson(response.data);
+        } catch (_) {}
+      }
       final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Failed to get client profile');
       throw Exception(msg);
     }
@@ -74,6 +92,15 @@ class ProfileApi {
       final response = await ApiClient.dio.get('profile');
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        // Try auth/me as a fallback
+        try {
+          final meResponse = await ApiClient.dio.get('auth/me');
+          return meResponse.data as Map<String, dynamic>;
+        } catch (_) {
+           // If auth/me also fails, throw the original one
+        }
+      }
       final error = (e.response?.data is Map) 
         ? e.response?.data['error'] 
         : (e.response?.data?.toString() ?? 'Failed to get full profile');
