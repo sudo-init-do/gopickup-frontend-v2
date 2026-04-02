@@ -39,7 +39,8 @@ class AuthApi {
       );
       return response.data; // Expected { "token": "jwt...", "user": { ... } }
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Login failed');
+      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Login failed');
+      throw Exception(msg);
     }
   }
 
@@ -60,9 +61,8 @@ class AuthApi {
       final response = await ApiClient.dio.get('auth/me');
       return User.fromJson(response.data);
     } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['error'] ?? 'Failed to get current user',
-      );
+      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Failed to get current user');
+      throw Exception(msg);
     }
   }
 
