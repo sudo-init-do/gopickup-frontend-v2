@@ -89,27 +89,33 @@ final fullProfileProvider = FutureProvider<Map<String, dynamic>>((ref) async {
     throw Exception('User not logged in');
   }
 
+  // Basic info from the user object as a baseline
+  final Map<String, dynamic> baseInfo = {
+    'email': user.email,
+    'role': user.role,
+  };
+
   try {
     if (user.role == 'client') {
       final profile = await api.getClientProfile();
-      return profile.toJson();
+      return {...baseInfo, ...profile.toJson()};
     } else if (user.role == 'driver') {
       final profile = await api.getDriverProfile();
-      return profile.toJson();
+      return {...baseInfo, ...profile.toJson()};
     } else if (user.role == 'vendor') {
       final profile = await api.getVendorProfile();
-      return profile.toJson();
+      return {...baseInfo, ...profile.toJson()};
     }
     
-    // Fallback to generic if role is something else or above fails
-    return await api.getFullProfile();
+    final generic = await api.getFullProfile();
+    return {...baseInfo, ...generic};
   } catch (e) {
-    // If specific one fails, try generic as last resort before giving up
-    try {
-      return await api.getFullProfile();
-    } catch (_) {
-      rethrow;
+    // If it's a 404 or any other error, return basic info so the screen doesn't crash
+    // This allows the user to still see their email and potentially "Edit" to create the profile
+    if (e.toString().contains('404')) {
+      return baseInfo;
     }
+    rethrow;
   }
 });
 
