@@ -309,8 +309,9 @@ class VendorHomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildStatCard(String value, String label, IconData icon) {
     return Expanded(

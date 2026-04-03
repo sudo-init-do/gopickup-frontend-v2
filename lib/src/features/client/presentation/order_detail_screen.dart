@@ -41,6 +41,7 @@ class OrderDetailScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildTrackingTop(
+                      context,
                       kBrandGreen,
                       kDarkTextColor,
                       kMidTextColor,
@@ -136,7 +137,12 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTrackingTop(Color brandGreen, Color darkText, Color midText) {
+  Widget _buildTrackingTop(
+    BuildContext context,
+    Color brandGreen,
+    Color darkText,
+    Color midText,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
@@ -197,7 +203,8 @@ class OrderDetailScreen extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => context.push('/vendor/store/${order.vendor!.id}'),
+                    onPressed: () =>
+                        context.push('/vendor/store/${order.vendor!.id}'),
                     child: const Text('View Store'),
                   ),
                 ],

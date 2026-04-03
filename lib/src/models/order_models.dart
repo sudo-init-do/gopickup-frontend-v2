@@ -53,6 +53,13 @@ class JobBid {
   }
 }
 
+class OrderVendor {
+  final String id;
+  final String storeName;
+
+  OrderVendor({required this.id, required this.storeName});
+}
+
 class Order {
   final String id;
   final String clientId;
@@ -69,6 +76,8 @@ class Order {
   final double? agreedDeliveryFee;
   final DateTime createdAt;
   final String? whatsappNotifyVendorUrl;
+
+  OrderVendor? get vendor => OrderVendor(id: vendorId, storeName: 'GoPickup Store');
 
   Order({
     required this.id,
@@ -117,4 +126,10 @@ class Order {
       whatsappNotifyVendorUrl: json['whatsapp_notify_vendor_url'] as String?,
     );
   }
+
+  // Helper for storefront link in different Order model
+  Map<String, dynamic>? get vendor => {
+    'id': vendorId,
+    'store_name': 'GoPickup Store', // Backend should ideally provide this
+  };
 }
