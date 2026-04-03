@@ -1,9 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'package:flutter/foundation.dart';
+import '../common/config/app_config.dart';
+
 class ApiClient {
-  static const String baseUrl =
-      'https://backend.gopickup.com.ng/api/v1/'; // Update to exact IP for physical devices or production URL
+  static String get baseUrl => AppConfig.baseUrl; 
   static final Dio dio = Dio(
     BaseOptions(
       baseUrl: baseUrl,
