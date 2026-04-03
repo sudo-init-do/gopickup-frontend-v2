@@ -126,10 +126,4 @@ class Order {
       whatsappNotifyVendorUrl: json['whatsapp_notify_vendor_url'] as String?,
     );
   }
-
-  // Helper for storefront link in different Order model
-  Map<String, dynamic>? get vendor => {
-    'id': vendorId,
-    'store_name': 'GoPickup Store', // Backend should ideally provide this
-  };
 }
