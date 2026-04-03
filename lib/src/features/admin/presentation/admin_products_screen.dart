@@ -306,32 +306,30 @@ class _AdminErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline_rounded, size: 64, color: Colors.red.shade300),
-            const SizedBox(height: 24),
-            const Text('Inventory Offline', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
-            const SizedBox(height: 12),
-            Text(error, textAlign: TextAlign.center, style: TextStyle(color: Colors.blueGrey.shade400, fontSize: 14, height: 1.5)),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onRetry,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E293B),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text('Retry Connection', style: TextStyle(fontWeight: FontWeight.w800)),
+      padding: const EdgeInsets.symmetric(horizontal: 40),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline_rounded, size: 64, color: Colors.red.shade300),
+          const SizedBox(height: 24),
+          const Text('Inventory Offline', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
+          const SizedBox(height: 12),
+          Text(error, textAlign: TextAlign.center, style: TextStyle(color: Colors.blueGrey.shade400, fontSize: 14, height: 1.5)),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1E293B),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
+              child: const Text('Retry Connection', style: TextStyle(fontWeight: FontWeight.w800)),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
