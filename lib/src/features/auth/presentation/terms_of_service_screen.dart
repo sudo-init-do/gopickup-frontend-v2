@@ -40,7 +40,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             const SizedBox(height: 24),
             _buildSection(
               '1.1 Platform Description',
-              'GO Pickup is a web and mobile application-based platform accessible at https://main.gopickup.com.ng/ which connects individuals or organizations requiring logistics and haulage services (“Senders”) with verified logistics professionals or vehicle owners (“Pilots”). Pilots can provide the following types of delivery services:\n'
+              'GO Pickup is a web and mobile application-based platform accessible at https://api.gopickup.com.ng/ which connects individuals or organizations requiring logistics and haulage services (“Senders”) with verified logistics professionals or vehicle owners (“Pilots”). Pilots can provide the following types of delivery services:\n'
               'On-Demand Jobs Delivery Service: Immediate or grouped order delivery.\n'
               'Scheduled Delivery Service: Future or recurring order delivery services.\n'
               'These services are collectively referred to as the “Services.”',
