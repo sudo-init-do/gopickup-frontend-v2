@@ -22,8 +22,8 @@ COPY --from=build /app/build/web /usr/share/nginx/html
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 3030 for the final restoration
-EXPOSE 3030
+# Expose port 80 for the final restoration
+EXPOSE 80
 
 # Command to run nginx
 CMD ["nginx", "-g", "daemon off;"]
