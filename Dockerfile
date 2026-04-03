@@ -19,8 +19,9 @@ FROM public.ecr.aws/nginx/nginx:alpine
 # Copy the build output from the builder stage
 COPY --from=build /app/build/web /usr/share/nginx/html
 
-# Copy custom nginx configuration (overwriting the global config)
-COPY nginx.conf /etc/nginx/nginx.conf
+# Copy site-specific nginx configuration (overwriting the default virtual host)
+# This is where the Alpine image expects it
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Ensure permissions are correct
 RUN chown -R nginx:nginx /usr/share/nginx/html
