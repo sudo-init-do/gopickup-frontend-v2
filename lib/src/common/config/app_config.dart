@@ -1,16 +1,16 @@
 import 'package:flutter/foundation.dart';
 
 class AppConfig {
-  static const String devBaseUrl = 'https://backend.gopickup.com.ng/api/v1/';
+  // Production backend — CORS is configured to allow https://main.gopickup.com.ng
   static const String prodBaseUrl = 'https://backend.gopickup.com.ng/api/v1/';
-  
-  // The host URL used for prefixing relative image paths returned by the backend.
+  static const String devBaseUrl = 'https://backend.gopickup.com.ng/api/v1/';
+
+  // Used for prefixing relative image paths returned by the backend
   static const String apiBaseUrl = 'https://backend.gopickup.com.ng';
 
-  static String get baseUrl {
-    if (kIsWeb) {
-      return '/api/v1/'; 
-    }
-    return kDebugMode ? devBaseUrl : prodBaseUrl;
-  }
+  // WebSocket endpoint
+  static const String wsUrl = 'wss://backend.gopickup.com.ng/api/v1/ws';
+
+  // Always use the full backend URL — Flutter Web bakes URLs at compile time
+  static String get baseUrl => kDebugMode ? devBaseUrl : prodBaseUrl;
 }
