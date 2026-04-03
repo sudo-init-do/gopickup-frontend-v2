@@ -55,8 +55,8 @@ class VendorApi {
 
   Future<Order> markOrderReady(String orderId) async {
     try {
-      final response = await ApiClient.dio.patch(
-        'vendor/orders/$orderId/ready',
+      final response = await ApiClient.dio.post(
+        'vendor/$orderId/ready',
       );
       return Order.fromJson(response.data);
     } on DioException catch (e) {
@@ -66,10 +66,21 @@ class VendorApi {
     }
   }
 
+  Future<Map<String, dynamic>> getVendorProfile(String vendorId) async {
+    try {
+      final response = await ApiClient.dio.get('vendors/$vendorId');
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['error'] ?? 'Failed to get vendor profile',
+      );
+    }
+  }
+
   Future<Map<String, dynamic>> getDashboard() async {
     try {
       final response = await ApiClient.dio.get('vendor/dashboard');
-      return response.data; // { "total_sales": 100.0, "active_orders": 5 }
+      return response.data; // { "total_sales": 100.0, "active_orders": 5, "total_orders": 10, "pending_orders": 2, "total_revenue": 5000.0 }
     } on DioException catch (e) {
       throw Exception(
         e.response?.data['error'] ?? 'Failed to get vendor dashboard',

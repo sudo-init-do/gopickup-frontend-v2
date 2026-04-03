@@ -11,161 +11,157 @@ class VendorHomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ordersAsync = ref.watch(vendorOrdersProvider);
-    final balanceAsync = ref.watch(balanceProvider);
+    final dashboardAsync = ref.watch(vendorDashboardProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                // Purple Header with Curve
-                ClipPath(
-                  clipper: HeaderClipper(),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.only(
-                      top: 60,
-                      left: 24,
-                      right: 24,
-                      bottom: 120,
-                    ),
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [Color(0xFFA855F7), Color(0xFF9333EA)],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(vendorOrdersProvider);
+          ref.invalidate(vendorDashboardProvider);
+          ref.invalidate(vendorInventoryProvider);
+        },
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  // Purple Header with Curve
+                  ClipPath(
+                    clipper: HeaderClipper(),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.only(
+                        top: 60,
+                        left: 24,
+                        right: 24,
+                        bottom: 120,
                       ),
-                    ),
-                    child: Column(
-                      children: [
-                        // Store Info Row
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.storefront_rounded,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'My Store',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.star_rounded,
-                                        color: Color(0xFFFFD700),
-                                        size: 18,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'New Store',
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.9,
-                                          ),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Color(0xFFA855F7), Color(0xFF9333EA)],
                         ),
-                        const SizedBox(height: 32),
-                        // Stats Grid
-                        Row(
-                          children: [
-                            ref
-                                .watch(vendorInventoryProvider)
-                                .when(
+                      ),
+                      child: Column(
+                        children: [
+                          // Store Info Row
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.storefront_rounded,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'My Store',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.star_rounded,
+                                          color: Color(0xFFFFD700),
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Verified Vendor',
+                                          style: TextStyle(
+                                            color: Colors.white.withValues(
+                                              alpha: 0.9,
+                                            ),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 32),
+                          // Stats Grid
+                          dashboardAsync.when(
+                            data: (data) => Row(
+                              children: [
+                                _buildStatCard(
+                                  '${data['total_orders'] ?? 0}',
+                                  'Total Orders',
+                                  Icons.shopping_bag_outlined,
+                                ),
+                                const SizedBox(width: 10),
+                                _buildStatCard(
+                                  '${data['pending_orders'] ?? 0}',
+                                  'Awaiting',
+                                  Icons.pending_actions_rounded,
+                                ),
+                                const SizedBox(width: 10),
+                                _buildStatCard(
+                                  '₦${((data['total_revenue'] ?? 0) / 1000).toStringAsFixed(1)}k',
+                                  'Revenue',
+                                  Icons.payments_outlined,
+                                ),
+                                const SizedBox(width: 10),
+                                ref.watch(vendorInventoryProvider).when(
                                   data: (products) => _buildStatCard(
                                     '${products.length}',
                                     'Products',
                                     Icons.inventory_2_outlined,
                                   ),
-                                  loading: () => _buildStatCard(
-                                    '...',
-                                    'Products',
-                                    Icons.inventory_2_outlined,
-                                  ),
-                                  error: (_, __) => _buildStatCard(
-                                    '0',
-                                    'Products',
-                                    Icons.inventory_2_outlined,
-                                  ),
+                                  loading: () => _buildStatCard('...', 'Products', Icons.inventory_2_outlined),
+                                  error: (_, __) => _buildStatCard('0', 'Products', Icons.inventory_2_outlined),
                                 ),
-                            const SizedBox(width: 10),
-                            ordersAsync.when(
-                              data: (orders) => _buildStatCard(
-                                '${orders.length}',
-                                'Orders',
-                                Icons.shopping_cart_outlined,
-                              ),
-                              loading: () => _buildStatCard(
-                                '...',
-                                'Orders',
-                                Icons.shopping_cart_outlined,
-                              ),
-                              error: (_, __) => _buildStatCard(
-                                '0',
-                                'Orders',
-                                Icons.shopping_cart_outlined,
-                              ),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            balanceAsync.when(
-                              data: (balance) => _buildStatCard(
-                                '₦${(balance / 1000).toStringAsFixed(1)}k',
-                                'Revenue',
-                                Icons.attach_money_rounded,
-                              ),
-                              loading: () => _buildStatCard(
-                                '...',
-                                'Revenue',
-                                Icons.attach_money_rounded,
-                              ),
-                              error: (_, __) => _buildStatCard(
-                                '₦0',
-                                'Revenue',
-                                Icons.attach_money_rounded,
-                              ),
+                            loading: () => Row(
+                              children: [
+                                _buildStatCard('...', 'Orders', Icons.shopping_bag_outlined),
+                                const SizedBox(width: 10),
+                                _buildStatCard('...', 'Pending', Icons.pending_actions_rounded),
+                                const SizedBox(width: 10),
+                                _buildStatCard('...', 'Revenue', Icons.payments_outlined),
+                                const SizedBox(width: 10),
+                                _buildStatCard('...', 'Products', Icons.inventory_2_outlined),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            _buildStatCard(
-                              '0',
-                              'Views',
-                              Icons.visibility_outlined,
+                            error: (err, _) => Row(
+                              children: [
+                                _buildStatCard('0', 'Orders', Icons.shopping_bag_outlined),
+                                const SizedBox(width: 10),
+                                _buildStatCard('0', 'Pending', Icons.pending_actions_rounded),
+                                const SizedBox(width: 10),
+                                _buildStatCard('₦0', 'Revenue', Icons.payments_outlined),
+                                const SizedBox(width: 10),
+                                _buildStatCard('0', 'Products', Icons.inventory_2_outlined),
+                              ],
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
                 // Floating Action Bar (Overlapping)
                 Positioned(
                   bottom: -40,

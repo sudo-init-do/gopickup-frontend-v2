@@ -102,6 +102,39 @@ class VendorRepository {
     }
   }
 
+  Future<Map<String, dynamic>> getDashboard() async {
+    try {
+      final response = await _apiClient.get('vendor/dashboard');
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+      return {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> getVendorProfile(String vendorId) async {
+    try {
+      final response = await _apiClient.get('vendors/$vendorId');
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      }
+      return {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  Future<bool> markOrderReady(String orderId) async {
+    try {
+      final response = await _apiClient.post('vendor/$orderId/ready');
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<bool> updateOrderStatus(String orderId, String status) async {
     try {
       final response = await _apiClient.patch(
@@ -125,4 +158,12 @@ final vendorOrdersProvider = FutureProvider<List<Order>>((ref) {
 
 final vendorInventoryProvider = FutureProvider<List<Product>>((ref) {
   return ref.watch(vendorRepositoryProvider).getInventory();
+});
+
+final vendorDashboardProvider = FutureProvider<Map<String, dynamic>>((ref) {
+  return ref.watch(vendorRepositoryProvider).getDashboard();
+});
+
+final vendorProfileProvider = FutureProvider.family<Map<String, dynamic>, String>((ref, id) {
+  return ref.watch(vendorRepositoryProvider).getVendorProfile(id);
 });

@@ -6,6 +6,7 @@ enum OrderStatus {
   pending,
   processing,
   assigned,
+  ready,
   in_progress,
   picked_up,
   on_the_way,
@@ -22,6 +23,8 @@ extension OrderStatusExtension on OrderStatus {
         return 'Price Negotiation';
       case OrderStatus.assigned:
         return 'Driver Assigned';
+      case OrderStatus.ready:
+        return 'Ready for Pickup';
       case OrderStatus.in_progress:
         return 'In Progress';
       case OrderStatus.picked_up:
@@ -43,6 +46,8 @@ extension OrderStatusExtension on OrderStatus {
         return const Color(0xFF2563EB);
       case OrderStatus.assigned:
         return const Color(0xFF0D9488);
+      case OrderStatus.ready:
+        return const Color(0xFF45A225);
       case OrderStatus.in_progress:
         return const Color(0xFF9333EA);
       case OrderStatus.picked_up:
@@ -64,6 +69,8 @@ extension OrderStatusExtension on OrderStatus {
         return const Color(0xFFEFF6FF);
       case OrderStatus.assigned:
         return const Color(0xFFF0FDFA);
+      case OrderStatus.ready:
+        return const Color(0xFFF0FDF4);
       case OrderStatus.in_progress:
         return const Color(0xFFF5F3FF);
       case OrderStatus.picked_up:
@@ -92,6 +99,26 @@ class OrderItem {
   }
 }
 
+class OrderVendor {
+  final String id;
+  final String storeName;
+  final String? bannerUrl;
+
+  OrderVendor({
+    required this.id,
+    required this.storeName,
+    this.bannerUrl,
+  });
+
+  factory OrderVendor.fromJson(Map<String, dynamic> json) {
+    return OrderVendor(
+      id: json['id'] ?? json['vendor_id'] ?? '',
+      storeName: json['store_name'] ?? 'GoPickup Store',
+      bannerUrl: json['store_banner_url'] ?? json['banner_url'],
+    );
+  }
+}
+
 class Order {
   final String id;
   final OrderStatus status;
@@ -101,6 +128,7 @@ class Order {
   final String? driverId;
   final double? agreedPrice;
   final double? agreedDeliveryFee;
+  final OrderVendor? vendor;
 
   Order({
     required this.id,
@@ -111,6 +139,7 @@ class Order {
     this.driverId,
     this.agreedPrice,
     this.agreedDeliveryFee,
+    this.vendor,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -138,9 +167,10 @@ class Order {
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
       clientId: json['client_id'] ?? '',
-      driverId: json['driver_id'],
+      driverId: json['driver_id'] ?? json['pilot_id'],
       agreedPrice: (json['agreed_price'] as num?)?.toDouble(),
       agreedDeliveryFee: (json['agreed_delivery_fee'] as num?)?.toDouble(),
+      vendor: json['vendor'] != null ? OrderVendor.fromJson(json['vendor']) : null,
     );
   }
 

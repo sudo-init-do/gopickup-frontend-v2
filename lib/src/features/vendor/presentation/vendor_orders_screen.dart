@@ -255,6 +255,44 @@ class VendorOrdersScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             Divider(color: kLightBorderColor, height: 1),
             const SizedBox(height: 16),
+            if (order.status == OrderStatus.assigned) ...[
+              SizedBox(
+                width: double.infinity,
+                child: Consumer(
+                  builder: (context, ref, _) {
+                    return ElevatedButton.icon(
+                      onPressed: () async {
+                        final success = await ref
+                            .read(vendorRepositoryProvider)
+                            .markOrderReady(order.id);
+                        if (success) {
+                          ref.invalidate(vendorOrdersProvider);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Order marked as ready!')),
+                            );
+                          }
+                        }
+                      },
+                      icon: const Icon(Icons.inventory_2_rounded, size: 18),
+                      label: const Text('Mark Ready'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF45A225),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              Divider(color: kLightBorderColor, height: 1),
+              const SizedBox(height: 16),
+            ],
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

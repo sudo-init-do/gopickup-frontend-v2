@@ -144,6 +144,67 @@ class OrderDetailScreen extends StatelessWidget {
         children: [
           Icon(Icons.local_shipping_rounded, color: brandGreen, size: 64),
           const SizedBox(height: 32),
+          if (order.vendor != null) ...[
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(32),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFF0FDF4),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.storefront_rounded,
+                      color: Color(0xFF166534),
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Vendor Store',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF6B7280),
+                          ),
+                        ),
+                        Text(
+                          order.vendor!.storeName,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: darkText,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => context.push('/vendor/store/${order.vendor!.id}'),
+                    child: const Text('View Store'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(

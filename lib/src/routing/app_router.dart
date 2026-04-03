@@ -40,6 +40,7 @@ import '../features/shared/chat/chat_screen.dart';
 import '../features/shared/presentation/scaffold_with_nav_bar.dart';
 import '../features/shared/presentation/notifications_screen.dart';
 import '../features/shared/presentation/settings_screen.dart';
+import '../features/vendor/presentation/vendor_storefront_screen.dart';
 import '../models/order_models.dart';
 import '../models/chat_models.dart';
 
@@ -194,6 +195,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/driver/registration',
         builder: (context, state) => const DriverRegistrationScreen(),
+      ),
+      GoRoute(
+        path: '/vendor/store/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return VendorStorefrontScreen(vendorId: id);
+        },
       ),
       GoRoute(
         path: '/driver/submit-bid',
