@@ -8,6 +8,9 @@ class AppConfig {
   static const String apiBaseUrl = 'https://backend.gopickup.com.ng';
 
   static String get baseUrl {
+    if (kIsWeb) {
+      return '/api/v1/'; 
+    }
     return kDebugMode ? devBaseUrl : prodBaseUrl;
   }
 }
