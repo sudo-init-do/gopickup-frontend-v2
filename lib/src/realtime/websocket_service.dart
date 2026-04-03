@@ -6,7 +6,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 class WebSocketService {
   static String get wsUrl {
     if (kIsWeb) {
-      final protocol = Uri.base.protocol == 'https:' ? 'wss' : 'ws';
+      final protocol = Uri.base.scheme == 'https' ? 'wss' : 'ws';
       return '$protocol://${Uri.base.host}/api/v1/ws';
     }
     return 'wss://backend.gopickup.com.ng/api/v1/ws';
