@@ -19,15 +19,18 @@ FROM public.ecr.aws/nginx/nginx:alpine
 # Copy the build output from the builder stage
 COPY --from=build /app/build/web /usr/share/nginx/html
 
-# Copy site-specific nginx configuration (overwriting the default virtual host)
-# This is where the Alpine image expects it
+# Copy site-specific nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Ensure permissions are correct
 RUN chown -R nginx:nginx /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Health check to ensure Nginx is responsive before traffic starts flow
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost/health || exit 1
+
+# Expose ports for both standard and alternative routing
+EXPOSE 80 3000
 
 # Command to run nginx
 CMD ["nginx", "-g", "daemon off;"]
