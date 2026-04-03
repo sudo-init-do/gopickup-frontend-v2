@@ -19,10 +19,13 @@ FROM public.ecr.aws/nginx/nginx:alpine
 # Copy the build output from the builder stage
 COPY --from=build /app/build/web /usr/share/nginx/html
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx configuration (overwriting the global config)
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose port 80 for the final restoration
+# Ensure permissions are correct
+RUN chown -R nginx:nginx /usr/share/nginx/html
+
+# Expose port 80
 EXPOSE 80
 
 # Command to run nginx
