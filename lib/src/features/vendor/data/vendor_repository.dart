@@ -68,7 +68,7 @@ class VendorRepository {
 
   Future<List<Product>> getInventory() async {
     try {
-      final response = await _apiClient.get('products/vendor/me');
+      final response = await _apiClient.get('vendor/products');
       if (response.statusCode == 200) {
         final dynamic respData = response.data;
         if (respData is List) {
@@ -85,7 +85,7 @@ class VendorRepository {
       }
       return [];
     } catch (e) {
-      return [];
+      rethrow;
     }
   }
 

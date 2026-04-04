@@ -154,7 +154,7 @@ class VendorInventoryScreen extends ConsumerWidget {
                             product.name,
                             product.category,
                             '₦${product.price.toStringAsFixed(2)}',
-                            '${product.id.toString() == 'dummy' ? 0 : 100}', // Mock soldier for now or use real data if available
+                            '${product.stock}',
                             '${product.moq}',
                             '0 sold', // Mock sold for now
                             product.imageUrl,

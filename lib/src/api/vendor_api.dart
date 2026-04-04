@@ -90,7 +90,7 @@ class VendorApi {
 
   Future<List<Product>> getMyProducts() async {
     try {
-      final response = await ApiClient.dio.get('products/vendor/me');
+      final response = await ApiClient.dio.get('vendor/products');
       
       // Handle potential pagination or list response
       final dynamic data = response.data;
