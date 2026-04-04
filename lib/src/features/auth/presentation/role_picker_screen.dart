@@ -69,18 +69,12 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                     // Logo and Name
                     Row(
                       children: [
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: Image.asset(
-                              'assets/images/app_logo.png',
-                              fit: BoxFit.contain,
-                            ),
+                        SizedBox(
+                          width: 140,
+                          height: 50,
+                          child: Image.asset(
+                            'assets/images/app_logo.png',
+                            fit: BoxFit.fitHeight,
                           ),
                         ),
                         const SizedBox(width: 12),

@@ -141,20 +141,12 @@ class _AdminDrawer extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        'assets/images/app_logo.png',
-                        width: 40,
-                        height: 40,
-                        fit: BoxFit.contain,
-                      ),
+                  SizedBox(
+                    width: 80,
+                    height: 28,
+                    child: Image.asset(
+                      'assets/images/app_logo.png',
+                      fit: BoxFit.contain,
                     ),
                   ),
                   const SizedBox(width: 12),

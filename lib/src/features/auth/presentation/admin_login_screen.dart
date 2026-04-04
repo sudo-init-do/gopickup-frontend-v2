@@ -73,18 +73,12 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Logo
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Image.asset(
-                      'assets/images/app_logo.png',
-                      fit: BoxFit.contain,
-                    ),
+                SizedBox(
+                  width: 240,
+                  height: 100,
+                  child: Image.asset(
+                    'assets/images/app_logo.png',
+                    fit: BoxFit.fitHeight,
                   ),
                 ),
                 const SizedBox(height: 24),
