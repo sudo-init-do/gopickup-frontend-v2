@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../state/profile_provider.dart';
+import '../../../state/auth_provider.dart';
 import '../../../models/user_models.dart';
 
 import '../../../common/utils/error_handler.dart';
