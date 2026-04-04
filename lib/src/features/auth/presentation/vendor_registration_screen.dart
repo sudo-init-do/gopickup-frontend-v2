@@ -233,34 +233,59 @@ class _VendorRegistrationScreenState
   }
 
   void _handleContinue() async {
+    debugPrint('Current Step: $_currentStep. Validating...');
+    
     if (_currentStep < 2) {
+      debugPrint('Moving from $_currentStep to ${_currentStep + 1}');
       setState(() => _currentStep++);
     } else {
-      final profile = VendorProfile(
-        storeName: _storeNameController.text.trim(),
-        businessType: _selectedCategory,
-        address: _addressController.text.trim(),
-        phoneNumber: _phoneController.text.trim(),
-        businessRegistrationNumber: _registrationController.text.trim(),
-        isApproved: false,
-      );
+      debugPrint('Attempting profile creation...');
+      final registrationNumber = _registrationController.text.trim();
+      debugPrint('Registration Number: $registrationNumber');
 
-      final success = await ref
-          .read(profileProvider.notifier)
-          .createVendorProfile(profile);
+      try {
+        final profile = VendorProfile(
+          storeName: _storeNameController.text.trim(),
+          businessType: _selectedCategory,
+          address: _addressController.text.trim(),
+          phoneNumber: _phoneController.text.trim(),
+          businessRegistrationNumber: registrationNumber,
+          isApproved: false,
+        );
 
-      if (!mounted) return;
-      
-      if (success) {
-        ref.read(authProvider.notifier).markProfileComplete();
-        context.go('/vendor');
-      } else {
-        final error = ref.read(profileProvider).error;
+        debugPrint('Vendor Profile Payload: ${profile.toCreateJson()}');
+
+        final success = await ref
+            .read(profileProvider.notifier)
+            .createVendorProfile(profile);
+
+        debugPrint('Profile creation success: $success');
+        
+        if (!mounted) return;
+        
+        if (success) {
+          debugPrint('Marking profile as complete for local state...');
+          ref.read(authProvider.notifier).markProfileComplete();
+          debugPrint('Navigating to /vendor');
+          context.go('/vendor');
+        } else {
+          final error = ref.read(profileProvider).error;
+          debugPrint('Profile creation failed: $error');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(ErrorHandler.getMessage(error)),
+              backgroundColor: Colors.red.shade800,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } catch (e, stack) {
+        debugPrint('CRITICAL ERROR during registration: $e');
+        debugPrint('Stack: $stack');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(ErrorHandler.getMessage(error)),
-            backgroundColor: Colors.red.shade800,
-            behavior: SnackBarBehavior.floating,
+            content: Text('Submission error: ${e.toString()}'),
+            backgroundColor: Colors.orange.shade800,
           ),
         );
       }
