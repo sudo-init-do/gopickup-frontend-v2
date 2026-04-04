@@ -124,22 +124,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         }
       }
 
-      if (isLoggedIn && (subpath == '/' || subpath == '/admin/login')) {
+      if (isLoggedIn && subpath == '/admin/login') {
         final role = authState.user?.role;
-        final isComplete = authState.user?.isProfileComplete ?? false;
-
         if (role == 'admin') return '/admin';
-
-        // Redirect to incomplete profile screens if necessary
-        if (!isComplete) {
-          if (role == 'vendor') return '/vendor/registration';
-          if (role == 'driver') return '/driver/registration';
-          return '/complete-profile';
-        }
-
-        if (role == 'vendor') return '/vendor';
-        if (role == 'driver') return '/driver';
-        return '/client';
       }
 
       return null;
