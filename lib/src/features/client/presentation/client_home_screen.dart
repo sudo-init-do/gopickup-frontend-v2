@@ -257,36 +257,39 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
             ),
           ),
 
-          // Quick Actions Horizontal List
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: 160,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
                 children: [
-                  _QuickActionCard(
-                    icon: Icons.shopping_bag_outlined,
-                    color: AppColors.primary,
-                    title: 'Go-Market',
-                    subtitle: 'Verified vendors',
-                    onTap: () => context.go('/client/products'),
+                  Expanded(
+                    child: _QuickActionCard(
+                      icon: Icons.shopping_bag_outlined,
+                      color: AppColors.primary,
+                      title: 'Go-Market',
+                      subtitle: 'Vendors',
+                      onTap: () => context.go('/client/products'),
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  _QuickActionCard(
-                    icon: Icons.inventory_2_outlined,
-                    color: const Color(0xFFF59E0B),
-                    title: 'Post a Load',
-                    subtitle: 'Find drivers',
-                    onTap: () => context.push('/client/create-job'),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickActionCard(
+                      icon: Icons.inventory_2_outlined,
+                      color: const Color(0xFFF59E0B),
+                      title: 'Post Load',
+                      subtitle: 'Drivers',
+                      onTap: () => context.push('/client/create-job'),
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  _QuickActionCard(
-                    icon: Icons.local_shipping_outlined,
-                    color: const Color(0xFF8B5CF6),
-                    title: 'Book a truck',
-                    subtitle: 'Schedule now',
-                    onTap: () => context.push('/client/book-truck'),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickActionCard(
+                      icon: Icons.local_shipping_outlined,
+                      color: const Color(0xFF8B5CF6),
+                      title: 'Book Truck',
+                      subtitle: 'Schedule',
+                      onTap: () => context.push('/client/book-truck'),
+                    ),
                   ),
                 ],
               ),
@@ -720,16 +723,16 @@ class _QuickActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 150, // Slightly wider
+      height: 145,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(24), // Slightly smaller radius
         border: Border.all(color: Colors.grey.shade50),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -737,36 +740,39 @@ class _QuickActionCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(24),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16), // Tighter padding
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(10), // Smaller icon container
                   decoration: BoxDecoration(
                     color: color,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: Colors.white, size: 24),
+                  child: Icon(icon, color: Colors.white, size: 20), // Smaller icon
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12), // Tighter vertical spacing
                 Text(
                   title,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: 13, // Smaller font size
                     color: Color(0xFF1F2937),
+                    letterSpacing: -0.2, // Tighter letters
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
                   subtitle,
+                  maxLines: 1, // Prevent wrapping
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.grey[400],
-                    fontSize: 12,
+                    fontSize: 11, // Smaller subtitle
                     fontWeight: FontWeight.w500,
                   ),
                 ),
