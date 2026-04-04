@@ -241,6 +241,7 @@ class _VendorRegistrationScreenState
         businessType: _selectedCategory,
         address: _addressController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
+        businessRegistrationNumber: _registrationController.text.trim(),
         isApproved: false,
       );
 

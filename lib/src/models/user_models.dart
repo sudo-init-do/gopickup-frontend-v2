@@ -122,6 +122,7 @@ class VendorProfile {
   final String address;
   final String phoneNumber;
   final String? storeBannerUrl;
+  final String? businessRegistrationNumber;
   final bool isApproved;
 
   VendorProfile({
@@ -129,6 +130,7 @@ class VendorProfile {
     required this.businessType,
     required this.address,
     required this.phoneNumber,
+    this.businessRegistrationNumber,
     this.storeBannerUrl,
     required this.isApproved,
   });
@@ -140,6 +142,7 @@ class VendorProfile {
       address: json['address'] as String? ?? '',
       phoneNumber: json['phone_number'] as String? ?? '',
       storeBannerUrl: json['store_banner_url'] as String?,
+      businessRegistrationNumber: json['business_registration_number'] as String?,
       isApproved: json['is_approved'] as bool? ?? false,
     );
   }
@@ -151,6 +154,8 @@ class VendorProfile {
       'address': address,
       'phone_number': phoneNumber,
       if (storeBannerUrl != null) 'store_banner_url': storeBannerUrl,
+      if (businessRegistrationNumber != null)
+        'business_registration_number': businessRegistrationNumber,
       'is_approved': isApproved,
     };
   }
@@ -161,6 +166,8 @@ class VendorProfile {
       'phone_number': phoneNumber,
       'business_type': businessType,
       'address': address,
+      if (businessRegistrationNumber != null)
+        'business_registration_number': businessRegistrationNumber,
     };
   }
 }
