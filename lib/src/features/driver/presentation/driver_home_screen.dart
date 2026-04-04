@@ -6,6 +6,7 @@ import '../../driver/data/job_repository.dart';
 import '../../../common/models/order.dart' as common_order;
 import '../../../models/order_models.dart';
 import '../../../state/order_provider.dart';
+import '../../../common/utils/error_handler.dart';
 
 class DriverHomeScreen extends ConsumerStatefulWidget {
   const DriverHomeScreen({super.key});
@@ -96,7 +97,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   builder: (context) => const Center(child: CircularProgressIndicator()),
                 );
 
-                final success = await ref.read(jobRepositoryProvider).acceptJob(job.id);
+                final (success, error) = await ref.read(jobRepositoryProvider).acceptJob(job.id);
 
                 if (context.mounted) {
                   Navigator.pop(context); // Close loading
@@ -106,11 +107,19 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                     ref.invalidate(assignedJobsProvider);
                     ref.invalidate(driverOrdersProvider);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Job accepted successfully!')),
+                      const SnackBar(
+                        content: Text('Job accepted successfully!'),
+                        backgroundColor: Color(0xFF388E3C),
+                        behavior: SnackBarBehavior.floating,
+                      ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Failed to accept job.')),
+                      SnackBar(
+                        content: Text(ErrorHandler.getMessage(error)),
+                        backgroundColor: Colors.red.shade800,
+                        behavior: SnackBarBehavior.floating,
+                      ),
                     );
                   }
                 }

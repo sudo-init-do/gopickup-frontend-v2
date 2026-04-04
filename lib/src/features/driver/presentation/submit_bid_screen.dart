@@ -334,6 +334,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                     const SnackBar(
                       content: Text('Bidding is currently disabled for this task. Please check assigned jobs.'),
                       backgroundColor: Colors.orange,
+                      behavior: SnackBarBehavior.floating,
                     ),
                   );
                   context.go('/driver');

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../state/auth_provider.dart';
 
 class NavigationItem {
   final IconData unselectedIcon;
@@ -15,7 +17,7 @@ class NavigationItem {
   });
 }
 
-class ScaffoldWithNavBar extends StatelessWidget {
+class ScaffoldWithNavBar extends ConsumerWidget {
   final Widget child;
   final List<NavigationItem> items;
   final String currentLocation;
@@ -28,7 +30,10 @@ class ScaffoldWithNavBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final isComplete = authState.user?.isProfileComplete ?? false;
+
     // Calculate selected index based on current location
     int selectedIndex = 0;
     for (int i = 0; i < items.length; i++) {
@@ -40,7 +45,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
     return Scaffold(
       body: child,
-      bottomNavigationBar: Container(
+      bottomNavigationBar: isComplete ? Container(
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
@@ -125,7 +130,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      ) : null,
     );
   }
 }

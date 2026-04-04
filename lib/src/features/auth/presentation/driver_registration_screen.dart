@@ -5,6 +5,8 @@ import '../../../common/styles/app_colors.dart';
 import '../../../state/profile_provider.dart';
 import '../../../models/user_models.dart';
 
+import '../../../common/utils/error_handler.dart';
+
 class DriverRegistrationScreen extends ConsumerStatefulWidget {
   const DriverRegistrationScreen({super.key});
 
@@ -89,17 +91,19 @@ class _DriverRegistrationScreenState
           .read(profileProvider.notifier)
           .createDriverProfile(profile);
 
+      if (!mounted) return;
+      
       setState(() => _isLoading = false);
 
-      if (success && mounted) {
+      if (success) {
         context.go('/driver');
-      } else if (mounted) {
+      } else {
+        final error = ref.read(profileProvider).error;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              ref.read(profileProvider).error ?? 'Registration failed',
-            ),
-            backgroundColor: Colors.red,
+            content: Text(ErrorHandler.getMessage(error)),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }

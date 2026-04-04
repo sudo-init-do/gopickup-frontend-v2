@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../state/profile_provider.dart';
 import '../../../models/user_models.dart';
 
+import '../../../common/utils/error_handler.dart';
+
 class VendorRegistrationScreen extends ConsumerStatefulWidget {
   const VendorRegistrationScreen({super.key});
 
@@ -246,19 +248,19 @@ class _VendorRegistrationScreenState
           .read(profileProvider.notifier)
           .createVendorProfile(profile);
 
-      if (mounted) {
-        if (success) {
-          context.go('/vendor');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                ref.read(profileProvider).error ??
-                    'Failed to complete setup. Please try again.',
-              ),
-            ),
-          );
-        }
+      if (!mounted) return;
+      
+      if (success) {
+        context.go('/vendor');
+      } else {
+        final error = ref.read(profileProvider).error;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(ErrorHandler.getMessage(error)),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       }
     }
   }

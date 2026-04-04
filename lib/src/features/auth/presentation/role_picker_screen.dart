@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../state/auth_provider.dart';
 import '../../../state/signup_provider.dart';
+import '../../../common/utils/error_handler.dart';
 
 class RolePickerScreen extends ConsumerStatefulWidget {
   const RolePickerScreen({super.key});
@@ -31,17 +32,21 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
         .read(authProvider.notifier)
         .register(signupData.email, signupData.password, roleValue);
 
+    if (!mounted) return;
+    
     setState(() {
       _isLoading = false;
     });
 
-    if (success && mounted) {
+    if (success) {
       context.push('/verify?email=${signupData.email}');
-    } else if (mounted) {
+    } else {
+      final error = ref.read(authProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ref.read(authProvider).error ?? 'Registration failed'),
-          backgroundColor: Colors.red,
+          content: Text(ErrorHandler.getMessage(error)),
+          backgroundColor: Colors.red.shade800,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../state/auth_provider.dart';
+import '../../../common/utils/error_handler.dart';
 
 class AdminLoginScreen extends ConsumerStatefulWidget {
   const AdminLoginScreen({super.key});
@@ -42,13 +43,17 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
         .read(authProvider.notifier)
         .adminLogin(_emailController.text.trim(), _passwordController.text);
 
-    if (success && mounted) {
+    if (!mounted) return;
+
+    if (success) {
       context.go('/admin');
-    } else if (mounted) {
+    } else {
+      final error = ref.read(authProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ref.read(authProvider).error ?? 'Admin login failed'),
-          backgroundColor: Colors.red,
+          content: Text(ErrorHandler.getMessage(error)),
+          backgroundColor: Colors.red.shade800,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }

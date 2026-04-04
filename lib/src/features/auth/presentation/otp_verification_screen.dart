@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../state/auth_provider.dart';
 import '../../../state/signup_provider.dart';
+import '../../../common/utils/error_handler.dart';
 
 class OtpVerificationScreen extends ConsumerStatefulWidget {
   final String email;
@@ -51,10 +52,12 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
         context.push('/vendor/registration');
       }
     } else if (mounted) {
+      final error = ref.read(authProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ref.read(authProvider).error ?? 'Invalid OTP'),
-          backgroundColor: Colors.red,
+          content: Text(ErrorHandler.getMessage(error)),
+          backgroundColor: Colors.red.shade800,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }

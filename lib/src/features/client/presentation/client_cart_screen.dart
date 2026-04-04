@@ -6,6 +6,7 @@ import '../data/cart_provider.dart';
 import '../../../models/order_models.dart';
 import '../../../state/order_provider.dart';
 import '../../../common/config/app_config.dart';
+import '../../../common/utils/error_handler.dart';
 
 class ClientCartScreen extends ConsumerWidget {
   const ClientCartScreen({super.key});
@@ -241,10 +242,15 @@ class ClientCartScreen extends ConsumerWidget {
                           }
                           // Clear cart after successful checkout initiate
                           ref.read(cartProvider.notifier).clear();
-                        } else if (result == null) {
-                           // Error handled by state but show snackbar here too
+                        } else {
+                           // Error handled by state but show floating snackbar here too
+                           final error = ref.read(orderProvider).error;
                            ScaffoldMessenger.of(context).showSnackBar(
-                             const SnackBar(content: Text('Checkout failed. Please try again.')),
+                             SnackBar(
+                               content: Text(ErrorHandler.getMessage(error)),
+                               backgroundColor: Colors.red.shade800,
+                               behavior: SnackBarBehavior.floating,
+                             ),
                            );
                         }
                       },

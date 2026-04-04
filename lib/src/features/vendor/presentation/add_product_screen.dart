@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:typed_data';
 import '../data/vendor_repository.dart';
+import '../../../common/utils/error_handler.dart';
 
 class AddProductScreen extends ConsumerStatefulWidget {
   const AddProductScreen({super.key});
@@ -316,9 +317,10 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                   if (imageUrl == null && context.mounted) {
                     Navigator.pop(context); // Close loading
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Failed to upload image'),
-                        backgroundColor: Colors.red,
+                      SnackBar(
+                        content: const Text('Failed to upload image. Please check your connection.'),
+                        backgroundColor: Colors.red.shade800,
+                        behavior: SnackBarBehavior.floating,
                       ),
                     );
                     return;
@@ -345,14 +347,16 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                       const SnackBar(
                         content: Text('Product added successfully!'),
                         backgroundColor: Color(0xFF45A225),
+                        behavior: SnackBarBehavior.floating,
                       ),
                     );
                     context.pop();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(error ?? 'Failed to add product.'),
-                        backgroundColor: Colors.red,
+                        content: Text(ErrorHandler.getMessage(error)),
+                        backgroundColor: Colors.red.shade800,
+                        behavior: SnackBarBehavior.floating,
                       ),
                     );
                   }

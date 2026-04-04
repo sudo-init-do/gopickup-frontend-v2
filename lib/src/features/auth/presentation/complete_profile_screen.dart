@@ -5,6 +5,7 @@ import '../../../common/styles/app_colors.dart';
 import '../../../state/profile_provider.dart';
 import '../../../models/user_models.dart';
 import '../../../state/auth_provider.dart';
+import '../../../common/utils/error_handler.dart';
 
 class CompleteProfileScreen extends ConsumerStatefulWidget {
   const CompleteProfileScreen({super.key});
@@ -102,19 +103,21 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
         success = await notifier.createClientProfile(profile);
       }
 
+      if (!mounted) return;
+      
       setState(() => _isLoading = false);
 
-      if (success && mounted) {
+      if (success) {
         if (role == 'vendor') context.go('/vendor');
         else if (role == 'driver') context.go('/driver/home');
         else context.go('/client');
-      } else if (mounted) {
+      } else {
+        final error = ref.read(profileProvider).error;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              ref.read(profileProvider).error ?? 'Failed to create profile',
-            ),
-            backgroundColor: Colors.red,
+            content: Text(ErrorHandler.getMessage(error)),
+            backgroundColor: Colors.red.shade800,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }

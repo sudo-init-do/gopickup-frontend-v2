@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../models/order_models.dart';
 import '../data/vendor_repository.dart';
+import '../../../common/utils/error_handler.dart';
 
 class VendorOrderDetailScreen extends ConsumerWidget {
   final Order order;
@@ -286,7 +287,7 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                             ),
                           );
 
-                          final success = await ref
+                          final (success, error) = await ref
                               .read(vendorRepositoryProvider)
                               .updateOrderStatus(order.id, 'searching_driver');
 
@@ -298,6 +299,16 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Order accepted successfully!'),
+                                  backgroundColor: kBrandGreen,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(ErrorHandler.getMessage(error)),
+                                  backgroundColor: Colors.red.shade800,
+                                  behavior: SnackBarBehavior.floating,
                                 ),
                               );
                             }

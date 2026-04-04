@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../state/auth_provider.dart';
+import '../../../common/utils/error_handler.dart';
 
 class ForgotPasswordScreen extends ConsumerStatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -28,19 +29,24 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         .read(authProvider.notifier)
         .forgotPassword(_emailController.text);
 
-    if (success && mounted) {
+    if (!mounted) return;
+
+    if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Check your email for the reset code!'),
           backgroundColor: AppColors.primary,
+          behavior: SnackBarBehavior.floating,
         ),
       );
       context.push('/reset-password?email=${_emailController.text}');
-    } else if (mounted) {
+    } else {
+      final error = ref.read(authProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(ref.read(authProvider).error ?? 'Request failed'),
-          backgroundColor: Colors.red,
+          content: Text(ErrorHandler.getMessage(error)),
+          backgroundColor: Colors.red.shade800,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }

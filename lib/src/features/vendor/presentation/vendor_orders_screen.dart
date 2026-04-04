@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../data/vendor_repository.dart';
 import '../../../common/models/order.dart';
+import '../../../common/utils/error_handler.dart';
 import 'package:intl/intl.dart';
 
 class VendorOrdersScreen extends ConsumerWidget {
@@ -262,14 +263,26 @@ class VendorOrdersScreen extends ConsumerWidget {
                   builder: (context, ref, _) {
                     return ElevatedButton.icon(
                       onPressed: () async {
-                        final success = await ref
+                        final (success, error) = await ref
                             .read(vendorRepositoryProvider)
                             .markOrderReady(order.id);
-                        if (success) {
-                          ref.invalidate(vendorOrdersProvider);
-                          if (context.mounted) {
+                        if (context.mounted) {
+                          if (success) {
+                            ref.invalidate(vendorOrdersProvider);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Order marked as ready!')),
+                              const SnackBar(
+                                content: Text('Order marked as ready!'),
+                                backgroundColor: Color(0xFF45A225),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(ErrorHandler.getMessage(error)),
+                                backgroundColor: Colors.red.shade800,
+                                behavior: SnackBarBehavior.floating,
+                              ),
                             );
                           }
                         }
