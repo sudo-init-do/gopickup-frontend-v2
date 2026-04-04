@@ -126,24 +126,40 @@ class VendorRepository {
     }
   }
 
-  Future<bool> markOrderReady(String orderId) async {
+  Future<(bool, String?)> markOrderReady(String orderId) async {
     try {
       final response = await _apiClient.post('vendor/$orderId/ready');
-      return response.statusCode == 200;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (true, null);
+      }
+      return (false, 'Server error: ${response.statusCode}');
+    } on DioException catch (e) {
+      final msg = e.response?.data is Map 
+          ? (e.response?.data['error'] ?? e.response?.data['message'] ?? e.message)
+          : e.message;
+      return (false, msg.toString());
     } catch (e) {
-      return false;
+      return (false, e.toString());
     }
   }
 
-  Future<bool> updateOrderStatus(String orderId, String status) async {
+  Future<(bool, String?)> updateOrderStatus(String orderId, String status) async {
     try {
       final response = await _apiClient.patch(
         '/orders/$orderId/status',
         data: {'status': status},
       );
-      return response.statusCode == 200;
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return (true, null);
+      }
+      return (false, 'Server error: ${response.statusCode}');
+    } on DioException catch (e) {
+      final msg = e.response?.data is Map 
+          ? (e.response?.data['error'] ?? e.response?.data['message'] ?? e.message)
+          : e.message;
+      return (false, msg.toString());
     } catch (e) {
-      return false;
+      return (false, e.toString());
     }
   }
 }
