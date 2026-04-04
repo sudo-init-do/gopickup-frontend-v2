@@ -96,6 +96,7 @@ class _DriverRegistrationScreenState
       setState(() => _isLoading = false);
 
       if (success) {
+        ref.read(authProvider.notifier).markProfileComplete();
         context.go('/driver');
       } else {
         final error = ref.read(profileProvider).error;

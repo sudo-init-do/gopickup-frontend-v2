@@ -252,6 +252,7 @@ class _VendorRegistrationScreenState
       if (!mounted) return;
       
       if (success) {
+        ref.read(authProvider.notifier).markProfileComplete();
         context.go('/vendor');
       } else {
         final error = ref.read(profileProvider).error;

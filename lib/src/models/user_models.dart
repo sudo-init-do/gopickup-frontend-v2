@@ -34,6 +34,22 @@ class User {
       'is_profile_complete': isProfileComplete,
     };
   }
+
+  User copyWith({
+    String? id,
+    String? email,
+    String? role,
+    DateTime? createdAt,
+    bool? isComplete,
+  }) {
+    return User(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      role: role ?? this.role,
+      createdAt: createdAt ?? this.createdAt,
+      isProfileComplete: isComplete ?? this.isProfileComplete,
+    );
+  }
 }
 
 class ClientProfile {

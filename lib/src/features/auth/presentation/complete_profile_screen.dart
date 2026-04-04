@@ -108,6 +108,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
       setState(() => _isLoading = false);
 
       if (success) {
+        ref.read(authProvider.notifier).markProfileComplete();
         if (role == 'vendor') context.go('/vendor');
         else if (role == 'driver') context.go('/driver/home');
         else context.go('/client');

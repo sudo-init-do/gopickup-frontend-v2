@@ -146,6 +146,12 @@ class AuthNotifier extends Notifier<AuthState> {
       return false;
     }
   }
+
+  void markProfileComplete() {
+    if (state.user != null) {
+      state = state.copyWith(user: state.user!.copyWith(isComplete: true));
+    }
+  }
 }
 
 final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {
