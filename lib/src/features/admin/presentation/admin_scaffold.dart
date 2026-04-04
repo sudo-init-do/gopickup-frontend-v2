@@ -149,15 +149,6 @@ class _AdminDrawer extends ConsumerWidget {
                       fit: BoxFit.contain,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  const Text(
-                    'Go Pickup',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -270,15 +261,6 @@ class _AdminSidebar extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(Icons.admin_panel_settings, color: Colors.black87),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Go Pickup',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
                 ),
               ],
             ),

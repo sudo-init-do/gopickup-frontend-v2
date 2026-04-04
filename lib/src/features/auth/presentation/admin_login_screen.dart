@@ -83,16 +83,6 @@ class _AdminLoginScreenState extends ConsumerState<AdminLoginScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Title
-                Text(
-                  'Go Pickup Admin',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-
                 // Subtitle
                 Text(
                   'Central Command Center',

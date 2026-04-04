@@ -72,14 +72,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       fit: BoxFit.fitHeight,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Go Pickup',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1F2937),
-                        ),
-                  ),
                 ],
               ),
               const SizedBox(height: 48),

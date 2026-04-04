@@ -161,16 +161,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                 ),
                 const SizedBox(height: 24),
 
-                // Title
-                Text(
-                  'Go Pickup',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-
                 // Subtitle
                 Text(
                   'Sign in to your account',
