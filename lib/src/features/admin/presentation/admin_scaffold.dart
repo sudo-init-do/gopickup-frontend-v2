@@ -151,9 +151,9 @@ class _AdminDrawer extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(8),
                       child: Image.asset(
                         'assets/images/app_logo.png',
-                        width: 32,
-                        height: 32,
-                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),

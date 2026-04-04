@@ -70,17 +70,16 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                     Row(
                       children: [
                         Container(
-                          width: 48,
-                          height: 48,
+                          width: 64,
+                          height: 64,
                           decoration: const BoxDecoration(
-                            color: AppColors.primary,
                             shape: BoxShape.circle,
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(24),
                             child: Image.asset(
                               'assets/images/app_logo.png',
-                              fit: BoxFit.cover,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),
