@@ -19,7 +19,11 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   bool _isOnline = true;
   int _selectedTabIndex = 0;
 
-  Future<void> _launchWhatsApp(String orderId) async {
+  Future<void> _launchWhatsApp(String orderId, [String? customUrl]) async {
+    if (customUrl != null && await canLaunchUrl(Uri.parse(customUrl))) {
+      await launchUrl(Uri.parse(customUrl), mode: LaunchMode.externalApplication);
+      return;
+    }
     const phone = "2348133755282"; // Admin Support
     final message = "Hello, I am agreeing to the delivery for Order #$orderId";
     final url = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
@@ -957,6 +961,91 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   const SizedBox(width: 8),
                   Icon(Icons.chevron_right_rounded, color: midText, size: 24),
                 ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: job.status == 'assigned' ? Colors.blue.withValues(alpha: 0.1) : Colors.green.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  job.status == 'assigned' ? 'Pre-Assigned' : 'Available',
+                  style: TextStyle(
+                    color: job.status == 'assigned' ? Colors.blue : Colors.green,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => _launchWhatsApp(job.id, job.whatsappUrl),
+                  icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                  label: const Text('Negotiate'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF25D366),
+                    side: const BorderSide(color: Color(0xFF25D366)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    // Show loading
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const Center(child: CircularProgressIndicator()),
+                    );
+
+                    final (success, error) = await ref.read(jobRepositoryProvider).acceptJob(job.id);
+
+                    if (context.mounted) {
+                      Navigator.pop(context); // Close loading
+
+                      if (success) {
+                        ref.invalidate(assignedJobsProvider);
+                        ref.invalidate(driverOrdersProvider);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Job accepted successfully!'),
+                            backgroundColor: Color(0xFF388E3C),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(ErrorHandler.getMessage(error)),
+                            backgroundColor: Colors.red.shade800,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF388E3C),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('I Accept', style: TextStyle(fontWeight: FontWeight.w800)),
+                ),
               ),
             ],
           ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../state/order_provider.dart';
 import '../../../models/order_models.dart';
 import '../../../common/styles/app_colors.dart';
 
@@ -10,11 +12,18 @@ class OrderDetailScreen extends StatelessWidget {
   const OrderDetailScreen({super.key, required this.order});
 
   Future<void> _launchWhatsApp() async {
-    const phone = "2348000000000"; // Real admin number should be used here
-    final message = "Hello GoPickup Support, I have an inquiry about my order: ${order.id}";
-    final url = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
-    if (await canLaunchUrl(Uri.parse(url))) {
+    final url = order.whatsappUrl;
+    if (url != null && await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+      return;
+    }
+
+    // Fallback
+    const phone = "2348000000000";
+    final message = "Hello GoPickup Support, I have an inquiry about my order: ${order.id}";
+    final fallbackUrl = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
+    if (await canLaunchUrl(Uri.parse(fallbackUrl))) {
+      await launchUrl(Uri.parse(fallbackUrl), mode: LaunchMode.externalApplication);
     }
   }
 
@@ -53,13 +62,62 @@ class OrderDetailScreen extends StatelessWidget {
                       kBrandGreen,
                     ),
                     const SizedBox(height: 24),
-                    if (order.status != 'delivered' && order.status != 'cancelled')
+                    if (order.status == 'pending' || order.status == 'awaiting_payment')
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: _launchWhatsApp,
+                              icon: const Icon(Icons.chat_bubble_outline_rounded),
+                              label: const Text('Negotiate on WhatsApp'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF25D366),
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size(double.infinity, 56),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                            ),
+                            if (order.status == 'awaiting_payment') ...[
+                              const SizedBox(height: 12),
+                              Consumer(
+                                builder: (context, ref, _) {
+                                  final isLoading = ref.watch(orderProvider).isLoading;
+                                  return ElevatedButton.icon(
+                                    onPressed: isLoading ? null : () async {
+                                      final success = await ref.read(orderProvider.notifier).reportPaymentMade(order.id);
+                                      if (context.mounted && success) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Payment reported successfully!')),
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(Icons.check_circle_outline_rounded),
+                                    label: Text(isLoading ? 'Processing...' : 'I Have Made Payment'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: kBrandGreen,
+                                      foregroundColor: Colors.white,
+                                      minimumSize: const Size(double.infinity, 56),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ],
+                        ),
+                      )
+                    else if (order.status != 'delivered' && order.status != 'cancelled')
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: ElevatedButton.icon(
                           onPressed: _launchWhatsApp,
                           icon: const Icon(Icons.chat_bubble_outline_rounded),
-                          label: const Text('Chat with Support (WhatsApp)'),
+                          label: const Text('Chat with Support'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF25D366),
                             foregroundColor: Colors.white,
@@ -296,9 +354,19 @@ class OrderDetailScreen extends StatelessWidget {
         'desc': 'Waiting for price estimation',
       },
       {
-        'status': 'processing',
+        'status': 'awaiting_payment',
         'label': 'Negotiation',
         'desc': 'Contact support to finalize price',
+      },
+      {
+        'status': 'payment_made',
+        'label': 'Payment Made',
+        'desc': 'Awaiting admin verification',
+      },
+      {
+        'status': 'processing',
+        'label': 'Finding Driver',
+        'desc': 'We are looking for a driver',
       },
       {
         'status': 'assigned',

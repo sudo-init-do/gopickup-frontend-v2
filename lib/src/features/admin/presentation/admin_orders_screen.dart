@@ -20,9 +20,9 @@ class _AdminOrdersScreenState extends ConsumerState<AdminOrdersScreen> {
     
     // Tab filter
     if (_selectedTab == 'Pending') {
-      filtered = filtered.where((o) => o.status == 'pending' || o.status == 'awaiting payment').toList();
+      filtered = filtered.where((o) => o.status == 'pending' || o.status == 'awaiting_payment' || o.status == 'payment_made').toList();
     } else if (_selectedTab == 'Active') {
-      filtered = filtered.where((o) => !['pending', 'awaiting payment', 'delivered', 'cancelled'].contains(o.status)).toList();
+      filtered = filtered.where((o) => !['pending', 'awaiting_payment', 'payment_made', 'delivered', 'cancelled'].contains(o.status)).toList();
     } else if (_selectedTab == 'Completed') {
       filtered = filtered.where((o) => o.status == 'delivered').toList();
     }
@@ -217,10 +217,10 @@ class _OrderCard extends StatelessWidget {
       statusLabel = 'Completed';
       statusColor = Colors.black87;
       statusBgColor = Colors.grey.shade100;
-    } else if (order.status == 'pending' || order.status == 'awaiting payment') {
-      statusLabel = 'Pending';
-      statusColor = Colors.blueAccent;
-      statusBgColor = Colors.blue.shade50;
+    } else if (order.status == 'pending' || order.status == 'awaiting_payment' || order.status == 'payment_made') {
+      statusLabel = order.status == 'payment_made' ? 'Verification' : 'Pending';
+      statusColor = order.status == 'payment_made' ? Colors.orange.shade800 : Colors.blueAccent;
+      statusBgColor = order.status == 'payment_made' ? Colors.orange.shade50 : Colors.blue.shade50;
     } else {
       statusLabel = 'Active';
       statusColor = Colors.green.shade700;
@@ -677,19 +677,32 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (order.status == 'awaiting payment') ...[
-                const Text('Manual Payment (WhatsApp)', style: TextStyle(fontWeight: FontWeight.bold)),
+              if (order.status == 'payment_made') ...[
+                const Text('Payment Verification Required', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _priceController,
+                  decoration: const InputDecoration(labelText: 'Verify Agreed Price (₦)', border: OutlineInputBorder()),
+                  keyboardType: TextInputType.number,
+                ),
                 const SizedBox(height: 12),
                 ElevatedButton.icon(
                   onPressed: _isLoading ? null : () async {
+                    if (_priceController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter agreed price')));
+                      return;
+                    }
                     setState(() => _isLoading = true);
                     try {
-                      await widget.ref.read(adminApiProvider).confirmPayment(order.id);
+                      await widget.ref.read(adminApiProvider).verifyPayment(
+                        orderId: order.id,
+                        agreedPrice: double.parse(_priceController.text),
+                      );
                       if (context.mounted) {
                         Navigator.pop(context); // Close dialog
                         Navigator.pop(context); // Close bottom sheet
                         widget.ref.invalidate(adminOrdersProvider);
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment Confirmed')));
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment Verified & Order processing')));
                       }
                     } catch (e) {
                       if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -697,13 +710,19 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
                       setState(() => _isLoading = false);
                     }
                   },
-                  icon: const Icon(Icons.check_circle_outline),
-                  label: const Text('Confirm Payment Received'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.shade700, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 48)),
+                  icon: const Icon(Icons.verified_user_outlined),
+                  label: const Text('Verify & Approve Payment'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 48)),
                 ),
+                const SizedBox(height: 24),
+              ],
+              if (order.status == 'awaiting_payment') ...[
+                const Text('Manual Payment Expected', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                const Text('Waiting for client to negotiate and report payment on WhatsApp.', style: TextStyle(fontSize: 12, color: Colors.grey)),
                 const SizedBox(height: 12),
               ],
-              if (order.status != 'pending' && order.status != 'awaiting payment' && order.whatsappNotifyVendorUrl != null) ...[
+              if (order.status != 'pending' && order.status != 'awaiting_payment' && order.status != 'payment_made' && order.whatsappNotifyVendorUrl != null) ...[
                  ElevatedButton.icon(
                   onPressed: () async {
                     final url = Uri.parse(order.whatsappNotifyVendorUrl!);
@@ -715,7 +734,7 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
                 ),
                 const SizedBox(height: 24),
               ],
-              if (order.status == 'pending' || order.status == 'processing' || order.status == 'awaiting payment') ...[
+              if (order.status == 'pending' || order.status == 'processing' || order.status == 'awaiting_payment' || order.status == 'payment_made') ...[
                 const Text('Assign Driver & Set Prices', style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 driversAsync.when(

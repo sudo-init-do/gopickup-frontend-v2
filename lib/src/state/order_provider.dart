@@ -69,6 +69,7 @@ class OrderNotifier extends Notifier<OrderState> {
           agreedPrice: order.agreedPrice,
           agreedDeliveryFee: order.agreedDeliveryFee,
           whatsappNotifyVendorUrl: order.whatsappNotifyVendorUrl,
+          whatsappUrl: order.whatsappUrl,
         );
       }
       return order;
@@ -110,6 +111,18 @@ class OrderNotifier extends Notifier<OrderState> {
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       return null;
+    }
+  }
+
+  Future<bool> reportPaymentMade(String orderId) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      await _api.reportPaymentMade(orderId);
+      await fetchOrders(); // Refresh state
+      return true;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
     }
   }
 }

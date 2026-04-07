@@ -4,6 +4,8 @@ import 'product.dart';
 
 enum OrderStatus {
   pending,
+  awaiting_payment,
+  payment_made,
   processing,
   assigned,
   ready,
@@ -19,8 +21,12 @@ extension OrderStatusExtension on OrderStatus {
     switch (this) {
       case OrderStatus.pending:
         return 'Pending';
+      case OrderStatus.awaiting_payment:
+        return 'Negotiating on WhatsApp';
+      case OrderStatus.payment_made:
+        return 'Awaiting Admin Verification';
       case OrderStatus.processing:
-        return 'Price Negotiation';
+        return 'Finding Driver';
       case OrderStatus.assigned:
         return 'Driver Assigned';
       case OrderStatus.ready:
@@ -42,6 +48,10 @@ extension OrderStatusExtension on OrderStatus {
     switch (this) {
       case OrderStatus.pending:
         return const Color(0xFF6B7280);
+      case OrderStatus.awaiting_payment:
+        return const Color(0xFF9333EA);
+      case OrderStatus.payment_made:
+        return const Color(0xFFF59E0B);
       case OrderStatus.processing:
         return const Color(0xFF2563EB);
       case OrderStatus.assigned:
@@ -65,6 +75,10 @@ extension OrderStatusExtension on OrderStatus {
     switch (this) {
       case OrderStatus.pending:
         return const Color(0xFFF3F4FB);
+      case OrderStatus.awaiting_payment:
+        return const Color(0xFFF5F3FF);
+      case OrderStatus.payment_made:
+        return const Color(0xFFFEF3C7);
       case OrderStatus.processing:
         return const Color(0xFFEFF6FF);
       case OrderStatus.assigned:
@@ -129,6 +143,7 @@ class Order {
   final double? agreedPrice;
   final double? agreedDeliveryFee;
   final OrderVendor? vendor;
+  final String? whatsappUrl;
 
   Order({
     required this.id,
@@ -140,6 +155,7 @@ class Order {
     this.agreedPrice,
     this.agreedDeliveryFee,
     this.vendor,
+    this.whatsappUrl,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -171,6 +187,7 @@ class Order {
       agreedPrice: (json['agreed_price'] as num?)?.toDouble(),
       agreedDeliveryFee: (json['agreed_delivery_fee'] as num?)?.toDouble(),
       vendor: json['vendor'] != null ? OrderVendor.fromJson(json['vendor']) : null,
+      whatsappUrl: json['whatsapp_url'],
     );
   }
 

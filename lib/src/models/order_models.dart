@@ -67,7 +67,7 @@ class Order {
   final String? driverId;
   final List<OrderItem> items;
   final double totalProductAmount;
-  final String status; // pending, processing, assigned, in_progress, picked_up, on_the_way, delivered, cancelled
+  final String status; // pending, awaiting_payment, payment_made, processing, assigned, in_progress, picked_up, on_the_way, delivered, cancelled
   final String pickupAddress;
   final String deliveryAddress;
   final double? deliveryLat;
@@ -76,6 +76,7 @@ class Order {
   final double? agreedDeliveryFee;
   final DateTime createdAt;
   final String? whatsappNotifyVendorUrl;
+  final String? whatsappUrl;
 
   OrderVendor? get vendor => OrderVendor(id: vendorId, storeName: 'GoPickup Store');
 
@@ -95,6 +96,7 @@ class Order {
     this.agreedDeliveryFee,
     required this.createdAt,
     this.whatsappNotifyVendorUrl,
+    this.whatsappUrl,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -124,6 +126,7 @@ class Order {
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
       whatsappNotifyVendorUrl: json['whatsapp_notify_vendor_url'] as String?,
+      whatsappUrl: json['whatsapp_url'] as String?,
     );
   }
 }

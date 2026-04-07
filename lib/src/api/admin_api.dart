@@ -105,4 +105,18 @@ class AdminApi {
       throw Exception(e.response?.data['error'] ?? 'Failed to delete product');
     }
   }
+
+  Future<void> verifyPayment({
+    required String orderId,
+    required double agreedPrice,
+  }) async {
+    try {
+      await ApiClient.dio.post(
+        'admin/orders/$orderId/verify-payment',
+        data: {'agreed_price': agreedPrice},
+      );
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to verify payment');
+    }
+  }
 }

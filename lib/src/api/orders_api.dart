@@ -68,4 +68,12 @@ class OrdersApi {
       );
     }
   }
+
+  Future<void> reportPaymentMade(String id) async {
+    try {
+      await ApiClient.dio.post('orders/$id/payment-made');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to report payment');
+    }
+  }
 }
