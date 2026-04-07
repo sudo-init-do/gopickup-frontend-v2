@@ -668,131 +668,305 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
     final driversAsync = widget.ref.watch(adminUsersProvider('driver'));
     final order = widget.order;
 
-    return AlertDialog(
-      title: Text('Manage Order #${order.id.substring(0, 8)}'),
-      content: SizedBox(
-        width: 400,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (order.status == 'payment_made') ...[
-                const Text('Payment Verification Required', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _priceController,
-                  decoration: const InputDecoration(labelText: 'Verify Agreed Price (₦)', border: OutlineInputBorder()),
-                  keyboardType: TextInputType.number,
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: _isLoading ? null : () async {
-                    if (_priceController.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter agreed price')));
-                      return;
-                    }
-                    setState(() => _isLoading = true);
-                    try {
-                      await widget.ref.read(adminApiProvider).verifyPayment(
-                        orderId: order.id,
-                        agreedPrice: double.parse(_priceController.text),
-                      );
-                      if (context.mounted) {
-                        Navigator.pop(context); // Close dialog
-                        Navigator.pop(context); // Close bottom sheet
-                        widget.ref.invalidate(adminOrdersProvider);
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment Verified & Order processing')));
-                      }
-                    } catch (e) {
-                      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-                    } finally {
-                      setState(() => _isLoading = false);
-                    }
-                  },
-                  icon: const Icon(Icons.verified_user_outlined),
-                  label: const Text('Verify & Approve Payment'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 48)),
-                ),
-                const SizedBox(height: 24),
-              ],
-              if (order.status == 'awaiting_payment') ...[
-                const Text('Manual Payment Expected', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
-                const Text('Waiting for client to negotiate and report payment on WhatsApp.', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                const SizedBox(height: 12),
-              ],
-              if (order.status != 'pending' && order.status != 'awaiting_payment' && order.status != 'payment_made' && order.whatsappNotifyVendorUrl != null) ...[
-                 ElevatedButton.icon(
-                  onPressed: () async {
-                    final url = Uri.parse(order.whatsappNotifyVendorUrl!);
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
-                  },
-                  icon: const Icon(Icons.chat_bubble_outline),
-                  label: const Text('Notify Vendor (WhatsApp)'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green.shade600, foregroundColor: Colors.white, minimumSize: const Size(double.infinity, 48)),
-                ),
-                const SizedBox(height: 24),
-              ],
-              if (order.status == 'pending' || order.status == 'processing' || order.status == 'awaiting_payment' || order.status == 'payment_made') ...[
-                const Text('Assign Driver & Set Prices', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
-                driversAsync.when(
-                  data: (drivers) => DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(labelText: 'Select Driver', border: OutlineInputBorder()),
-                    items: drivers.map((d) => DropdownMenuItem(value: d['id'] as String, child: Text(d['full_name'] ?? d['email']))).toList(),
-                    onChanged: (val) => setState(() => _selectedDriverId = val),
-                    value: _selectedDriverId,
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      backgroundColor: Colors.white,
+      elevation: 24,
+      child: Container(
+        width: 450,
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 16, 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'MANAGE ORDER',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5,
+                            color: Colors.blueAccent.shade700,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Order #${order.id.substring(0, 8).toUpperCase()}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF1E293B),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (e, s) => Text('Error loading drivers: $e'),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade200),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.close, size: 18, color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (order.status == 'payment_made') ...[
+                      _sectionHeader('PAYMENT VERIFICATION'),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        controller: _priceController,
+                        label: 'Verify Agreed Price (₦)',
+                        icon: Icons.payments_outlined,
+                      ),
+                      const SizedBox(height: 20),
+                      _primaryButton(
+                        onPressed: _isLoading ? null : () async {
+                          if (_priceController.text.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter agreed price')));
+                            return;
+                          }
+                          setState(() => _isLoading = true);
+                          try {
+                            await widget.ref.read(adminApiProvider).verifyPayment(
+                              orderId: order.id,
+                              agreedPrice: double.parse(_priceController.text),
+                            );
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              widget.ref.invalidate(adminOrdersProvider);
+                            }
+                          } catch (e) {
+                            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                          } finally {
+                            setState(() => _isLoading = false);
+                          }
+                        },
+                        label: 'Verify & Approve Payment',
+                        color: Colors.blueAccent,
+                        icon: Icons.verified_user_outlined,
+                      ),
+                      const SizedBox(height: 32),
+                    ],
+
+                    if (order.status == 'awaiting_payment') ...[
+                      _sectionHeader('MANUAL PAYMENT STATUS'),
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.shade50,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.amber.shade100),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.info_outline, color: Colors.amber.shade800, size: 20),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Text(
+                                'Waiting for client to report payment via WhatsApp.',
+                                style: TextStyle(fontSize: 13, color: Color(0xFF92400E), fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
+
+                    if (order.status == 'pending' || order.status == 'processing' || order.status == 'awaiting_payment' || order.status == 'payment_made') ...[
+                      _sectionHeader('LOGISTICS ASSIGNMENT'),
+                      const SizedBox(height: 16),
+                      driversAsync.when(
+                        data: (drivers) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.grey.shade200),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButtonFormField<String>(
+                              decoration: const InputDecoration(
+                                labelText: 'Select Logistics Driver',
+                                labelStyle: TextStyle(fontSize: 14, color: Colors.grey),
+                                border: InputBorder.none,
+                              ),
+                              items: drivers.map((d) => DropdownMenuItem(
+                                value: d['id'] as String,
+                                child: Text(d['full_name'] ?? d['email'] ?? 'Driver', style: const TextStyle(fontSize: 15)),
+                              )).toList(),
+                              onChanged: (val) => setState(() => _selectedDriverId = val),
+                              value: _selectedDriverId,
+                            ),
+                          ),
+                        ),
+                        loading: () => const Center(child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator(strokeWidth: 2))),
+                        error: (e, s) => Text('Error loading drivers', style: TextStyle(color: Colors.red.shade700, fontSize: 13)),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _priceController,
+                              label: 'Item Price (₦)',
+                              icon: Icons.shopping_bag_outlined,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _feeController,
+                              label: 'Delivery Fee (₦)',
+                              icon: Icons.local_shipping_outlined,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      _primaryButton(
+                        onPressed: _isLoading ? null : () async {
+                          if (_selectedDriverId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a driver')));
+                            return;
+                          }
+                          setState(() => _isLoading = true);
+                          try {
+                            await widget.ref.read(adminApiProvider).assignDriver(
+                              orderId: order.id,
+                              driverId: _selectedDriverId!,
+                              agreedPrice: double.parse(_priceController.text),
+                              deliveryFee: double.parse(_feeController.text),
+                            );
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              widget.ref.invalidate(adminOrdersProvider);
+                            }
+                          } catch (e) {
+                            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                          } finally {
+                            setState(() => _isLoading = false);
+                          }
+                        },
+                        label: 'Update & Assign Driver',
+                        color: const Color(0xFF388E3C),
+                        icon: Icons.check_circle_outline,
+                      ),
+                      const SizedBox(height: 32),
+                    ] else if (order.status != 'delivered' && order.status != 'cancelled') ...[
+                      _sectionHeader('STATUS SHIPMENT CONTROL'),
+                      const SizedBox(height: 16),
+                      _statusButton('picked_up', 'Confirm Picked Up', Icons.inventory),
+                      const SizedBox(height: 12),
+                      _statusButton('on_the_way', 'Set as In Transit', Icons.local_shipping),
+                      const SizedBox(height: 12),
+                      _statusButton('delivered', 'Mark as Delivered', Icons.done_all, color: Colors.blue.shade700),
+                    ] else ...[
+                      Center(
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 24),
+                            Icon(Icons.check_circle, size: 64, color: Colors.green.shade600),
+                            const SizedBox(height: 16),
+                            const Text('Order Finalized', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            const Text('This order is completed and archived.', style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                const SizedBox(height: 12),
-                TextField(controller: _priceController, decoration: const InputDecoration(labelText: 'Agreed Price (₦)', border: OutlineInputBorder()), keyboardType: TextInputType.number),
-                const SizedBox(height: 12),
-                TextField(controller: _feeController, decoration: const InputDecoration(labelText: 'Delivery Fee (₦)', border: OutlineInputBorder()), keyboardType: TextInputType.number),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : () async {
-                    if (_selectedDriverId == null) return;
-                    setState(() => _isLoading = true);
-                    try {
-                      await widget.ref.read(adminApiProvider).assignDriver(orderId: order.id, driverId: _selectedDriverId!, agreedPrice: double.parse(_priceController.text), deliveryFee: double.parse(_feeController.text));
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                        widget.ref.invalidate(adminOrdersProvider);
-                      }
-                    } catch (e) {
-                      if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-                    } finally {
-                      setState(() => _isLoading = false);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 48)),
-                  child: const Text('Confirm Assignment'),
-                ),
-              ] else if (order.status != 'delivered' && order.status != 'cancelled') ...[
-                const Text('Update Delivery Status', style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                _buildStatusButton('picked_up', 'Mark as Picked Up'),
-                const SizedBox(height: 8),
-                _buildStatusButton('on_the_way', 'Mark as On the Way'),
-                const SizedBox(height: 8),
-                _buildStatusButton('delivered', 'Mark as Delivered', color: Colors.green),
-              ] else ...[
-                const Center(child: Text('This order is completed and cannot be modified.')),
-              ],
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
-      actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
     );
   }
 
-  Widget _buildStatusButton(String status, String label, {Color? color}) {
+  Widget _sectionHeader(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 1.2,
+        color: Colors.grey,
+      ),
+    );
+  }
+
+  Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: TextField(
+        controller: controller,
+        cursorColor: Colors.blueAccent,
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, size: 20, color: Colors.blueAccent.shade200),
+          labelText: label,
+          labelStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        ),
+        keyboardType: TextInputType.number,
+      ),
+    );
+  }
+
+  Widget _primaryButton({required VoidCallback? onPressed, required String label, required Color color, IconData? icon}) {
     return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        minimumSize: const Size(double.infinity, 56),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        overlayColor: Colors.white.withOpacity(0.1),
+      ),
+      child: _isLoading 
+        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 8)],
+              Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+            ],
+          ),
+    );
+  }
+
+  Widget _statusButton(String status, String label, IconData icon, {Color? color}) {
+    return OutlinedButton(
       onPressed: _isLoading ? null : () async {
         setState(() => _isLoading = true);
         try {
@@ -808,8 +982,20 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
           setState(() => _isLoading = false);
         }
       },
-      style: ElevatedButton.styleFrom(backgroundColor: color, foregroundColor: color != null ? Colors.white : null, minimumSize: const Size(double.infinity, 44)),
-      child: Text(label),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: color ?? Colors.black87,
+        side: BorderSide(color: color?.withOpacity(0.3) ?? Colors.grey.shade300, width: 1.5),
+        minimumSize: const Size(double.infinity, 52),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18),
+          const SizedBox(width: 12),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+        ],
+      ),
     );
   }
 }
