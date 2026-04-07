@@ -20,6 +20,7 @@ extension OrderStatusExtension on OrderStatus {
   String get displayName {
     switch (this) {
       case OrderStatus.pending:
+        return 'Order Placed';
       case OrderStatus.awaiting_payment:
         return 'Negotiating on WhatsApp';
       case OrderStatus.payment_made:
