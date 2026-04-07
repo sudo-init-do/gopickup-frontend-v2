@@ -20,23 +20,22 @@ extension OrderStatusExtension on OrderStatus {
   String get displayName {
     switch (this) {
       case OrderStatus.pending:
-        return 'Pending';
       case OrderStatus.awaiting_payment:
         return 'Negotiating on WhatsApp';
       case OrderStatus.payment_made:
-        return 'Awaiting Admin Verification';
+        return 'Awaiting Verification';
       case OrderStatus.processing:
         return 'Finding Driver';
       case OrderStatus.assigned:
-        return 'Driver Assigned';
+        return 'Assigned to Driver';
       case OrderStatus.ready:
         return 'Ready for Pickup';
       case OrderStatus.in_progress:
-        return 'In Progress';
+        return 'In Transit';
       case OrderStatus.picked_up:
         return 'Picked Up';
       case OrderStatus.on_the_way:
-        return 'On the Way';
+        return 'Out for Delivery';
       case OrderStatus.delivered:
         return 'Delivered';
       case OrderStatus.cancelled:
@@ -47,19 +46,18 @@ extension OrderStatusExtension on OrderStatus {
   Color get color {
     switch (this) {
       case OrderStatus.pending:
-        return const Color(0xFF6B7280);
       case OrderStatus.awaiting_payment:
-        return const Color(0xFF9333EA);
+        return const Color(0xFFEAB308); // Yellow
       case OrderStatus.payment_made:
-        return const Color(0xFFF59E0B);
+        return const Color(0xFF3B82F6); // Blue
       case OrderStatus.processing:
-        return const Color(0xFF2563EB);
+        return const Color(0xFF8B5CF6); // Purple
       case OrderStatus.assigned:
-        return const Color(0xFF0D9488);
+        return const Color(0xFF14B8A6); // Teal
       case OrderStatus.ready:
         return const Color(0xFF45A225);
       case OrderStatus.in_progress:
-        return const Color(0xFF9333EA);
+        return const Color(0xFF10B981); // Green
       case OrderStatus.picked_up:
         return const Color(0xFFD97706);
       case OrderStatus.on_the_way:
@@ -74,19 +72,18 @@ extension OrderStatusExtension on OrderStatus {
   Color get backgroundColor {
     switch (this) {
       case OrderStatus.pending:
-        return const Color(0xFFF3F4FB);
       case OrderStatus.awaiting_payment:
-        return const Color(0xFFF5F3FF);
+        return const Color(0xFFFEF9C3);
       case OrderStatus.payment_made:
-        return const Color(0xFFFEF3C7);
-      case OrderStatus.processing:
         return const Color(0xFFEFF6FF);
+      case OrderStatus.processing:
+        return const Color(0xFFF5F3FF);
       case OrderStatus.assigned:
         return const Color(0xFFF0FDFA);
       case OrderStatus.ready:
         return const Color(0xFFF0FDF4);
       case OrderStatus.in_progress:
-        return const Color(0xFFF5F3FF);
+        return const Color(0xFFECFDF5);
       case OrderStatus.picked_up:
         return const Color(0xFFFFFBEB);
       case OrderStatus.on_the_way:

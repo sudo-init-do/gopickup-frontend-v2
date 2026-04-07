@@ -24,7 +24,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       await launchUrl(Uri.parse(customUrl), mode: LaunchMode.externalApplication);
       return;
     }
-    const phone = "2348133755282"; // Admin Support
+    const phone = "2348087042206"; // Admin Support
     final message = "Hello, I am agreeing to the delivery for Order #$orderId";
     final url = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
     if (await canLaunchUrl(Uri.parse(url))) {
@@ -974,7 +974,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  job.status == 'assigned' ? 'Pre-Assigned' : 'Available',
+                  job.status == 'assigned' ? 'Assigned to You' : 'Available',
                   style: TextStyle(
                     color: job.status == 'assigned' ? Colors.blue : Colors.green,
                     fontSize: 11,

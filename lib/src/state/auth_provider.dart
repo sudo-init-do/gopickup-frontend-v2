@@ -85,7 +85,7 @@ class AuthNotifier extends Notifier<AuthState> {
   Future<bool> register(String email, String password, String role) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
-      final response = await _authApi.register(email, password, role);
+      final response = await _authApi.register(email, password, role.toLowerCase());
       final token = response['token'] as String;
       final userDict = response['user'] as Map<String, dynamic>;
 

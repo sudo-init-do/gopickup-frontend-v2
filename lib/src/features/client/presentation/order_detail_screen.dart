@@ -19,7 +19,7 @@ class OrderDetailScreen extends StatelessWidget {
     }
 
     // Fallback
-    const phone = "2348000000000";
+    const phone = "2348087042206";
     final message = "Hello GoPickup Support, I have an inquiry about my order: ${order.id}";
     final fallbackUrl = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
     if (await canLaunchUrl(Uri.parse(fallbackUrl))) {
