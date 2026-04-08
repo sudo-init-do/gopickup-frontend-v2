@@ -579,7 +579,7 @@ class ProductCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Verified Vendor',
+                        product.vendorName,
                         style: TextStyle(
                           color: Colors.grey[500],
                           fontSize: 11,

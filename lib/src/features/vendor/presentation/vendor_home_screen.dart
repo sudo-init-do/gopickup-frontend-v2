@@ -85,7 +85,7 @@ class VendorHomeScreen extends ConsumerWidget {
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
-                                          'Verified Vendor',
+                                          'GoPickup Vendor',
                                           style: TextStyle(
                                             color: Colors.white.withValues(
                                               alpha: 0.9,

@@ -382,7 +382,7 @@ class ClientCartScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Verified Vendor',
+                      item.product.vendorName,
                       style: TextStyle(
                         color: Colors.grey[500],
                         fontSize: 11,

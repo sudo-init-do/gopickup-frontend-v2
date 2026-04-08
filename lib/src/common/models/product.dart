@@ -18,11 +18,11 @@ class Product {
     required this.vendorId,
     required this.category,
     required this.imageUrl,
-    this.vendorName = 'Unknown Vendor',
+    this.vendorName = 'GoPickup Vendor',
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    String vName = 'Unknown Vendor';
+    String vName = 'GoPickup Vendor';
     if (json['vendor'] != null && json['vendor']['store_name'] != null) {
       vName = json['vendor']['store_name'];
     }
