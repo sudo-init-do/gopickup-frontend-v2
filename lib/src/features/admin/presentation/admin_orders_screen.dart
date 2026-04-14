@@ -79,6 +79,8 @@ FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
                 _buildTab('Active'),
                 const SizedBox(width: 8),
                 _buildTab('Completed'),
+                const SizedBox(width: 8),
+                _buildTab('Signups'),
               ],
             ),
           ),
@@ -141,24 +143,26 @@ FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
           
           // Order List
           Expanded(
-            child: ordersAsync.when(
-              data: (orders) {
-                final filtered = _getFilteredOrders(orders);
-                if (filtered.isEmpty) return const Center(child: Text('No orders found'));
-                
-                return ListView.separated(
-                  padding: const EdgeInsets.all(16).copyWith(bottom: 100),
-                  itemCount: filtered.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) => _OrderCard(
-                    order: filtered[index],
-                    onTap: () => _showFocusedView(context, filtered[index]),
+            child: _selectedTab == 'Signups'
+                ? _buildRecentSignups(context)
+                : ordersAsync.when(
+                    data: (orders) {
+                      final filtered = _getFilteredOrders(orders);
+                      if (filtered.isEmpty) return const Center(child: Text('No orders found'));
+
+                      return ListView.separated(
+                        padding: const EdgeInsets.all(16).copyWith(bottom: 100),
+                        itemCount: filtered.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) => _OrderCard(
+                          order: filtered[index],
+                          onTap: () => _showFocusedView(context, filtered[index]),
+                        ),
+                      );
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (e, stack) => Center(child: Text('Error: $e')),
                   ),
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, stack) => Center(child: Text('Error: $e')),
-            ),
           ),
         ],
       ),
@@ -183,6 +187,88 @@ FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
             fontSize: 13,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildRecentSignups(BuildContext context) {
+    final recentUsersAsync = ref.watch(adminRecentUsersProvider);
+
+    return recentUsersAsync.when(
+      data: (users) {
+        if (users.isEmpty) return const Center(child: Text('No recent signups'));
+
+        return ListView.separated(
+          padding: const EdgeInsets.all(16).copyWith(bottom: 100),
+          itemCount: users.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final user = users[index];
+            final joinedDate = user['created_at'] != null 
+                ? DateFormat('MMM d, h:mm a').format(DateTime.parse(user['created_at']))
+                : 'Unknown';
+
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        user['full_name'] ?? 'Unknown User',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          (user['role'] ?? 'Client').toString().toUpperCase(),
+                          style: TextStyle(color: Colors.blue.shade700, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _signupInfo(Icons.email_outlined, user['email'] ?? 'No email'),
+                  _signupInfo(Icons.phone_outlined, user['phone_number'] ?? 'No phone'),
+                  const Divider(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Joined $joinedDate', style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
+                      const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.grey),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, stack) => Center(child: Text('Error: $e')),
+    );
+  }
+
+  Widget _signupInfo(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: Colors.grey.shade400),
+          const SizedBox(width: 8),
+          Text(text, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+        ],
       ),
     );
   }

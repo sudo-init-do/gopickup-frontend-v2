@@ -8,6 +8,7 @@ class Product {
   final String category;
   final String imageUrl;
   final String vendorName;
+  final String vendorAddress;
 
   Product({
     required this.id,
@@ -19,12 +20,19 @@ class Product {
     required this.category,
     required this.imageUrl,
     this.vendorName = 'GoPickup Vendor',
+    this.vendorAddress = 'Lagos, Nigeria',
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     String vName = 'GoPickup Vendor';
-    if (json['vendor'] != null && json['vendor']['store_name'] != null) {
-      vName = json['vendor']['store_name'];
+    String vAddress = 'Lagos, Nigeria';
+    if (json['vendor'] != null) {
+      if (json['vendor']['store_name'] != null) {
+        vName = json['vendor']['store_name'];
+      }
+      if (json['vendor']['address'] != null) {
+        vAddress = json['vendor']['address'];
+      }
     }
 
     return Product(
@@ -37,6 +45,7 @@ class Product {
       category: json['category'] as String,
       imageUrl: json['image_url'] ?? '',
       vendorName: vName,
+      vendorAddress: vAddress,
     );
   }
 

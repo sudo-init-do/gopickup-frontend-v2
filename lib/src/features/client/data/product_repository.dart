@@ -13,6 +13,9 @@ class ProductRepository {
       final response = await _apiClient.get(
         '/products',
         queryParameters: {
+          'unique_vendors': 'true',
+          'page': 1,
+          'limit': 10,
           if (category != null && category != 'All') 'category': category,
           if (query != null && query.isNotEmpty) 'q': query,
         },

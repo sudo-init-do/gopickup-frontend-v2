@@ -232,16 +232,32 @@ class ClientCartScreen extends ConsumerWidget {
                         );
 
                         if (result != null && result['whatsapp_url'] != null) {
+                          // Show Success Snackbar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Order created successfully, go to my orders to negotiate price.'),
+                              backgroundColor: const Color(0xFF3B7D23),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                              margin: const EdgeInsets.all(20),
+                              duration: const Duration(seconds: 4),
+                            ),
+                          );
+
                           final url = Uri.parse(result['whatsapp_url']);
                           if (await canLaunchUrl(url)) {
                              await launchUrl(url, mode: LaunchMode.externalApplication);
                           } else {
-                             // Fallback to direct support
                              final supportUrl = Uri.parse('https://wa.me/2348087042206');
                              await launchUrl(supportUrl, mode: LaunchMode.externalApplication);
                           }
                           // Clear cart after successful checkout initiate
                           ref.read(cartProvider.notifier).clear();
+
+                          // Redirect to Orders
+                          if (context.mounted) {
+                            context.pushReplacement('/client/orders');
+                          }
                         } else {
                            // Error handled by state but show floating snackbar here too
                            final error = ref.read(orderProvider).error;

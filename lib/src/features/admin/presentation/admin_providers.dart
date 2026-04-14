@@ -13,3 +13,7 @@ final adminUsersProvider = FutureProvider.family<List<Map<String, dynamic>>, Str
 final adminOrdersProvider = FutureProvider((ref) {
   return ref.read(adminApiProvider).getOrders();
 });
+
+final adminRecentUsersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
+  return ref.read(adminApiProvider).getRecentUsers(limit: 10);
+});

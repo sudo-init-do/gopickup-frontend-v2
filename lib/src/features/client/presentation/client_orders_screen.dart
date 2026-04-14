@@ -83,7 +83,13 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
               ),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back_rounded, size: 24),
-                onPressed: () => context.pop(),
+                onPressed: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go('/client/home');
+                  }
+                },
               ),
             ),
           ),

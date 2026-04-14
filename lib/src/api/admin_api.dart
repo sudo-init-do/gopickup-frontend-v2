@@ -119,4 +119,13 @@ class AdminApi {
       throw Exception(e.response?.data['error'] ?? 'Failed to verify payment');
     }
   }
+
+  Future<List<Map<String, dynamic>>> getRecentUsers({int limit = 10}) async {
+    try {
+      final response = await ApiClient.dio.get('admin/users/recent', queryParameters: {'limit': limit});
+      return List<Map<String, dynamic>>.from(response.data);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to load recent users');
+    }
+  }
 }

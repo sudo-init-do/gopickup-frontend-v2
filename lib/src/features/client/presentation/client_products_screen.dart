@@ -578,13 +578,40 @@ class ProductCard extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        product.vendorName,
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              product.vendorName,
+                              style: TextStyle(
+                                color: Colors.grey[500],
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, size: 10, color: Colors.blueAccent.withValues(alpha: 0.7)),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              product.vendorAddress,
+                              style: TextStyle(
+                                color: Colors.blueAccent.withValues(alpha: 0.8),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
 
                       const SizedBox(height: 4),
