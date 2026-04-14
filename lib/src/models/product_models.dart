@@ -11,6 +11,7 @@ class Product {
   final int stock;
   final int moq;
   final String vendorName;
+  final String vendorAddress;
 
   Product({
     required this.id,
@@ -24,13 +25,20 @@ class Product {
     required this.category,
     required this.imageUrl,
     required this.isActive,
-    this.vendorName = 'Unknown Vendor',
+    this.vendorName = 'GoPickup Vendor',
+    this.vendorAddress = 'Lagos, Nigeria',
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    String vName = 'Unknown Vendor';
-    if (json['vendor'] != null && json['vendor']['store_name'] != null) {
-      vName = json['vendor']['store_name'];
+    String vName = 'GoPickup Vendor';
+    String vAddress = 'Lagos, Nigeria';
+    if (json['vendor'] != null) {
+      if (json['vendor']['store_name'] != null) {
+        vName = json['vendor']['store_name'];
+      }
+      if (json['vendor']['address'] != null) {
+        vAddress = json['vendor']['address'];
+      }
     }
 
     return Product(
@@ -46,6 +54,7 @@ class Product {
       imageUrl: json['image_url'] as String? ?? '',
       isActive: json['is_active'] as bool? ?? false,
       vendorName: vName,
+      vendorAddress: vAddress,
     );
   }
 
