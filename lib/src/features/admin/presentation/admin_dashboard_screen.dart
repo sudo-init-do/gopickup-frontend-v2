@@ -305,7 +305,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                         iconColor: Colors.orange.shade600,
                         title: 'High Value Order Placed',
                         time: '14 mins ago',
-                        desc: 'Order #88219 reached \$4,200 threshold. Fraud verification required.',
+                        desc: 'Order #88219 reached ₦4,200 threshold. Fraud verification required.',
                         isLast: false,
                       ),
                       _buildActivityItem(

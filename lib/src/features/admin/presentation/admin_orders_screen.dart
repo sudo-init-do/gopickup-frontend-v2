@@ -394,7 +394,7 @@ class _OrderCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '\$${(order.totalProductAmount + (order.agreedDeliveryFee ?? 0)).toStringAsFixed(2)}',
+                      '₦${(order.totalProductAmount + (order.agreedDeliveryFee ?? 0)).toStringAsFixed(2)}',
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                   ],
