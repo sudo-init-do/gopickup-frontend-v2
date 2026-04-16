@@ -28,6 +28,10 @@ class ErrorHandler {
       return 'Network issue, please check your internet connection.';
     }
     
+    if (msg.toLowerCase().contains('limited to 1 product')) {
+      return 'Each vendor is limited to 1 product for now. Please upgrade your plan for more.';
+    }
+    
     // Generic Errors
     if (msg.toLowerCase().contains('internal server error') || 
         msg.toLowerCase().contains('500')) {

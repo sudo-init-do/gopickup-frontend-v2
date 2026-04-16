@@ -17,7 +17,7 @@ class ProductRepository {
           'page': 1,
           'limit': 10,
           if (category != null && category != 'All') 'category': category,
-          if (query != null && query.isNotEmpty) 'q': query,
+          if (query != null && query.isNotEmpty) 'search': query,
         },
       );
 

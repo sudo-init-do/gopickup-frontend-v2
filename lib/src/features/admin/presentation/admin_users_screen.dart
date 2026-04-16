@@ -355,6 +355,28 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               children: [
                 Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 Text(email, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.phone_outlined, size: 12, color: Colors.grey.shade400),
+                    const SizedBox(width: 4),
+                    Text(
+                      (user['vendor_profile']?['phone_number'] ?? user['client_profile']?['phone_number'] ?? user['driver_profile']?['phone_number'] ?? 'No phone').toString(),
+                      style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(Icons.location_on_outlined, size: 12, color: Colors.grey.shade400),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        (user['vendor_profile']?['address'] ?? user['client_profile']?['address'] ?? user['driver_profile']?['address'] ?? 'No address').toString(),
+                        style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
