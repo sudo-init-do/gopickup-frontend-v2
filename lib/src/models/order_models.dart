@@ -87,6 +87,8 @@ class Order {
   final String? vendorStoreName;
   final String? vendorPhone;
 
+  OrderVendor? get vendor => vendorStoreName != null ? OrderVendor(id: vendorId, storeName: vendorStoreName!) : OrderVendor(id: vendorId, storeName: 'GoPickup Store');
+
   Order({
     required this.id,
     required this.clientId,
