@@ -411,7 +411,10 @@ class _OrderCard extends StatelessWidget {
                   children: [
                     const Icon(Icons.person, size: 14, color: Colors.grey),
                     const SizedBox(width: 4),
-                    Text(order.clientId.substring(0, 8), style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                    Text(
+                      order.clientName ?? order.clientEmail ?? order.clientId.substring(0, 8),
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                    ),
                   ],
                 ),
                 Row(
@@ -588,6 +591,7 @@ class _FocusedView extends StatelessWidget {
                         const SizedBox(height: 32),
                         const Text('CUSTOMER DETAILS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                         const SizedBox(height: 16),
+                        // --- Client Card ---
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade200)),
@@ -604,16 +608,79 @@ class _FocusedView extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Client: ${order.clientId.substring(0, 8)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                                    const Text('Contact provided', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                                    Text(
+                                      order.clientName ?? order.clientEmail ?? 'Client #${order.clientId.substring(0, 8)}',
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                    ),
+                                    if (order.clientPhone != null)
+                                      Text(order.clientPhone!, style: const TextStyle(fontSize: 11, color: Colors.grey))
+                                    else if (order.clientEmail != null)
+                                      Text(order.clientEmail!, style: const TextStyle(fontSize: 11, color: Colors.grey)),
                                   ],
                                 ),
                               ),
+                              if (order.clientPhone != null)
+                                GestureDetector(
+                                  onTap: () async {
+                                    final uri = Uri.parse('tel:${order.clientPhone}');
+                                    if (await canLaunchUrl(uri)) launchUrl(uri);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(color: Colors.green.shade50, border: Border.all(color: Colors.green.shade200), borderRadius: BorderRadius.circular(8)),
+                                    child: Icon(Icons.call, size: 16, color: Colors.green.shade700),
+                                  ),
+                                )
+                              else
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade200), borderRadius: BorderRadius.circular(8)),
+                                  child: const Icon(Icons.message, size: 16, color: Colors.black54),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        // --- Vendor Card ---
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade200)),
+                          child: Row(
+                            children: [
                               Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade200), borderRadius: BorderRadius.circular(8)),
-                                child: const Icon(Icons.message, size: 16, color: Colors.black54),
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(color: Colors.green.shade50, shape: BoxShape.circle),
+                                child: Icon(Icons.storefront, color: Colors.green.shade600, size: 20),
                               ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      order.vendorStoreName ?? 'Vendor #${order.vendorId.substring(0, 8)}',
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                    ),
+                                    if (order.vendorPhone != null)
+                                      Text(order.vendorPhone!, style: const TextStyle(fontSize: 11, color: Colors.grey))
+                                    else
+                                      const Text('No contact available', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                                  ],
+                                ),
+                              ),
+                              if (order.vendorPhone != null)
+                                GestureDetector(
+                                  onTap: () async {
+                                    final uri = Uri.parse('tel:${order.vendorPhone}');
+                                    if (await canLaunchUrl(uri)) launchUrl(uri);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(color: Colors.green.shade50, border: Border.all(color: Colors.green.shade200), borderRadius: BorderRadius.circular(8)),
+                                    child: Icon(Icons.call, size: 16, color: Colors.green.shade700),
+                                  ),
+                                ),
                             ],
                           ),
                         ),

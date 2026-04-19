@@ -67,7 +67,7 @@ class Order {
   final String? driverId;
   final List<OrderItem> items;
   final double totalProductAmount;
-  final String status; // pending, awaiting_payment, payment_made, processing, assigned, in_progress, picked_up, on_the_way, delivered, cancelled
+  final String status;
   final String pickupAddress;
   final String deliveryAddress;
   final double? deliveryLat;
@@ -78,7 +78,14 @@ class Order {
   final String? whatsappNotifyVendorUrl;
   final String? whatsappUrl;
 
-  OrderVendor? get vendor => OrderVendor(id: vendorId, storeName: 'GoPickup Store');
+  // Nested client info (from admin API)
+  final String? clientName;
+  final String? clientPhone;
+  final String? clientEmail;
+
+  // Nested vendor info (from admin API)
+  final String? vendorStoreName;
+  final String? vendorPhone;
 
   Order({
     required this.id,
@@ -97,6 +104,11 @@ class Order {
     required this.createdAt,
     this.whatsappNotifyVendorUrl,
     this.whatsappUrl,
+    this.clientName,
+    this.clientPhone,
+    this.clientEmail,
+    this.vendorStoreName,
+    this.vendorPhone,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -104,6 +116,13 @@ class Order {
     if (json['items'] != null) {
       itemsList = json['items'] as List<dynamic>;
     }
+
+    // Extract nested client profile (from admin endpoint)
+    final clientObj = json['client'] as Map<String, dynamic>?;
+    final clientProfile = clientObj?['client_profile'] as Map<String, dynamic>?;
+
+    // Extract nested vendor object (from admin endpoint)
+    final vendorObj = json['vendor'] as Map<String, dynamic>?;
 
     return Order(
       id: json['id'] as String? ?? '',
@@ -127,6 +146,13 @@ class Order {
           : DateTime.now(),
       whatsappNotifyVendorUrl: json['whatsapp_notify_vendor_url'] as String?,
       whatsappUrl: json['whatsapp_url'] as String?,
+      // Nested client fields
+      clientName: clientProfile?['full_name'] as String?,
+      clientPhone: clientProfile?['phone_number'] as String?,
+      clientEmail: clientObj?['email'] as String?,
+      // Nested vendor fields
+      vendorStoreName: vendorObj?['store_name'] as String?,
+      vendorPhone: vendorObj?['phone_number'] as String?,
     );
   }
 }

@@ -15,7 +15,7 @@ class ProductRepository {
         queryParameters: {
           'unique_vendors': 'true',
           'page': 1,
-          'limit': 10,
+          'limit': 50,
           if (category != null && category != 'All') 'category': category,
           if (query != null && query.isNotEmpty) 'search': query,
         },
