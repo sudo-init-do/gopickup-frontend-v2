@@ -138,4 +138,13 @@ class WebSocketService {
       'lng': lng,
     });
   }
+
+  void dispose() {
+    disconnect();
+    _orderStatusController.close();
+    _newBidController.close();
+    _bidAcceptedController.close();
+    _driverMovedController.close();
+    _newMessageController.close();
+  }
 }
