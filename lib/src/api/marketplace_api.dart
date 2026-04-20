@@ -11,7 +11,7 @@ class MarketplaceApi {
     String? vendorId,
     String? search,
     int page = 1,
-    int limit = 10,
+    int limit = 50,
   }) async {
     try {
       final response = await ApiClient.dio.get(

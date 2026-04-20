@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +25,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
   String _selectedCategory = 'All';
   String _searchQuery = '';
   late final TextEditingController _searchController;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -58,6 +60,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -336,6 +339,21 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                                     setState(() {
                                       _searchQuery = value;
                                     });
+                                    if (_debounce?.isActive ?? false) {
+                                      _debounce!.cancel();
+                                    }
+                                    _debounce = Timer(const Duration(milliseconds: 500), () {
+                                      ref
+                                          .read(productProvider.notifier)
+                                          .fetchProducts(
+                                            category: _selectedCategory == 'All'
+                                                ? null
+                                                : _selectedCategory,
+                                            search: _searchQuery.isNotEmpty
+                                                ? _searchQuery
+                                                : null,
+                                          );
+                                    });
                                   },
                                   onSubmitted: (_) {
                                     ref
@@ -435,26 +453,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                         );
                       }
 
-                      var filteredProducts = productState.products;
-
-                      // NOTE: Because our new API handles filtering too, we could rely strictly on the API
-                      // if we fetch on every tap, but doing client-side filtering on all models we fetched
-                      // is acceptable for now. If you uncomment the API fetch on chip select, it will be faster to just display what we have.
-
-                      if (_selectedCategory != 'All') {
-                        filteredProducts = filteredProducts
-                            .where((p) => p.category == _selectedCategory)
-                            .toList();
-                      }
-                      if (_searchQuery.isNotEmpty) {
-                        filteredProducts = filteredProducts
-                            .where(
-                              (p) => p.name.toLowerCase().contains(
-                                _searchQuery.toLowerCase(),
-                              ),
-                            )
-                            .toList();
-                      }
+                      final filteredProducts = productState.products;
 
                       if (filteredProducts.isEmpty) {
                         return const Center(child: Text('No products found'));
@@ -491,6 +490,10 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
         setState(() {
           _selectedCategory = label;
         });
+        ref.read(productProvider.notifier).fetchProducts(
+          category: label == 'All' ? null : label,
+          search: _searchQuery.isNotEmpty ? _searchQuery : null,
+        );
       },
       child: Container(
         margin: const EdgeInsets.only(right: 10),
