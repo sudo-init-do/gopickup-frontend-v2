@@ -24,6 +24,7 @@ class MarketplaceApi {
           if (search != null) 'search': search,
           'page': page,
           'limit': limit,
+          'unique_vendors': true,
         },
       );
       // Assuming response format: { "data": [...], "meta": {...} }
@@ -49,7 +50,7 @@ class MarketplaceApi {
     String? businessType,
     String? search,
     int page = 1,
-    int limit = 10,
+    int limit = 100,
   }) async {
     try {
       final response = await ApiClient.dio.get(
