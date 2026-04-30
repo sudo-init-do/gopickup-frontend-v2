@@ -1,11 +1,11 @@
 {
-    "name": "gopickup_unity",
-    "short_name": "gopickup_unity",
+    "name": "GoPickup",
+    "short_name": "GoPickup",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FFFFFF",
+    "theme_color": "#3B7D23",
+    "description": "Go pickup platform",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
