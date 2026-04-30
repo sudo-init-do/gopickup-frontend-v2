@@ -17,7 +17,7 @@ class AppTheme {
         onPrimary: AppColors.onPrimary,
       ),
       scaffoldBackgroundColor: AppColors.surface,
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 1.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
@@ -25,7 +25,7 @@ class AppTheme {
         color: Colors.white,
         shadowColor: Colors.black.withOpacity( 0.05),
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24.0),
         ),
