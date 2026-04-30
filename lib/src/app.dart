@@ -17,7 +17,7 @@ class GoPickupApp extends ConsumerWidget {
 
     final goRouter = ref.watch(goRouterProvider);
     return MaterialApp.router(
-      title: 'GoPickup Unity',
+      title: 'GoPickup',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: goRouter,
