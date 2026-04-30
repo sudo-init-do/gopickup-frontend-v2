@@ -233,7 +233,7 @@ class _MessageBubble extends StatelessWidget {
                   style: TextStyle(
                     color: isMe
                         ? Colors.white
-                        : kDarkTextColor.withValues(alpha: 0.9),
+                        : kDarkTextColor.withOpacity( 0.9),
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
                     height: 1.4,
@@ -246,8 +246,8 @@ class _MessageBubble extends StatelessWidget {
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
                     color: isMe
-                        ? Colors.white.withValues(alpha: 0.8)
-                        : kMidTextColor.withValues(alpha: 0.6),
+                        ? Colors.white.withOpacity( 0.8)
+                        : kMidTextColor.withOpacity( 0.6),
                   ),
                 ),
               ],
@@ -323,7 +323,7 @@ class _ChatInput extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: kBrandGreen.withValues(alpha: 0.3),
+                    color: kBrandGreen.withOpacity( 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

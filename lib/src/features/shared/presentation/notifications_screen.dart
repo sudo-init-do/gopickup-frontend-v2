@@ -88,7 +88,7 @@ class NotificationsScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: Colors.black.withOpacity( 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -180,7 +180,7 @@ class NotificationsScreen extends StatelessWidget {
             ? []
             : [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: Colors.black.withOpacity( 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -238,7 +238,7 @@ class NotificationsScreen extends StatelessWidget {
                   ).format(notification['time'] as DateTime),
                   style: TextStyle(
                     fontSize: 12,
-                    color: midText.withValues(alpha: 0.6),
+                    color: midText.withOpacity( 0.6),
                     fontWeight: FontWeight.w600,
                   ),
                 ),

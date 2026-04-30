@@ -263,7 +263,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
+                    color: Colors.black.withOpacity( 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -374,7 +374,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 Icon(
                   Icons.local_shipping_outlined,
                   size: 64,
-                  color: midText.withValues(alpha: 0.5),
+                  color: midText.withOpacity( 0.5),
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -427,7 +427,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 Icon(
                   Icons.assignment_outlined,
                   size: 64,
-                  color: midText.withValues(alpha: 0.5),
+                  color: midText.withOpacity( 0.5),
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -478,7 +478,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 Icon(
                   Icons.history_rounded,
                   size: 64,
-                  color: midText.withValues(alpha: 0.5),
+                  color: midText.withOpacity( 0.5),
                 ),
                 const SizedBox(height: 16),
                 const Text(
@@ -568,7 +568,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: green.withValues(alpha: 0.1),
+                  color: green.withOpacity( 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -629,7 +629,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withOpacity( 0.02),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -642,7 +642,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: green.withValues(alpha: 0.1),
+                  color: green.withOpacity( 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Icons.local_shipping_outlined, color: green, size: 24),
@@ -801,7 +801,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: green.withValues(alpha: 0.1),
+                  color: green.withOpacity( 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -875,7 +875,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withOpacity( 0.02),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -888,7 +888,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: orange.withValues(alpha: 0.1),
+                  color: orange.withOpacity( 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -970,7 +970,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: job.status == 'assigned' ? Colors.blue.withValues(alpha: 0.1) : Colors.green.withValues(alpha: 0.1),
+                  color: job.status == 'assigned' ? Colors.blue.withOpacity( 0.1) : Colors.green.withOpacity( 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

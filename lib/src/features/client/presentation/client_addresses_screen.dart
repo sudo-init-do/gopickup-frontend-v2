@@ -66,7 +66,7 @@ class ClientAddressesScreen extends StatelessWidget {
                     border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.02),
+                        color: Colors.black.withOpacity( 0.02),
                         blurRadius: 15,
                         offset: const Offset(0, 6),
                       ),
@@ -77,7 +77,7 @@ class ClientAddressesScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: kBrandGreen.withValues(alpha: 0.1),
+                          color: kBrandGreen.withOpacity( 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(

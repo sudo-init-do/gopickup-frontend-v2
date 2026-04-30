@@ -90,7 +90,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight.withValues(alpha: 0.5),
+                  color: AppColors.primaryLight.withOpacity( 0.5),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -132,7 +132,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                   border: Border.all(color: const Color(0xFFF3F4F6)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
+                      color: Colors.black.withOpacity( 0.03),
                       blurRadius: 15,
                       offset: const Offset(0, 4),
                     ),
@@ -235,7 +235,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
+                              color: Colors.black.withOpacity( 0.04),
                               blurRadius: 10,
                             ),
                           ],
@@ -534,7 +534,7 @@ class ProductCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withOpacity( 0.03),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -600,13 +600,13 @@ class ProductCard extends ConsumerWidget {
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          Icon(Icons.location_on, size: 10, color: Colors.blueAccent.withValues(alpha: 0.7)),
+                          Icon(Icons.location_on, size: 10, color: Colors.blueAccent.withOpacity( 0.7)),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               product.vendorAddress,
                               style: TextStyle(
-                                color: Colors.blueAccent.withValues(alpha: 0.8),
+                                color: Colors.blueAccent.withOpacity( 0.8),
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
                               ),

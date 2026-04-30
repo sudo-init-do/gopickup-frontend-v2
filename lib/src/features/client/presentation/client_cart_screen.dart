@@ -133,7 +133,7 @@ class ClientCartScreen extends ConsumerWidget {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
+                color: Colors.black.withOpacity( 0.03),
                 blurRadius: 20,
                 offset: const Offset(0, -5),
               ),
@@ -316,7 +316,7 @@ class ClientCartScreen extends ConsumerWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: Colors.black.withOpacity( 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -364,7 +364,7 @@ class ClientCartScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withOpacity( 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),

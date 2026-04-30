@@ -144,7 +144,7 @@ class _DriverRegistrationScreenState
                       'Complete your driver profile to start earning',
                       style: TextStyle(
                         fontSize: 16,
-                        color: kMidTextColor.withValues(alpha: 0.8),
+                        color: kMidTextColor.withOpacity( 0.8),
                         letterSpacing: 0.1,
                       ),
                     ),
@@ -210,13 +210,9 @@ class _DriverRegistrationScreenState
                   onPressed: (_isFormValid && !_isLoading) ? _nextStep : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primary.withValues(
-                      alpha: 0.4,
-                    ),
+                    disabledBackgroundColor: AppColors.primary.withOpacity(0.4),
                     foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white.withValues(
-                      alpha: 0.7,
-                    ),
+                    disabledForegroundColor: Colors.white.withOpacity(0.7),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -590,7 +586,7 @@ class _DriverRegistrationScreenState
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: activeColor.withValues(alpha: 0.1),
+                    color: activeColor.withOpacity( 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

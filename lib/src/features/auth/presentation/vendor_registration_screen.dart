@@ -309,7 +309,7 @@ class _VendorRegistrationScreenState
                 width: 110,
                 height: 110,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6).withValues(alpha: 0.5),
+                  color: const Color(0xFFF3F4F6).withOpacity( 0.5),
                   borderRadius: BorderRadius.circular(40),
                 ),
                 child: const Center(
@@ -426,7 +426,7 @@ class _VendorRegistrationScreenState
           width: double.infinity,
           height: 220,
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F4F6).withValues(alpha: 0.5),
+            color: const Color(0xFFF3F4F6).withOpacity( 0.5),
             borderRadius: BorderRadius.circular(32),
           ),
           child: Column(
@@ -474,7 +474,7 @@ class _VendorRegistrationScreenState
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: kPurple.withValues(alpha: 0.1),
+                  color: kPurple.withOpacity( 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(Icons.business_rounded, color: kPurple, size: 28),
@@ -556,7 +556,7 @@ class _VendorRegistrationScreenState
       prefix = Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.2),
+          color: Colors.white.withOpacity( 0.2),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: Colors.white, size: 16),

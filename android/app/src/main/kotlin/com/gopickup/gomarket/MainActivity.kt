@@ -1,4 +1,4 @@
-package com.gopickup.unity.gopickup_unity
+package com.gopickup.gomarket
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

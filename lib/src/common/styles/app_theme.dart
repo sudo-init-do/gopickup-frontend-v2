@@ -17,15 +17,15 @@ class AppTheme {
         onPrimary: AppColors.onPrimary,
       ),
       scaffoldBackgroundColor: AppColors.surface,
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         elevation: 1.0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
         color: Colors.white,
-        shadowColor: Colors.black.withValues(alpha: 0.05),
+        shadowColor: Colors.black.withOpacity( 0.05),
       ),
-      dialogTheme: DialogThemeData(
+      dialogTheme: DialogTheme(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24.0),
         ),
@@ -91,9 +91,9 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
-        indicatorColor: AppColors.primaryLight.withValues(alpha: 0.7),
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
+        indicatorColor: AppColors.primaryLight.withOpacity( 0.7),
+        labelTextStyle: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
             return const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
@@ -106,8 +106,8 @@ class AppTheme {
             color: Color(0xFF9CA3AF),
           );
         }),
-        iconTheme: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
+        iconTheme: MaterialStateProperty.resolveWith((states) {
+          if (states.contains(MaterialState.selected)) {
             return const IconThemeData(color: AppColors.primaryDark, size: 24);
           }
           return const IconThemeData(color: Color(0xFF9CA3AF), size: 24);

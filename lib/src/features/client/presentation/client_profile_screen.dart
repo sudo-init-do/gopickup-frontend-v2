@@ -56,7 +56,7 @@ class ClientProfileScreen extends ConsumerWidget {
                           ),
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: Colors.white.withOpacity( 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
@@ -77,10 +77,10 @@ class ClientProfileScreen extends ConsumerWidget {
                             width: 100,
                             height: 100,
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: Colors.white.withOpacity( 0.2),
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.3),
+                                color: Colors.white.withOpacity( 0.3),
                                 width: 4,
                               ),
                             ),
@@ -144,7 +144,7 @@ class ClientProfileScreen extends ConsumerWidget {
                       border: Border.all(color: kLightGrey, width: 1.5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
+                          color: Colors.black.withOpacity( 0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -342,7 +342,7 @@ class ClientProfileScreen extends ConsumerWidget {
               Icon(
                 Icons.chevron_right_rounded,
                 color: isLogout
-                    ? const Color(0xFFEF5350).withValues(alpha: 0.5)
+                    ? const Color(0xFFEF5350).withOpacity( 0.5)
                     : const Color(0xFFCBD5E1),
                 size: 24,
               ),

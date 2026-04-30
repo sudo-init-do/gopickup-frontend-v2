@@ -76,7 +76,7 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: Colors.black.withOpacity( 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -143,7 +143,7 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
+              color: Colors.black.withOpacity( 0.02),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),

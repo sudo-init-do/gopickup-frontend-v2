@@ -78,6 +78,19 @@ class AuthRepository {
     await _storage.delete(key: 'user_id');
   }
 
+  Future<bool> deleteAccount() async {
+    try {
+      final response = await _apiClient.delete('/profile/delete');
+      if (response.statusCode == 200) {
+        await logout();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<bool> isLoggedIn() async {
     final token = await _storage.read(key: 'jwt_token');
     return token != null;

@@ -167,11 +167,9 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                     backgroundColor: const Color(0xFF3B7D23),
                     disabledBackgroundColor: const Color(
                       0xFF3B7D23,
-                    ).withValues(alpha: 0.5),
+                    ).withOpacity( 0.5),
                     foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white.withValues(
-                      alpha: 0.7,
-                    ),
+                    disabledForegroundColor: Colors.white.withOpacity(0.7),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
@@ -240,7 +238,7 @@ class _RoleOptionCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primaryLight.withValues(alpha: 0.5)
+              ? AppColors.primaryLight.withOpacity( 0.5)
               : Colors.white,
           borderRadius: BorderRadius.circular(32),
           border: Border.all(
@@ -250,7 +248,7 @@ class _RoleOptionCard extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: Colors.black.withOpacity( 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),

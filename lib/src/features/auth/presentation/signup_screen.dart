@@ -236,7 +236,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     disabledBackgroundColor:
-                        AppColors.primarySage.withValues(alpha: 0.5),
+                        AppColors.primarySage.withOpacity( 0.5),
                     foregroundColor: Colors.white,
                     disabledForegroundColor: Colors.white,
                     elevation: 0,

@@ -154,9 +154,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                       : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primarySage.withValues(
-                      alpha: 0.5,
-                    ),
+                    disabledBackgroundColor: AppColors.primarySage.withOpacity(0.5),
                     foregroundColor: Colors.white,
                     disabledForegroundColor: Colors.white,
                     elevation: 0,
@@ -428,7 +426,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
               border: Border.all(color: Colors.white, width: 4),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: Colors.black.withOpacity( 0.03),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -517,7 +515,7 @@ class _StepBubble extends StatelessWidget {
     Color contentColor;
 
     if (isCompleted) {
-      bgColor = AppColors.primaryLight.withValues(alpha: 0.5);
+      bgColor = AppColors.primaryLight.withOpacity( 0.5);
       contentColor = AppColors.primary;
     } else if (isActive) {
       bgColor = AppColors.primary;
@@ -533,7 +531,7 @@ class _StepBubble extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
         border: isCompleted
-            ? Border.all(color: AppColors.primary.withValues(alpha: 0.2))
+            ? Border.all(color: AppColors.primary.withOpacity( 0.2))
             : null,
       ),
       child: Row(

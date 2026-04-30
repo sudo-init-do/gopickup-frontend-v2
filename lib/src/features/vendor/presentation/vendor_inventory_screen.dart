@@ -216,7 +216,7 @@ class VendorInventoryScreen extends ConsumerWidget {
         border: Border.all(color: kLightBorderColor, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: kDarkTextColor.withValues(alpha: 0.04),
+            color: kDarkTextColor.withOpacity( 0.04),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

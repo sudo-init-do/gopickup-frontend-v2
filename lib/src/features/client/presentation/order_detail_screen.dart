@@ -158,7 +158,7 @@ class OrderDetailScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: Colors.black.withOpacity( 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -216,7 +216,7 @@ class OrderDetailScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(32),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: Colors.black.withOpacity( 0.03),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -277,7 +277,7 @@ class OrderDetailScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(32),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: Colors.black.withOpacity( 0.03),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -477,7 +477,7 @@ class OrderDetailScreen extends StatelessWidget {
                   child: Container(
                     width: 2,
                     margin: const EdgeInsets.symmetric(vertical: 4),
-                    color: showSolidLine ? color : color.withValues(alpha: 0.2),
+                    color: showSolidLine ? color : color.withOpacity( 0.2),
                   ),
                 ),
             ],
@@ -502,7 +502,7 @@ class OrderDetailScreen extends StatelessWidget {
                                 : FontWeight.w600,
                             color: isDone || isActive
                                 ? darkText
-                                : darkText.withValues(alpha: 0.4),
+                                : darkText.withOpacity( 0.4),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -513,7 +513,7 @@ class OrderDetailScreen extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                             color: isDone || isActive
                                 ? midText
-                                : midText.withValues(alpha: 0.4),
+                                : midText.withOpacity( 0.4),
                           ),
                         ),
                       ],

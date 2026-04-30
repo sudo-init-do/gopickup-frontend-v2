@@ -160,7 +160,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             right: -50,
             child: CircleAvatar(
               radius: 100,
-              backgroundColor: Colors.white.withValues(alpha: 0.05),
+              backgroundColor: Colors.white.withOpacity( 0.05),
             ),
           ),
           
@@ -179,7 +179,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       border: Border.all(color: Colors.white, width: 4),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: Colors.black.withOpacity( 0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -189,7 +189,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       child: photoUrl != null
                           ? Image.network(photoUrl, fit: BoxFit.cover)
                           : Container(
-                              color: Colors.white.withValues(alpha: 0.2),
+                              color: Colors.white.withOpacity( 0.2),
                               child: const Icon(Icons.person, size: 80, color: Colors.white),
                             ),
                     ),
@@ -229,9 +229,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withOpacity( 0.2),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                  border: Border.all(color: Colors.white.withOpacity( 0.3)),
                 ),
                 child: Text(
                   role.toUpperCase(),
@@ -288,13 +288,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             color: isEditing ? Colors.white : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isEditing ? const Color(0xFF3B7D23).withValues(alpha: 0.3) : Colors.grey.shade200,
+              color: isEditing ? const Color(0xFF3B7D23).withOpacity( 0.3) : Colors.grey.shade200,
               width: 1.5,
             ),
             boxShadow: isEditing
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF3B7D23).withValues(alpha: 0.05),
+                      color: const Color(0xFF3B7D23).withOpacity( 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     )
@@ -494,7 +494,7 @@ class _ProfileErrorState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: Colors.red.withOpacity( 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.error_outline_rounded, size: 64, color: Colors.redAccent),

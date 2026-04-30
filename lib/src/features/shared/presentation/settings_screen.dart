@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../auth/data/auth_repository.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   Future<void> _launchWhatsApp() async {
@@ -15,7 +17,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     const kDarkTextColor = Color(0xFF111827);
 
     const kBrandGreen = Color(0xFF3B7D23);
@@ -103,6 +105,7 @@ class SettingsScreen extends StatelessWidget {
                   _buildDangerItem(
                     Icons.delete_outline_rounded,
                     'Delete Account',
+                    onTap: () => _showDeleteAccountConfirmation(context, ref),
                   ),
                   const SizedBox(height: 40),
                 ],
@@ -128,7 +131,7 @@ class SettingsScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: Colors.black.withOpacity( 0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -269,7 +272,53 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDangerItem(IconData icon, String title) {
+  Future<void> _showDeleteAccountConfirmation(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Delete Account'),
+          content: const Text(
+            'Are you sure you want to delete your account? All your data, products, and history will be permanently removed. This cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Confirm Delete', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true && context.mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final success = await ref.read(authRepositoryProvider).deleteAccount();
+
+      if (context.mounted) {
+        Navigator.of(context).pop(); // dismiss loading indicator
+        if (success) {
+          context.go('/login');
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to delete account. Please try again later.')),
+          );
+        }
+      }
+    }
+  }
+
+  Widget _buildDangerItem(IconData icon, String title, {VoidCallback? onTap}) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFFFF1F2),
@@ -297,7 +346,7 @@ class SettingsScreen extends StatelessWidget {
           Icons.chevron_right_rounded,
           color: Colors.redAccent,
         ),
-        onTap: () {},
+        onTap: onTap,
       ),
     );
   }
