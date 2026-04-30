@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../api/api_client.dart';
 import '../../../state/auth_provider.dart';
 import '../../../state/profile_provider.dart';
+import '../../auth/data/auth_repository.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -122,6 +123,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         onTap: _handleLogout,
                         color: Colors.redAccent,
                         isOutlined: true,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildPrimaryAction(
+                        label: 'Delete Account',
+                        icon: Icons.delete_forever_rounded,
+                        onTap: _showDeleteAccountConfirmation,
+                        color: Colors.redAccent,
                       ),
                       const SizedBox(height: 60),
                     ],
@@ -452,6 +460,51 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (confirmed == true) {
       await ref.read(authProvider.notifier).logout();
       if (mounted) context.go('/');
+    }
+  }
+
+  Future<void> _showDeleteAccountConfirmation() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Delete Account'),
+          content: const Text(
+            'Are you sure you want to delete your account? All your data, products, and history will be permanently removed. This cannot be undone.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Confirm Delete', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true && mounted) {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => const Center(child: CircularProgressIndicator(color: Colors.redAccent)),
+      );
+
+      final success = await ref.read(authRepositoryProvider).deleteAccount();
+
+      if (mounted) {
+        Navigator.of(context).pop(); // dismiss loading indicator
+        if (success) {
+          context.go('/');
+        } else {
+          _showToast('Failed to delete account. Please try again later.', Icons.error_outline, Colors.redAccent);
+        }
+      }
     }
   }
 }
