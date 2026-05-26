@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/auth_provider.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
 
 class AdminScaffold extends ConsumerWidget {
   final Widget child;
@@ -46,7 +49,9 @@ class AdminScaffold extends ConsumerWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.go('/admin/login');
       });
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator(color: AppColors.adminAccent)),
+      );
     }
 
     return LayoutBuilder(
@@ -55,19 +60,15 @@ class AdminScaffold extends ConsumerWidget {
 
         if (isMobile) {
           return Scaffold(
-            backgroundColor: const Color(0xFFF9FAFB),
+            backgroundColor: AppColors.background,
             appBar: AppBar(
-              backgroundColor: Colors.white,
+              backgroundColor: AppColors.card,
               elevation: 0,
-              iconTheme: const IconThemeData(color: Colors.blueAccent),
+              iconTheme: const IconThemeData(color: AppColors.adminAccent),
               centerTitle: true,
               title: const Text(
                 'Admin Console',
-                style: TextStyle(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+                style: AppTextStyles.titleMd,
               ),
               actions: [
                 TextButton(
@@ -75,9 +76,12 @@ class AdminScaffold extends ConsumerWidget {
                     ref.read(authProvider.notifier).logout();
                     context.go('/');
                   },
-                  child: const Text('Logout', style: TextStyle(color: Colors.blueAccent)),
+                  child: Text(
+                    'Logout',
+                    style: AppTextStyles.label.copyWith(color: AppColors.adminAccent),
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
               ],
             ),
             drawer: _AdminDrawer(currentLocation: currentLocation),
@@ -85,9 +89,10 @@ class AdminScaffold extends ConsumerWidget {
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: _getSelectedIndex(currentLocation),
               onTap: (index) => _onItemTapped(index, context),
-              selectedItemColor: Colors.blueAccent,
-              unselectedItemColor: Colors.grey,
-              backgroundColor: Colors.white, type: BottomNavigationBarType.fixed,
+              selectedItemColor: AppColors.adminAccent,
+              unselectedItemColor: AppColors.textTertiary,
+              backgroundColor: AppColors.card,
+              type: BottomNavigationBarType.fixed,
               elevation: 8,
               selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
               unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
@@ -131,13 +136,13 @@ class _AdminDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Drawer(
-      backgroundColor: Colors.black87,
+      backgroundColor: AppColors.textPrimary,
       child: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Row(
                 children: [
                   SizedBox(
@@ -151,7 +156,7 @@ class _AdminDrawer extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 36),
+            const SizedBox(height: AppSpacing.xxl + AppSpacing.xs),
             _DrawerItem(
               icon: Icons.dashboard_outlined,
               label: 'Dashboard',
@@ -188,7 +193,7 @@ class _AdminDrawer extends ConsumerWidget {
                 context.go('/');
               },
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
           ],
         ),
       ),
@@ -214,14 +219,14 @@ class _DrawerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
       child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         tileColor: isSelected ? Colors.white.withOpacity(0.1) : Colors.transparent,
         leading: Icon(icon, color: isSelected ? Colors.white : Colors.white70),
         title: Text(
           label,
-          style: TextStyle(
+          style: AppTextStyles.body.copyWith(
             color: isSelected ? Colors.white : Colors.white70,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
@@ -245,26 +250,26 @@ class _AdminSidebar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       width: 250,
-      color: Colors.black87,
+      color: AppColors.textPrimary,
       child: Column(
         children: [
-          const SizedBox(height: 48),
+          const SizedBox(height: AppSpacing.xxxl + AppSpacing.sm),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
-                  child: const Icon(Icons.admin_panel_settings, color: Colors.black87),
+                  child: const Icon(Icons.admin_panel_settings, color: AppColors.textPrimary),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 48),
+          const SizedBox(height: AppSpacing.xxxl + AppSpacing.sm),
           _SidebarItem(
             icon: Icons.dashboard_outlined,
             label: 'Dashboard',
@@ -301,7 +306,7 @@ class _AdminSidebar extends ConsumerWidget {
               context.go('/');
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
         ],
       ),
     );
@@ -326,14 +331,14 @@ class _SidebarItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
       child: ListTile(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
         tileColor: isSelected ? Colors.white.withOpacity(0.1) : Colors.transparent,
         leading: Icon(icon, color: isSelected ? Colors.white : Colors.white70),
         title: Text(
           label,
-          style: TextStyle(
+          style: AppTextStyles.body.copyWith(
             color: isSelected ? Colors.white : Colors.white70,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
@@ -353,9 +358,9 @@ class _AdminHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       height: 70,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.card,
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -367,18 +372,18 @@ class _AdminHeader extends ConsumerWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const Icon(Icons.notifications_none, color: Colors.grey),
-          const SizedBox(width: 24),
+          const Icon(Icons.notifications_none, color: AppColors.textSecondary),
+          const SizedBox(width: AppSpacing.xl),
           Row(
             children: [
-              CircleAvatar(
-                backgroundColor: Colors.grey.shade200,
-                child: const Icon(Icons.person_outline, color: Colors.grey),
+              const CircleAvatar(
+                backgroundColor: AppColors.backgroundSubtle,
+                child: Icon(Icons.person_outline, color: AppColors.textSecondary),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Text(
                 userName,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style: AppTextStyles.label,
               ),
             ],
           ),

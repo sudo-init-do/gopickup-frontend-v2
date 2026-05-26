@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+import 'app_text_styles.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       fontFamily: 'Inter',
+      textTheme: AppTextStyles.textTheme,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,

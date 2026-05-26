@@ -3,25 +3,21 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/profile_provider.dart';
 import '../../client/data/wallet_repository.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
 
 class DriverProfileScreen extends ConsumerWidget {
   const DriverProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const kBrandGreen = Color(0xFF45A225);
-    const kStatTextColor = Color(0xFF1E293B);
-
-    const kLightGrey = Color(0xFFF1F5F9);
-    const kIconBgColor = Color(0xFFE8F5E9);
-    const kIconColor = Color(0xFF4CAF50);
-
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Green Header Section
+            // Driver-accent Header Section
             Stack(
               clipBehavior: Clip.none,
               children: [
@@ -29,7 +25,7 @@ class DriverProfileScreen extends ConsumerWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.fromLTRB(28, 64, 28, 80),
                   decoration: const BoxDecoration(
-                    color: kBrandGreen,
+                    color: AppColors.driverAccent,
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(48),
                       bottomRight: Radius.circular(48),
@@ -38,16 +34,11 @@ class DriverProfileScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Profile',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5,
-                        ),
+                        style: AppTextStyles.displayLg.copyWith(color: Colors.white),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.xxl),
                       ref.watch(driverProfileProvider).when(
                             data: (profile) => Row(
                               children: [
@@ -55,7 +46,7 @@ class DriverProfileScreen extends ConsumerWidget {
                                   width: 100,
                                   height: 100,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity( 0.2),
+                                    color: Colors.white.withOpacity(0.2),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Center(
@@ -66,50 +57,36 @@ class DriverProfileScreen extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 20),
+                                const SizedBox(width: AppSpacing.lg),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         profile.fullName,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.w800,
-                                        ),
+                                        style: AppTextStyles.headingLg.copyWith(color: Colors.white),
                                       ),
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: AppSpacing.xs),
                                       Text(
                                         profile.phoneNumber,
-                                        style: const TextStyle(
-                                          color: Colors.white70,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                                        style: AppTextStyles.body.copyWith(color: Colors.white70),
                                       ),
-                                      const SizedBox(height: 12),
+                                      const SizedBox(height: AppSpacing.md),
                                       Row(
                                         children: [
                                           Container(
                                             padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 4,
+                                              horizontal: AppSpacing.sm + 2,
+                                              vertical: AppSpacing.xs,
                                             ),
                                             decoration: BoxDecoration(
                                               color: Colors.white.withOpacity(0.2),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
+                                              borderRadius: BorderRadius.circular(AppRadius.md),
                                             ),
                                             child: const Row(
                                               children: [
-                                                Icon(
-                                                  Icons.star,
-                                                  color: Colors.orange,
-                                                  size: 14,
-                                                ),
-                                                SizedBox(width: 4),
+                                                Icon(Icons.star, color: Colors.orange, size: 14),
+                                                SizedBox(width: AppSpacing.xs),
                                                 Text(
                                                   '4.8',
                                                   style: TextStyle(
@@ -121,14 +98,10 @@ class DriverProfileScreen extends ConsumerWidget {
                                               ],
                                             ),
                                           ),
-                                          const SizedBox(width: 12),
-                                          const Text(
+                                          const SizedBox(width: AppSpacing.md),
+                                          Text(
                                             '0 deliveries',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 14,
-                                            ),
+                                            style: AppTextStyles.label.copyWith(color: Colors.white),
                                           ),
                                         ],
                                       ),
@@ -138,8 +111,7 @@ class DriverProfileScreen extends ConsumerWidget {
                               ],
                             ),
                             loading: () => const Center(
-                                child: CircularProgressIndicator(
-                                    color: Colors.white)),
+                                child: CircularProgressIndicator(color: Colors.white)),
                             error: (_, __) => const Row(
                               children: [
                                 Text('Failed to load profile',
@@ -158,12 +130,12 @@ class DriverProfileScreen extends ConsumerWidget {
                   child: Container(
                     height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.card,
                       borderRadius: BorderRadius.circular(40),
-                      border: Border.all(color: kLightGrey, width: 1.5),
+                      border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity( 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -171,19 +143,19 @@ class DriverProfileScreen extends ConsumerWidget {
                     ),
                     child: Row(
                       children: [
-                        _buildStatItem('0', 'Total Jobs', kStatTextColor),
+                        _buildStatItem('0', 'Total Jobs', AppColors.textPrimary),
                         _buildDivider(),
-                        _buildStatItem('0%', 'Completion', kStatTextColor),
+                        _buildStatItem('0%', 'Completion', AppColors.textPrimary),
                         _buildDivider(),
                         ref.watch(balanceProvider).when(
                               data: (balance) => _buildStatItem(
                                   '₦${(balance / 1000).toStringAsFixed(1)}k',
                                   'Earned',
-                                  kBrandGreen),
+                                  AppColors.driverAccent),
                               loading: () => _buildStatItem(
-                                  '...', 'Earned', kBrandGreen),
+                                  '...', 'Earned', AppColors.driverAccent),
                               error: (_, __) => _buildStatItem(
-                                  '₦0.0k', 'Earned', kBrandGreen),
+                                  '₦0.0k', 'Earned', AppColors.driverAccent),
                             ),
                       ],
                     ),
@@ -195,78 +167,78 @@ class DriverProfileScreen extends ConsumerWidget {
             const SizedBox(height: 64), // Space for the overlapping card
             // Menu Items List
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Column(
                 children: [
                   _buildMenuItem(
                     context,
                     Icons.local_shipping_outlined,
                     'Vehicle Information',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.driverAccent.withOpacity(0.12),
+                    AppColors.driverAccent,
                     '',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.credit_card_rounded,
                     'License & Documents',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.driverAccent.withOpacity(0.12),
+                    AppColors.driverAccent,
                     '',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.location_on_outlined,
                     'Address',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.driverAccent.withOpacity(0.12),
+                    AppColors.driverAccent,
                     '',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.notifications_none_rounded,
                     'Notifications',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.driverAccent.withOpacity(0.12),
+                    AppColors.driverAccent,
                     '/notifications',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.shield_outlined,
                     'Privacy & Security',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.driverAccent.withOpacity(0.12),
+                    AppColors.driverAccent,
                     '/settings/privacy',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.settings_outlined,
                     'Settings',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.driverAccent.withOpacity(0.12),
+                    AppColors.driverAccent,
                     '/settings',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.help_outline_rounded,
                     'Help & Support',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.driverAccent.withOpacity(0.12),
+                    AppColors.driverAccent,
                     '/help',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.logout_rounded,
                     'Log Out',
-                    const Color(0xFFFFEBEE),
-                    const Color(0xFFEF5350),
+                    AppColors.destructive.withOpacity(0.1),
+                    AppColors.destructive,
                     '',
                     isLogout: true,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxl),
           ],
         ),
       ),
@@ -280,28 +252,20 @@ class DriverProfileScreen extends ConsumerWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontSize: 20,
+            style: AppTextStyles.headingMd.copyWith(
               fontWeight: FontWeight.w900,
               color: valueColor,
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF94A3B8),
-            ),
-          ),
+          Text(label, style: AppTextStyles.caption),
         ],
       ),
     );
   }
 
   Widget _buildDivider() {
-    return Container(width: 1.5, height: 40, color: const Color(0xFFF1F5F9));
+    return Container(width: 1.5, height: 40, color: AppColors.backgroundSubtle);
   }
 
   Widget _buildMenuItem(
@@ -314,7 +278,7 @@ class DriverProfileScreen extends ConsumerWidget {
     bool isLogout = false,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       child: InkWell(
         onTap: () {
           if (isLogout) {
@@ -323,42 +287,38 @@ class DriverProfileScreen extends ConsumerWidget {
             context.push(route);
           }
         },
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
           ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   color: bgColor,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: iconColor, size: 24),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: isLogout
-                        ? const Color(0xFFEF5350)
-                        : const Color(0xFF1E293B),
+                  style: AppTextStyles.titleMd.copyWith(
+                    color: isLogout ? AppColors.destructive : AppColors.textPrimary,
                   ),
                 ),
               ),
               Icon(
                 Icons.chevron_right_rounded,
                 color: isLogout
-                    ? const Color(0xFFEF5350).withOpacity( 0.5)
-                    : const Color(0xFFCBD5E1),
+                    ? AppColors.destructive.withOpacity(0.5)
+                    : AppColors.border,
                 size: 24,
               ),
             ],

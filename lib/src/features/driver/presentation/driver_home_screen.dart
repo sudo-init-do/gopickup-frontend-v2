@@ -6,6 +6,13 @@ import '../../../common/models/order.dart' as common_order;
 import '../../../models/order_models.dart';
 import '../../../state/order_provider.dart';
 import '../../../common/utils/error_handler.dart';
+import '../../../common/config/app_config.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
+import '../../../common/widgets/app_card.dart';
+import '../../../common/widgets/app_states.dart';
 
 class DriverHomeScreen extends ConsumerStatefulWidget {
   const DriverHomeScreen({super.key});
@@ -23,7 +30,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       await launchUrl(Uri.parse(customUrl), mode: LaunchMode.externalApplication);
       return;
     }
-    const phone = "2348087042206"; // Admin Support
+    const phone = AppConfig.supportPhone; // Admin Support
     final message = "Hello, I am agreeing to the delivery for Order #$orderId";
     final url = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
     if (await canLaunchUrl(Uri.parse(url))) {
@@ -39,10 +46,10 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       builder: (context) => Container(
         height: MediaQuery.of(context).size.height * 0.7,
         decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          color: AppColors.card,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
         ),
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -51,49 +58,35 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: AppColors.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Accept Assignment',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFF111827)),
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xl),
+            const Text('Accept Assignment', style: AppTextStyles.headingLg),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               'Assignment ID: ${job.shortId}',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey),
+              style: AppTextStyles.label.copyWith(color: AppColors.textTertiary),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxl),
             _buildDialogSection('VENDOR', job.items.isNotEmpty ? job.items.first.product.vendorName : 'Go-Market', Icons.storefront_rounded),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
             _buildDialogSection('AGREED PRICE', '₦${job.total.toStringAsFixed(2)}', Icons.payments_outlined),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
             _buildDialogSection('PAYMENT METHOD', 'Wallet (Prepaid)', Icons.wallet_rounded),
             const Spacer(),
-            ElevatedButton(
+            PrimaryButton(
+              label: 'Negotiate Price on WhatsApp',
               onPressed: () => _launchWhatsApp(job.id),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF25D366),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                   Icon(Icons.chat_bubble_outline_rounded),
-                   SizedBox(width: 12),
-                   Text('Negotiate Price on WhatsApp', style: TextStyle(fontWeight: FontWeight.w800)),
-                ],
-              ),
+              color: AppColors.whatsapp,
+              icon: Icons.chat_bubble_outline_rounded,
             ),
-            const SizedBox(height: 12),
-            ElevatedButton(
+            const SizedBox(height: AppSpacing.md),
+            PrimaryButton(
+              label: 'Accept Assignment in App',
               onPressed: () async {
-                // Show loading
                 showDialog(
                   context: context,
                   barrierDismissible: false,
@@ -112,7 +105,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Job accepted successfully!'),
-                        backgroundColor: Color(0xFF388E3C),
+                        backgroundColor: AppColors.success,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
@@ -120,22 +113,16 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(ErrorHandler.getMessage(error)),
-                        backgroundColor: Colors.red.shade800,
+                        backgroundColor: AppColors.destructive,
                         behavior: SnackBarBehavior.floating,
                       ),
                     );
                   }
                 }
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF388E3C),
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              ),
-              child: const Text('Accept Assignment in App', style: TextStyle(fontWeight: FontWeight.w800)),
+              color: AppColors.primary,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
           ],
         ),
       ),
@@ -144,32 +131,27 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const orange = Color(0xFFF97316);
-    const darkText = Color(0xFF111827);
-    const midText = Color(0xFF64748B);
-    const green = Color(0xFF388E3C);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.xl, AppSpacing.xl, AppSpacing.lg),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Driver Portal',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: midText),
+                        style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
                       ),
-                      Text(
+                      const Text(
                         'GoPickup Delivery',
-                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: darkText),
+                        style: AppTextStyles.headingLg,
                       ),
                     ],
                   ),
@@ -180,9 +162,9 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             _buildSearchAndFilter(),
             _buildTabs(_selectedTabIndex, (index) {
               setState(() => _selectedTabIndex = index);
-            }, orange),
+            }),
             Expanded(
-              child: _buildJobList(darkText, midText, orange, green),
+              child: _buildJobList(),
             ),
           ],
         ),
@@ -195,12 +177,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
       onTap: () => setState(() => _isOnline = !_isOnline),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: _isOnline ? const Color(0xFFDCFCE7) : const Color(0xFFFEE2E2),
-          borderRadius: BorderRadius.circular(20),
+          color: _isOnline ? AppColors.success.withOpacity(0.12) : AppColors.destructive.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(AppRadius.pill),
           border: Border.all(
-            color: _isOnline ? const Color(0xFF22C55E).withOpacity(0.2) : const Color(0xFFEF4444).withOpacity(0.2),
+            color: _isOnline ? AppColors.success.withOpacity(0.2) : AppColors.destructive.withOpacity(0.2),
           ),
         ),
         child: Row(
@@ -210,15 +192,14 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               width: 8,
               height: 8,
               decoration: BoxDecoration(
-                color: _isOnline ? const Color(0xFF22C55E) : const Color(0xFFEF4444),
+                color: _isOnline ? AppColors.success : AppColors.destructive,
                 shape: BoxShape.circle,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSpacing.sm),
             Text(
               _isOnline ? 'Online' : 'Offline',
-              style: TextStyle(
-                fontSize: 13,
+              style: AppTextStyles.bodySm.copyWith(
                 fontWeight: FontWeight.w700,
                 color: _isOnline ? const Color(0xFF166534) : const Color(0xFF991B1B),
               ),
@@ -233,14 +214,14 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.grey[400], size: 20),
-        const SizedBox(width: 12),
+        Icon(icon, color: AppColors.textTertiary, size: 20),
+        const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12, color: Colors.grey)),
-              Text(value, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF111827))),
+              Text(label, style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w700)),
+              Text(value, style: AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w800)),
             ],
           ),
         ),
@@ -250,61 +231,55 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
 
   Widget _buildSearchAndFilter() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Row(
         children: [
           Expanded(
             child: Container(
               height: 56,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity( 0.02),
+                    color: Colors.black.withOpacity(0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: const TextField(
+              child: TextField(
                 decoration: InputDecoration(
                   hintText: 'Search jobs...',
-                  hintStyle: TextStyle(
-                    color: Color(0xFF94A3B8),
-                    fontWeight: FontWeight.w400,
-                  ),
-                  prefixIcon: Icon(
-                    Icons.search_rounded,
-                    color: Color(0xFF94A3B8),
-                  ),
+                  hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
+                  prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textTertiary),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 16),
+                  contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Container(
             height: 56,
             width: 56,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+              border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
             ),
-            child: const Icon(Icons.tune_rounded, color: Color(0xFF64748B)),
+            child: const Icon(Icons.tune_rounded, color: AppColors.textSecondary),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTabs(int selectedIndex, Function(int) onSelect, Color orange) {
+  Widget _buildTabs(int selectedIndex, Function(int) onSelect) {
     final tabs = ['New Jobs', 'Active', 'History'];
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.xl, AppSpacing.xl, AppSpacing.lg),
       child: Row(
         children: List.generate(tabs.length, (index) {
           final isSelected = selectedIndex == index;
@@ -314,22 +289,19 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 margin: EdgeInsets.only(
-                  right: index == tabs.length - 1 ? 0 : 8,
+                  right: index == tabs.length - 1 ? 0 : AppSpacing.sm,
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: isSelected ? orange : const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(24),
+                  color: isSelected ? AppColors.driverAccent : AppColors.backgroundSubtle,
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
                 ),
                 child: Center(
                   child: Text(
                     tabs[index],
-                    style: TextStyle(
-                      color: isSelected
-                          ? Colors.white
-                          : const Color(0xFF64748B),
+                    style: AppTextStyles.label.copyWith(
+                      color: isSelected ? Colors.white : AppColors.textSecondary,
                       fontWeight: FontWeight.w700,
-                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -341,74 +313,45 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildJobList(
-    Color darkText,
-    Color midText,
-    Color orange,
-    Color green,
-  ) {
+  Widget _buildJobList() {
     if (_selectedTabIndex == 0) {
-      return _buildNewAssignmentsList(darkText, midText, orange, green);
+      return _buildNewAssignmentsList();
     }
     if (_selectedTabIndex == 1) {
-      return _buildActiveTasksList(darkText, midText, orange, green);
+      return _buildActiveTasksList();
     }
-    return _buildHistoryJobList(darkText, midText, orange, green);
+    return _buildHistoryJobList();
   }
 
-  Widget _buildNewAssignmentsList(
-    Color darkText,
-    Color midText,
-    Color orange,
-    Color green,
-  ) {
-    // These are jobs with status 'assigned' but not yet 'in_progress'
+  Widget _buildNewAssignmentsList() {
     final assignedJobsAsync = ref.watch(assignedJobsProvider);
 
     return assignedJobsAsync.when(
       data: (jobs) {
         if (jobs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.local_shipping_outlined,
-                  size: 64,
-                  color: midText.withOpacity( 0.5),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'No new assignments',
-                  style: TextStyle(color: Color(0xFF6B7280), fontSize: 16),
-                ),
-              ],
-            ),
+          return const AppEmptyState(
+            icon: Icons.local_shipping_outlined,
+            title: 'No new assignments',
           );
         }
         return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.sm, AppSpacing.xl, AppSpacing.xl),
           itemCount: jobs.length,
           itemBuilder: (context, index) {
             final job = jobs[index];
             return GestureDetector(
               onTap: () => _showAcceptJobDialog(job),
-              child: _buildJobCard(job, darkText, midText, orange, green),
+              child: _buildJobCard(job),
             );
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error: $err')),
+      loading: () => const AppLoading(),
+      error: (err, stack) => AppErrorState(message: 'Error: $err'),
     );
   }
 
-  Widget _buildActiveTasksList(
-    Color darkText,
-    Color midText,
-    Color orange,
-    Color green,
-  ) {
+  Widget _buildActiveTasksList() {
     final driverOrdersAsync = ref.watch(driverOrdersProvider);
 
     return driverOrdersAsync.when(
@@ -421,45 +364,27 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             .toList();
 
         if (activeJobs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.assignment_outlined,
-                  size: 64,
-                  color: midText.withOpacity( 0.5),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'No active tasks',
-                  style: TextStyle(color: Color(0xFF6B7280), fontSize: 16),
-                ),
-              ],
-            ),
+          return const AppEmptyState(
+            icon: Icons.assignment_outlined,
+            title: 'No active tasks',
           );
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.sm, AppSpacing.xl, AppSpacing.xl),
           itemCount: activeJobs.length,
           itemBuilder: (context, index) {
             final job = activeJobs[index];
-            return _buildAssignedOrderCard(job, darkText, midText, green);
+            return _buildAssignedOrderCard(job);
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => const Center(child: Text('Error loading tasks')),
+      loading: () => const AppLoading(),
+      error: (err, stack) => const AppErrorState(message: 'Error loading tasks'),
     );
   }
 
-  Widget _buildHistoryJobList(
-    Color darkText,
-    Color midText,
-    Color orange,
-    Color green,
-  ) {
+  Widget _buildHistoryJobList() {
     final driverOrdersAsync = ref.watch(driverOrdersProvider);
 
     return driverOrdersAsync.when(
@@ -472,267 +397,86 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                 .toList();
 
         if (historyJobs.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.history_rounded,
-                  size: 64,
-                  color: midText.withOpacity( 0.5),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'No history yet',
-                  style: TextStyle(
-                    color: Color(0xFF6B7280),
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
+          return const AppEmptyState(
+            icon: Icons.history_rounded,
+            title: 'No history yet',
           );
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.sm, AppSpacing.xl, AppSpacing.xl),
           itemCount: historyJobs.length,
           itemBuilder: (context, index) {
             final job = historyJobs[index];
-            return _buildHistoryOrderCard(job, darkText, midText, green);
+            return _buildHistoryOrderCard(job);
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => const Center(child: Text('Failed to load history')),
+      loading: () => const AppLoading(),
+      error: (err, stack) => const AppErrorState(message: 'Failed to load history'),
     );
   }
 
-  Widget _buildHistoryJobCard(
-    Map<String, dynamic> job,
-    Color darkText,
-    Color midText,
-    Color green,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
-      ),
+  Widget _buildAssignedOrderCard(Order job) {
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF3F4F6),
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.check_circle_rounded,
-                  color: Color(0xFF94A3B8),
-                  size: 24,
-                ),
+                child: const Icon(Icons.local_shipping_outlined, color: AppColors.success, size: 24),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      job['title'],
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: darkText,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      job['date'],
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: midText,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: green.withOpacity( 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  job['status'],
-                  style: TextStyle(
-                    color: green,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Container(height: 1, color: const Color(0xFFF1F5F9)),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                job['price'],
-                style: TextStyle(
-                  fontSize: 20,
-                  color: darkText,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  'View Receipt',
-                  style: TextStyle(
-                    color: midText,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAssignedOrderCard(
-    Order job,
-    Color darkText,
-    Color midText,
-    Color green,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity( 0.02),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: green.withOpacity( 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.local_shipping_outlined, color: green, size: 24),
-              ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       job.items.isNotEmpty ? job.items.first.name ?? 'Load' : 'Task',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: darkText,
-                      ),
+                      style: AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       job.status.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: green,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: AppTextStyles.label.copyWith(color: AppColors.success, fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
               ),
               Text(
-                '₦\${job.totalProductAmount.toStringAsFixed(0)}',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: green,
-                  fontWeight: FontWeight.w900,
-                ),
+                '₦${job.totalProductAmount.toStringAsFixed(0)}',
+                style: AppTextStyles.headingMd.copyWith(color: AppColors.success, fontWeight: FontWeight.w900),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          Container(height: 1, color: const Color(0xFFF1F5F9)),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
+          Container(height: 1, color: AppColors.backgroundSubtle),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(
-                    Icons.access_time_rounded,
-                    color: Color(0xFF94A3B8),
-                    size: 18,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Pickup: ',
-                    style: TextStyle(
-                      color: midText,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  const Icon(Icons.access_time_rounded, color: AppColors.textTertiary, size: 18),
+                  const SizedBox(width: AppSpacing.sm),
+                  const Text('Pickup: ', style: AppTextStyles.body),
                   Text(
                     job.createdAt.toString().split(' ').first,
-                    style: TextStyle(
-                      color: darkText,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: AppTextStyles.body.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
-              ElevatedButton(
+              PrimaryButton(
+                label: 'Dashboard',
                 onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF388E3C),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Text(
-                  'Dashboard',
-                  style: TextStyle(fontWeight: FontWeight.w800),
-                ),
+                expanded: false,
+                color: AppColors.primary,
               ),
             ],
           ),
@@ -741,104 +485,66 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildHistoryOrderCard(
-    Order job,
-    Color darkText,
-    Color midText,
-    Color green,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
-      ),
+  Widget _buildHistoryOrderCard(Order job) {
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFF3F4F6),
+                  color: AppColors.backgroundSubtle,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.check_circle_rounded,
-                  color: Color(0xFF94A3B8),
-                  size: 24,
-                ),
+                child: const Icon(Icons.check_circle_rounded, color: AppColors.textTertiary, size: 24),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       job.items.isNotEmpty ? job.items.first.name ?? 'Delivery' : 'Completed',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: darkText,
-                      ),
+                      style: AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       job.createdAt.toString().split(' ').first,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: midText,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm + 2, vertical: AppSpacing.xs + 2),
                 decoration: BoxDecoration(
-                  color: green.withOpacity( 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.success.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
                 child: Text(
                   job.status,
-                  style: TextStyle(
-                    color: green,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: AppTextStyles.caption.copyWith(color: AppColors.success, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          Container(height: 1, color: const Color(0xFFF1F5F9)),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
+          Container(height: 1, color: AppColors.backgroundSubtle),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '₦\${job.totalProductAmount.toStringAsFixed(0)}',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: darkText,
-                  fontWeight: FontWeight.w900,
-                ),
+                '₦${job.totalProductAmount.toStringAsFixed(0)}',
+                style: AppTextStyles.headingMd.copyWith(fontWeight: FontWeight.w900),
               ),
               TextButton(
                 onPressed: () {},
                 child: Text(
                   'View Details',
-                  style: TextStyle(
-                    color: midText,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                  ),
+                  style: AppTextStyles.label.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
@@ -848,13 +554,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     );
   }
 
-  Widget _buildJobCard(
-    common_order.Order job,
-    Color darkText,
-    Color midText,
-    Color orange,
-    Color green,
-  ) {
+  Widget _buildJobCard(common_order.Order job) {
     // For title, use the first product name or a generic title
     final title =
         job.items.isNotEmpty ? job.items.first.product.name : 'Bulk Delivery';
@@ -867,125 +567,94 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             ? job.id.substring(0, 8)
             : job.id; // Just a placeholder for destination address for now
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity( 0.02),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: orange.withOpacity( 0.1),
+                  color: AppColors.driverAccent.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.inventory_2_outlined,
-                  color: orange,
+                  color: AppColors.driverAccent,
                   size: 24,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: darkText,
-                      ),
+                      style: AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       job.shortId,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: midText,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           _buildLocationRow(
             Icons.location_on_outlined,
             'From:',
             from,
-            Colors.green,
+            AppColors.success,
           ),
-          const SizedBox(height: 12),
-          _buildLocationRow(Icons.location_on, 'To:', 'Near $to', Colors.red),
-          const SizedBox(height: 20),
-          Container(height: 1, color: const Color(0xFFF1F5F9)),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.md),
+          _buildLocationRow(Icons.location_on, 'To:', 'Near $to', AppColors.destructive),
+          const SizedBox(height: AppSpacing.lg),
+          Container(height: 1, color: AppColors.backgroundSubtle),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '${job.items.length} items',
-                style: TextStyle(
-                  color: midText,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
               ),
               Row(
                 children: [
                   Text(
                     '₦${job.total.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      color: darkText,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.5,
-                    ),
+                    style: AppTextStyles.headingMd.copyWith(fontWeight: FontWeight.w900),
                   ),
-                  const SizedBox(width: 8),
-                  Icon(Icons.chevron_right_rounded, color: midText, size: 24),
+                  const SizedBox(width: AppSpacing.sm),
+                  const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 24),
                 ],
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                 decoration: BoxDecoration(
-                  color: job.status == common_order.OrderStatus.assigned ? Colors.blue.withOpacity( 0.1) : Colors.green.withOpacity( 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  color: job.status == common_order.OrderStatus.assigned ? AppColors.info.withOpacity(0.1) : AppColors.success.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Text(
                   job.status == common_order.OrderStatus.assigned ? 'Assigned to You' : 'Available',
-                  style: TextStyle(
-                    color: job.status == common_order.OrderStatus.assigned ? Colors.blue : Colors.green,
-                    fontSize: 11,
+                  style: AppTextStyles.caption.copyWith(
+                    color: job.status == common_order.OrderStatus.assigned ? AppColors.info : AppColors.success,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             children: [
               Expanded(
@@ -994,18 +663,18 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                   icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
                   label: const Text('Negotiate'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF25D366),
-                    side: const BorderSide(color: Color(0xFF25D366)),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    foregroundColor: AppColors.whatsapp,
+                    side: const BorderSide(color: AppColors.whatsapp),
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
-                child: ElevatedButton(
+                child: PrimaryButton(
+                  label: 'I Accept',
                   onPressed: () async {
-                    // Show loading
                     showDialog(
                       context: context,
                       barrierDismissible: false,
@@ -1023,7 +692,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Job accepted successfully!'),
-                            backgroundColor: Color(0xFF388E3C),
+                            backgroundColor: AppColors.success,
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
@@ -1031,21 +700,14 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(ErrorHandler.getMessage(error)),
-                            backgroundColor: Colors.red.shade800,
+                            backgroundColor: AppColors.destructive,
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
                       }
                     }
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF388E3C),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text('I Accept', style: TextStyle(fontWeight: FontWeight.w800)),
+                  color: AppColors.primary,
                 ),
               ),
             ],
@@ -1064,24 +726,16 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     return Row(
       children: [
         Icon(icon, size: 18, color: iconColor),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.md),
         Text(
           label,
-          style: const TextStyle(
-            color: Color(0xFF94A3B8),
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          style: AppTextStyles.label.copyWith(color: AppColors.textTertiary),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              color: Color(0xFF475569),
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTextStyles.body.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w600),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

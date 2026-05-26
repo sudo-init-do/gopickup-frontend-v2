@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
 
 class ComingSoonScreen extends StatefulWidget {
   final String featureName;
@@ -9,7 +12,7 @@ class ComingSoonScreen extends StatefulWidget {
     super.key,
     required this.featureName,
     this.icon = Icons.rocket_launch_rounded,
-    this.accentColor = const Color(0xFF3B7D23),
+    this.accentColor = AppColors.primary,
   });
 
   @override
@@ -55,11 +58,11 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(AppSpacing.xxl),
             child: AnimatedBuilder(
               animation: _controller,
               builder: (context, child) {
@@ -97,46 +100,40 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
                       ),
                     ),
 
-                    const SizedBox(height: 40),
+                    const SizedBox(height: AppSpacing.xxxl),
 
                     // Title
                     SlideTransition(
                       position: _slideAnimation,
                       child: FadeTransition(
                         opacity: _fadeAnimation,
-                        child: const Text(
+                        child: Text(
                           'Coming Soon',
-                          style: TextStyle(
+                          style: AppTextStyles.displayLg.copyWith(
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
-                            color: Color(0xFF111827),
                             letterSpacing: -0.8,
                           ),
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
 
                     // Subtitle
                     SlideTransition(
                       position: _slideAnimation,
                       child: FadeTransition(
                         opacity: _fadeAnimation,
-                        child: const Text(
+                        child: Text(
                           'We\'re working on something amazing.\nStay tuned!',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF6B7280),
-                            height: 1.5,
-                          ),
+                          style: AppTextStyles.body.copyWith(height: 1.5),
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.xxl),
 
                     // Feature label pill
                     SlideTransition(
@@ -144,10 +141,13 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
                       child: FadeTransition(
                         opacity: _fadeAnimation,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.lg,
+                            vertical: AppSpacing.sm + 2,
+                          ),
                           decoration: BoxDecoration(
                             color: widget.accentColor.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(AppRadius.xl),
                             border: Border.all(
                               color: widget.accentColor.withOpacity(0.15),
                             ),
@@ -160,11 +160,10 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
                                 size: 16,
                                 color: widget.accentColor,
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: AppSpacing.sm),
                               Text(
                                 '${widget.featureName} is under development',
-                                style: TextStyle(
-                                  fontSize: 13,
+                                style: AppTextStyles.bodySm.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: widget.accentColor,
                                 ),

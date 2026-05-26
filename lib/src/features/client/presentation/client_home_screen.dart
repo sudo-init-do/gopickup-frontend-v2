@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_states.dart';
 import '../../../state/order_provider.dart';
 
 class ClientHomeScreen extends ConsumerStatefulWidget {
@@ -38,14 +41,14 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), // Slightly off-white background
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent, // Transparent to show gradient
+        backgroundColor: Colors.transparent,
         automaticallyImplyLeading: false,
         toolbarHeight: 0,
       ),
-      extendBodyBehindAppBar: true, // Allow body to extend behind status bar
+      extendBodyBehindAppBar: true,
       body: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
@@ -63,10 +66,10 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Color(0xFF3B7D23), Color(0xFF4CA634)],
+                          colors: [AppColors.primary, Color(0xFF4CA634)],
                         ),
                         borderRadius: BorderRadius.vertical(
-                          bottom: Radius.circular(32),
+                          bottom: Radius.circular(AppSpacing.xxl),
                         ),
                       ),
                     ),
@@ -78,7 +81,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                         width: 200,
                         height: 200,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity( 0.05),
+                          color: Colors.white.withOpacity(0.05),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -90,7 +93,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity( 0.05),
+                          color: Colors.white.withOpacity(0.05),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -99,7 +102,12 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                     SafeArea(
                       bottom: false,
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                          AppSpacing.xl,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -114,24 +122,23 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                       children: [
                                         Text(
                                           _getGreeting().toUpperCase(),
-                                          style: TextStyle(
+                                          style: AppTextStyles.bodySm.copyWith(
                                             color: Colors.white.withOpacity(0.9),
-                                            fontSize: 13,
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 1.2,
                                           ),
                                         ),
-                                        const SizedBox(width: 6),
+                                        const SizedBox(width: AppSpacing.xs),
                                         Text(
                                           _getGreetingEmoji(),
                                           style: const TextStyle(fontSize: 14),
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 8),
-                                    const Text(
+                                    const SizedBox(height: AppSpacing.sm),
+                                    Text(
                                       'Welcome back',
-                                      style: TextStyle(
+                                      style: AppTextStyles.displayLg.copyWith(
                                         color: Colors.white,
                                         fontSize: 32,
                                         fontWeight: FontWeight.w800,
@@ -142,7 +149,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                 ),
                                 Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity( 0.15),
+                                    color: Colors.white.withOpacity(0.15),
                                     shape: BoxShape.circle,
                                   ),
                                   child: IconButton(
@@ -153,26 +160,26 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                     ),
                                     onPressed: () =>
                                         context.push('/notifications'),
-                                    padding: const EdgeInsets.all(10),
+                                    padding: const EdgeInsets.all(AppSpacing.md),
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: AppSpacing.xxl),
                             // Delivery Address Card
                             InkWell(
                               onTap: () => context.push('/client/addresses'),
-                              borderRadius: BorderRadius.circular(28),
+                              borderRadius: BorderRadius.circular(AppRadius.pill),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 16,
+                                  horizontal: AppSpacing.xl,
+                                  vertical: AppSpacing.lg,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity( 0.15),
-                                  borderRadius: BorderRadius.circular(28),
+                                  color: Colors.white.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(AppRadius.pill),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity( 0.2),
+                                    color: Colors.white.withOpacity(0.2),
                                     width: 1.5,
                                   ),
                                 ),
@@ -183,7 +190,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                       color: Colors.white,
                                       size: 22,
                                     ),
-                                    SizedBox(width: 16),
+                                    SizedBox(width: AppSpacing.lg),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
@@ -198,7 +205,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                                               letterSpacing: 0.5,
                                             ),
                                           ),
-                                          SizedBox(height: 4),
+                                          SizedBox(height: AppSpacing.xs),
                                           Text(
                                             'Add delivery address',
                                             style: TextStyle(
@@ -229,7 +236,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                 Transform.translate(
                   offset: const Offset(0, -28),
                   child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                     child: _FloatingSearchBar(),
                   ),
                 ),
@@ -238,26 +245,27 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
           ),
 
           // Reset spacing for the content below
-          const SliverToBoxAdapter(child: SizedBox(height: 8)),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.sm)),
 
           // Quick Actions Title
           const SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(24, 0, 24, 20),
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.xl,
+                0,
+                AppSpacing.xl,
+                AppSpacing.xl,
+              ),
               child: Text(
                 'Quick Actions',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1F2937),
-                ),
+                style: AppTextStyles.headingMd,
               ),
             ),
           ),
 
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Row(
                 children: [
                   Expanded(
@@ -269,21 +277,21 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                       onTap: () => context.go('/client/products'),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: _QuickActionCard(
                       icon: Icons.inventory_2_outlined,
-                      color: const Color(0xFFF59E0B),
+                      color: AppColors.warning,
                       title: 'Post Load',
                       subtitle: 'Drivers',
                       onTap: () => context.push('/client/create-job'),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: _QuickActionCard(
                       icon: Icons.local_shipping_outlined,
-                      color: const Color(0xFF8B5CF6),
+                      color: AppColors.vendorAccent,
                       title: 'Book Truck',
                       subtitle: 'Schedule',
                       onTap: () => context.push('/client/book-truck'),
@@ -294,7 +302,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl)),
 
           // Active Delivery Section
           SliverToBoxAdapter(
@@ -316,21 +324,21 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
 
                 final order = activeOrders.first;
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                   child: InkWell(
                     onTap: () => context.push(
                       '/client/orders/${order.id}',
                       extra: order,
                     ),
-                    borderRadius: BorderRadius.circular(32),
+                    borderRadius: BorderRadius.circular(AppSpacing.xxl),
                     child: Container(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(AppSpacing.xl),
                       decoration: BoxDecoration(
                         color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(32),
+                        borderRadius: BorderRadius.circular(AppSpacing.xxl),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity( 0.05),
+                            color: AppColors.primary.withOpacity(0.05),
                             blurRadius: 15,
                             offset: const Offset(0, 4),
                           ),
@@ -341,7 +349,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                           Container(
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity( 0.6),
+                              color: Colors.white.withOpacity(0.6),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -350,33 +358,25 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                               size: 26,
                             ),
                           ),
-                          const SizedBox(width: 20),
+                          const SizedBox(width: AppSpacing.xl),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
                                   'Active Delivery',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Color(0xFF1F2937),
-                                  ),
+                                  style: AppTextStyles.titleMd,
                                 ),
-                                const SizedBox(height: 6),
+                                const SizedBox(height: AppSpacing.xs),
                                 Text(
                                   '${order.items.length} items • ${order.status.toUpperCase()}',
-                                  style: TextStyle(
-                                    color: Colors.grey[600],
-                                    fontSize: 13,
-                                    height: 1.4,
-                                  ),
+                                  style: AppTextStyles.bodySm,
                                 ),
                               ],
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(AppSpacing.md),
                             decoration: const BoxDecoration(
                               color: AppColors.primary,
                               shape: BoxShape.circle,
@@ -396,37 +396,29 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl)),
 
           // Recent Orders Header
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Recent Orders',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F2937),
-                    ),
-                  ),
+                  const Text('Recent Orders', style: AppTextStyles.headingMd),
                   TextButton(
                     onPressed: () {},
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'View all',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                      style: AppTextStyles.label.copyWith(
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -437,43 +429,29 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
 
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Builder(
                 builder: (context) {
                   final orderState = ref.watch(orderProvider);
                   if (orderState.isLoading && orderState.orders.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const AppLoading();
                   } else if (orderState.error != null) {
-                    return Center(child: Text('Error: ${orderState.error}'));
+                    return AppErrorState(message: orderState.error ?? 'Unknown error');
                   }
 
                   final orders = orderState.orders;
                   if (orders.isEmpty) {
                     return Container(
-                      padding: const EdgeInsets.all(40),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: Colors.grey.shade100),
+                        color: AppColors.card,
+                        borderRadius: BorderRadius.circular(AppRadius.xl),
+                        border: Border.all(color: AppColors.border),
                       ),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.shopping_bag_outlined,
-                            size: 48,
-                            color: Colors.grey[300],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No orders yet',
-                            style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                      child: const AppEmptyState(
+                        icon: Icons.shopping_bag_outlined,
+                        title: 'No orders yet',
+                        message: 'Start shopping in Go-Market',
                       ),
                     );
                   }
@@ -482,13 +460,13 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                         .take(3)
                         .map(
                           (order) => Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
+                            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
                             child: InkWell(
                               onTap: () => context.push(
                                 '/client/orders/${order.id}',
                                 extra: order,
                               ),
-                              borderRadius: BorderRadius.circular(28),
+                              borderRadius: BorderRadius.circular(AppRadius.xl),
                               child: _RecentOrderCard(
                                 title: 'Order ${order.id.substring(0, 8)}',
                                 status: order.status.toUpperCase(),
@@ -506,7 +484,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
             ),
           ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: 40)),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxxl)),
         ],
       ),
     );
@@ -535,11 +513,11 @@ class _RecentOrderCard extends StatelessWidget {
 
     switch (status.toLowerCase()) {
       case 'delivered':
-        statusColor = const Color(0xFF059669);
+        statusColor = AppColors.success;
         statusBgColor = const Color(0xFFECFDF5);
         break;
       case 'processing':
-        statusColor = const Color(0xFFD97706);
+        statusColor = AppColors.warning;
         statusBgColor = const Color(0xFFFFFBEB);
         break;
       case 'in transit':
@@ -550,14 +528,14 @@ class _RecentOrderCard extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.grey.shade100),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity( 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -570,50 +548,46 @@ class _RecentOrderCard extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+                style: AppTextStyles.titleMd.copyWith(
                   fontSize: 17,
-                  color: Color(0xFF1F2937),
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.xs,
                 ),
                 decoration: BoxDecoration(
                   color: statusBgColor,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
                   status,
-                  style: TextStyle(
+                  style: AppTextStyles.caption.copyWith(
                     color: statusColor,
-                    fontSize: 11,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '$items items • $time',
-                style: TextStyle(
-                  color: Colors.grey[500],
-                  fontSize: 14,
+                style: AppTextStyles.bodySm.copyWith(
+                  color: AppColors.textTertiary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
                 '₦${price.toStringAsFixed(2)}',
-                style: const TextStyle(
+                style: AppTextStyles.headingMd.copyWith(
                   fontWeight: FontWeight.w800,
                   fontSize: 18,
-                  color: Color(0xFF1F2937),
                 ),
               ),
             ],
@@ -632,16 +606,16 @@ class _FloatingSearchBar extends StatelessWidget {
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity( 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity( 0.08),
+            color: Colors.black.withOpacity(0.08),
             blurRadius: 20,
             offset: const Offset(0, 12),
           ),
@@ -658,13 +632,12 @@ class _FloatingSearchBar extends StatelessWidget {
         },
         decoration: InputDecoration(
           hintText: 'Search materials, vendors...',
-          hintStyle: TextStyle(
-            color: Colors.grey[400],
-            fontSize: 15,
+          hintStyle: AppTextStyles.body.copyWith(
+            color: AppColors.textTertiary,
             fontWeight: FontWeight.w400,
           ),
           prefixIcon: const Padding(
-            padding: EdgeInsets.only(left: 20, right: 12),
+            padding: EdgeInsets.only(left: 20, right: AppSpacing.md),
             child: Icon(
               Icons.search_rounded,
               color: AppColors.primary,
@@ -672,16 +645,16 @@ class _FloatingSearchBar extends StatelessWidget {
             ),
           ),
           suffixIcon: Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: AppSpacing.sm),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
                   height: 24,
                   width: 1,
-                  color: Colors.grey.withOpacity( 0.2),
+                  color: AppColors.border,
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: AppSpacing.xs),
                 IconButton(
                   icon: const Icon(
                     Icons.tune_rounded,
@@ -723,12 +696,12 @@ class _QuickActionCard extends StatelessWidget {
     return Container(
       height: 145,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24), // Slightly smaller radius
-        border: Border.all(color: Colors.grey.shade50),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity( 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -738,40 +711,40 @@ class _QuickActionCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16), // Tighter padding
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: AppSpacing.lg,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10), // Smaller icon container
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
                     color: color,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(icon, color: Colors.white, size: 20), // Smaller icon
+                  child: Icon(icon, color: Colors.white, size: 20),
                 ),
-                const SizedBox(height: 12), // Tighter vertical spacing
+                const SizedBox(height: AppSpacing.md),
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13, // Smaller font size
-                    color: Color(0xFF1F2937),
-                    letterSpacing: -0.2, // Tighter letters
+                  style: AppTextStyles.label.copyWith(
+                    fontSize: 13,
+                    letterSpacing: -0.2,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   subtitle,
-                  maxLines: 1, // Prevent wrapping
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 11, // Smaller subtitle
+                  style: AppTextStyles.caption.copyWith(
                     fontWeight: FontWeight.w500,
+                    fontSize: 11,
                   ),
                 ),
               ],

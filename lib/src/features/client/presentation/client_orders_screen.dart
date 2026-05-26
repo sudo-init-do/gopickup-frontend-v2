@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../models/order_models.dart';
 import '../../../state/order_provider.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_states.dart';
 
 class ClientOrdersScreen extends ConsumerStatefulWidget {
   const ClientOrdersScreen({super.key});
@@ -24,7 +28,7 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -35,19 +39,32 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                   final orderState = ref.watch(orderProvider);
 
                   if (orderState.isLoading && orderState.orders.isEmpty) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const AppLoading();
                   }
                   if (orderState.error != null) {
-                    return Center(child: Text('Error: ${orderState.error}'));
+                    return AppErrorState(
+                      message: orderState.error ?? 'Unknown error',
+                      onRetry: () =>
+                          ref.read(orderProvider.notifier).fetchOrders(),
+                    );
                   }
 
                   final orders = orderState.orders;
                   if (orders.isEmpty) {
-                    return const Center(child: Text('No orders found'));
+                    return const AppEmptyState(
+                      icon: Icons.receipt_long_outlined,
+                      title: 'No orders found',
+                      message: 'Your orders will appear here',
+                    );
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.xl,
+                      AppSpacing.md,
+                      AppSpacing.xl,
+                      AppSpacing.xl,
+                    ),
                     itemCount: orders.length,
                     itemBuilder: (context, index) {
                       return _buildOrderCard(context, orders[index]);
@@ -64,7 +81,10 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xl,
+        vertical: AppSpacing.lg,
+      ),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -72,11 +92,11 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
             alignment: Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.card,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity( 0.04),
+                    color: Colors.black.withOpacity(0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -93,12 +113,10 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
               ),
             ),
           ),
-          const Text(
+          Text(
             'My Orders',
-            style: TextStyle(
+            style: AppTextStyles.headingLg.copyWith(
               fontSize: 22,
-              fontWeight: FontWeight.w900,
-              color: Color(0xFF1F2937),
               letterSpacing: -0.5,
             ),
           ),
@@ -115,35 +133,30 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
     switch (order.status.toLowerCase()) {
       case 'delivered':
         badgeColor = const Color(0xFFECFDF5);
-        badgeTextColor = const Color(0xFF059669);
+        badgeTextColor = AppColors.success;
         break;
       case 'pending':
       case 'awaiting payment':
         badgeColor = const Color(0xFFFFFBEB);
-        badgeTextColor = const Color(0xFFD97706);
+        badgeTextColor = AppColors.warning;
         break;
       default:
         badgeColor = const Color(0xFFE0E7FF);
-        badgeTextColor = const Color(0xFF4F46E5);
+        badgeTextColor = AppColors.adminAccent;
     }
-
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
-    const kLightTextColor = Color(0xFF9CA3AF);
-    const kBrandGreen = Color(0xFF3B7D23);
 
     return InkWell(
       onTap: () => context.push('/client/orders/${order.id}', extra: order),
-      borderRadius: BorderRadius.circular(32),
+      borderRadius: BorderRadius.circular(AppSpacing.xxl),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
-        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.only(bottom: AppSpacing.xl),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(32),
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(AppSpacing.xxl),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity( 0.02),
+              color: Colors.black.withOpacity(0.02),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -158,16 +171,16 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.backgroundSubtle,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
                   ),
                   child: const Icon(
                     Icons.inventory_2_outlined,
-                    color: kBrandGreen,
+                    color: AppColors.primary,
                     size: 26,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.lg),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,21 +193,16 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                             children: [
                               Text(
                                 order.id.substring(0, 8),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w900,
+                                style: AppTextStyles.headingMd.copyWith(
                                   fontSize: 18,
-                                  color: kDarkTextColor,
+                                  fontWeight: FontWeight.w900,
                                   letterSpacing: -0.5,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                DateFormat(
-                                  'MMM d, yyyy',
-                                ).format(order.createdAt),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: kLightTextColor,
+                                DateFormat('MMM d, yyyy').format(order.createdAt),
+                                style: AppTextStyles.caption.copyWith(
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -202,25 +210,25 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
+                              horizontal: AppSpacing.lg,
+                              vertical: AppSpacing.sm,
                             ),
                             decoration: BoxDecoration(
                               color: badgeColor,
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.pill),
                             ),
                             child: Text(
                               statusText,
-                              style: TextStyle(
+                              style: AppTextStyles.bodySm.copyWith(
                                 color: badgeTextColor,
-                                fontSize: 13,
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.lg),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -232,39 +240,31 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                                 order.items.isNotEmpty
                                     ? order.items.first.name ?? 'Unknown item'
                                     : 'No items',
-                                style: const TextStyle(
-                                  color: kMidTextColor,
-                                  fontSize: 15,
+                                style: AppTextStyles.body.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               Text(
                                 '${order.items.length} item${order.items.length != 1 ? 's' : ''}',
-                                style: const TextStyle(
-                                  color: kLightTextColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: AppTextStyles.caption,
                               ),
                             ],
                           ),
-
                           Row(
                             children: [
                               Text(
                                 '₦${order.totalProductAmount.toStringAsFixed(2)}',
-                                style: const TextStyle(
+                                style: AppTextStyles.headingMd.copyWith(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,
-                                  color: kDarkTextColor,
                                   letterSpacing: -0.5,
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: AppSpacing.sm),
                               const Icon(
                                 Icons.arrow_forward_ios_rounded,
                                 size: 16,
-                                color: Color(0xFFD1D5DB),
+                                color: AppColors.borderStrong,
                               ),
                             ],
                           ),
@@ -277,27 +277,27 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
             ),
             if (statusText != 'DELIVERED') ...[
               const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Divider(color: Color(0xFFF3F4F6), height: 1),
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
+                child: Divider(color: AppColors.border, height: 1),
               ),
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.access_time_rounded, size: 18, color: kBrandGreen),
-                  SizedBox(width: 8),
+                  const Icon(
+                    Icons.access_time_rounded,
+                    size: 18,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
                   Text(
                     'ETA:',
-                    style: TextStyle(
-                      color: kLightTextColor,
-                      fontSize: 14,
+                    style: AppTextStyles.caption.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   Text(
                     '2 hours',
-                    style: TextStyle(
-                      color: kDarkTextColor,
-                      fontSize: 14,
+                    style: AppTextStyles.label.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
                   ),

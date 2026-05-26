@@ -4,6 +4,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 import '../../../models/order_models.dart';
 import 'admin_providers.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_card.dart';
+import '../../../common/widgets/app_states.dart';
+import '../../../common/widgets/primary_button.dart';
 
 class AdminOrdersScreen extends ConsumerStatefulWidget {
   const AdminOrdersScreen({super.key});
@@ -18,7 +24,7 @@ class _AdminOrdersScreenState extends ConsumerState<AdminOrdersScreen> {
 
   List<Order> _getFilteredOrders(List<Order> orders) {
     var filtered = orders;
-    
+
     // Tab filter
     if (_selectedTab == 'Pending') {
       filtered = filtered.where((o) => o.status == 'pending' || o.status == 'awaiting_payment' || o.status == 'payment_made').toList();
@@ -48,21 +54,26 @@ class _AdminOrdersScreenState extends ConsumerState<AdminOrdersScreen> {
     final ordersAsync = ref.watch(adminOrdersProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('ADMIN CONSOLE', style: TextStyle(fontSize: 10, fontWeight: 
-FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
-            const Text('Orders Monitoring', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 18)),
+            Text(
+              'ADMIN CONSOLE',
+              style: AppTextStyles.caption.copyWith(
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text('Orders Monitoring', style: AppTextStyles.titleMd),
           ],
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.search, color: Colors.black87), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.menu, color: Colors.black87), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.search, color: AppColors.textPrimary), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.menu, color: AppColors.textPrimary), onPressed: () {}),
         ],
       ),
       body: Column(
@@ -70,78 +81,90 @@ FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
           // Tabs
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
             child: Row(
               children: [
                 _buildTab('All Orders'),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 _buildTab('Pending'),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 _buildTab('Active'),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 _buildTab('Completed'),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 _buildTab('Signups'),
               ],
             ),
           ),
-          
+
           // Search Bar
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
                     height: 40,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.shade300),
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                      border: Border.all(color: AppColors.borderStrong),
                     ),
                     child: TextField(
                       controller: _searchController,
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
                         hintText: 'Search ID, Customer...',
-                        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                        hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
                         prefixIcon: const Icon(Icons.search, size: 20),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 Container(
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    border: Border.all(color: AppColors.borderStrong),
                   ),
-                  child: const Icon(Icons.calendar_today, size: 18, color: Colors.black87),
+                  child: const Icon(Icons.calendar_today, size: 18, color: AppColors.textPrimary),
                 ),
               ],
             ),
           ),
-          
-          const SizedBox(height: 24),
-          
+
+          const SizedBox(height: AppSpacing.xl),
+
           // Live Feed Header
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('LIVE FEED', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.2)),
-                ordersAsync.whenData((orders) => Text('${orders.length} Active Transmissions', style: TextStyle(fontSize: 10, color: Colors.grey.shade500))).value ?? const SizedBox(),
+                Text(
+                  'LIVE FEED',
+                  style: AppTextStyles.bodySm.copyWith(
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                ordersAsync.whenData((orders) => Text(
+                  '${orders.length} Active Transmissions',
+                  style: AppTextStyles.caption,
+                )).value ?? const SizedBox(),
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          
+          const SizedBox(height: AppSpacing.md),
+
           // Order List
           Expanded(
             child: _selectedTab == 'Signups'
@@ -149,20 +172,26 @@ FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
                 : ordersAsync.when(
                     data: (orders) {
                       final filtered = _getFilteredOrders(orders);
-                      if (filtered.isEmpty) return const Center(child: Text('No orders found'));
+                      if (filtered.isEmpty) {
+                        return const AppEmptyState(
+                          icon: Icons.receipt_long_outlined,
+                          title: 'No orders found',
+                          message: 'Try adjusting your tab or search query.',
+                        );
+                      }
 
                       return ListView.separated(
-                        padding: const EdgeInsets.all(16).copyWith(bottom: 100),
+                        padding: const EdgeInsets.all(AppSpacing.lg).copyWith(bottom: 100),
                         itemCount: filtered.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
                         itemBuilder: (context, index) => _OrderCard(
                           order: filtered[index],
                           onTap: () => _showFocusedView(context, filtered[index]),
                         ),
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (e, stack) => Center(child: Text('Error: $e')),
+                    loading: () => const AppLoading(),
+                    error: (e, stack) => AppErrorState(message: 'Error: $e'),
                   ),
           ),
         ],
@@ -175,17 +204,16 @@ FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
     return GestureDetector(
       onTap: () => setState(() => _selectedTab = title),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: isActive ? Colors.blueAccent : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(20),
+          color: isActive ? AppColors.adminAccent : AppColors.backgroundSubtle,
+          borderRadius: BorderRadius.circular(AppRadius.pill),
         ),
         child: Text(
           title,
-          style: TextStyle(
-            color: isActive ? Colors.white : Colors.black87,
+          style: AppTextStyles.bodySm.copyWith(
+            color: isActive ? Colors.white : AppColors.textPrimary,
             fontWeight: FontWeight.w600,
-            fontSize: 13,
           ),
         ),
       ),
@@ -197,25 +225,24 @@ FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
 
     return recentUsersAsync.when(
       data: (users) {
-        if (users.isEmpty) return const Center(child: Text('No recent signups'));
+        if (users.isEmpty) {
+          return const AppEmptyState(
+            icon: Icons.person_add_outlined,
+            title: 'No recent signups',
+          );
+        }
 
         return ListView.separated(
-          padding: const EdgeInsets.all(16).copyWith(bottom: 100),
+          padding: const EdgeInsets.all(AppSpacing.lg).copyWith(bottom: 100),
           itemCount: users.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
           itemBuilder: (context, index) {
             final user = users[index];
-            final joinedDate = user['created_at'] != null 
+            final joinedDate = user['created_at'] != null
                 ? DateFormat('MMM d, h:mm a').format(DateTime.parse(user['created_at']))
                 : 'Unknown';
 
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
+            return AppCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -224,31 +251,52 @@ FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
                     children: [
                       Text(
                         user['full_name'] ?? 'Unknown User',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        style: AppTextStyles.titleMd,
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: AppSpacing.xs,
+                        ),
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.info.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
                         ),
                         child: Text(
                           (user['role'] ?? 'Client').toString().toUpperCase(),
-                          style: TextStyle(color: Colors.blue.shade700, fontSize: 10, fontWeight: FontWeight.bold),
+                          style: AppTextStyles.caption.copyWith(
+                            color: AppColors.info,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   _signupInfo(Icons.email_outlined, user['email'] ?? 'No email'),
-                  _signupInfo(Icons.phone_outlined, (user['vendor_profile']?['phone_number'] ?? user['client_profile']?['phone_number'] ?? user['driver_profile']?['phone_number'] ?? user['phone_number'] ?? 'No phone').toString()),
-                  _signupInfo(Icons.location_on_outlined, (user['vendor_profile']?['address'] ?? user['client_profile']?['address'] ?? user['driver_profile']?['address'] ?? 'No address').toString()),
-                  const Divider(height: 24),
+                  _signupInfo(
+                    Icons.phone_outlined,
+                    (user['vendor_profile']?['phone_number'] ??
+                            user['client_profile']?['phone_number'] ??
+                            user['driver_profile']?['phone_number'] ??
+                            user['phone_number'] ??
+                            'No phone')
+                        .toString(),
+                  ),
+                  _signupInfo(
+                    Icons.location_on_outlined,
+                    (user['vendor_profile']?['address'] ??
+                            user['client_profile']?['address'] ??
+                            user['driver_profile']?['address'] ??
+                            'No address')
+                        .toString(),
+                  ),
+                  const Divider(height: AppSpacing.xl),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Joined $joinedDate', style: TextStyle(color: Colors.grey.shade500, fontSize: 11)),
-                      const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.grey),
+                      Text('Joined $joinedDate', style: AppTextStyles.caption),
+                      const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.textTertiary),
                     ],
                   ),
                 ],
@@ -257,19 +305,19 @@ FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, stack) => Center(child: Text('Error: $e')),
+      loading: () => const AppLoading(),
+      error: (e, stack) => AppErrorState(message: 'Error: $e'),
     );
   }
 
   Widget _signupInfo(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
       child: Row(
         children: [
-          Icon(icon, size: 14, color: Colors.grey.shade400),
-          const SizedBox(width: 8),
-          Text(text, style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+          Icon(icon, size: 14, color: AppColors.textTertiary),
+          const SizedBox(width: AppSpacing.sm),
+          Text(text, style: AppTextStyles.bodySm),
         ],
       ),
     );
@@ -295,41 +343,31 @@ class _OrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Generate type based on items count for UI matching
     final isLogistics = order.items.isEmpty || order.vendorId.isEmpty;
-    
+
     // Convert status to visual group
     String statusLabel = 'Pending';
-    Color statusColor = Colors.blue;
-    Color statusBgColor = Colors.blue.shade50;
-    
+    Color statusColor = AppColors.info;
+    Color statusBgColor = AppColors.info.withOpacity(0.1);
+
     if (order.status == 'delivered') {
       statusLabel = 'Completed';
-      statusColor = Colors.black87;
-      statusBgColor = Colors.grey.shade100;
+      statusColor = AppColors.textPrimary;
+      statusBgColor = AppColors.backgroundSubtle;
     } else if (order.status == 'pending' || order.status == 'awaiting_payment' || order.status == 'payment_made') {
       statusLabel = order.status == 'payment_made' ? 'Verification' : 'Pending';
-      statusColor = order.status == 'payment_made' ? Colors.orange.shade800 : Colors.blueAccent;
-      statusBgColor = order.status == 'payment_made' ? Colors.orange.shade50 : Colors.blue.shade50;
+      statusColor = order.status == 'payment_made' ? AppColors.warning : AppColors.adminAccent;
+      statusBgColor = order.status == 'payment_made'
+          ? AppColors.warning.withOpacity(0.1)
+          : AppColors.adminAccent.withOpacity(0.1);
     } else {
       statusLabel = 'Active';
-      statusColor = Colors.green.shade700;
-      statusBgColor = Colors.green.shade50;
+      statusColor = AppColors.success;
+      statusBgColor = AppColors.success.withOpacity(0.1);
     }
 
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
+      child: AppCard(
         child: Column(
           children: [
             Row(
@@ -339,40 +377,45 @@ class _OrderCard extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: isLogistics ? Colors.indigo.shade50 : Colors.orange.shade50,
-                    borderRadius: BorderRadius.circular(8),
+                    color: isLogistics
+                        ? AppColors.adminAccent.withOpacity(0.1)
+                        : AppColors.driverAccent.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: Icon(
                     isLogistics ? Icons.local_shipping : Icons.storefront,
-                    color: isLogistics ? Colors.indigo : Colors.orange,
+                    color: isLogistics ? AppColors.adminAccent : AppColors.driverAccent,
                     size: 20,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'ORD-${order.id.substring(0, 8).toUpperCase()}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: AppTextStyles.label,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xs),
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
+                              color: AppColors.backgroundSubtle,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               isLogistics ? 'Logistics' : 'Marketplace',
-                              style: TextStyle(fontSize: 10, color: Colors.grey.shade700),
+                              style: AppTextStyles.caption,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Text('Placed recent', style: TextStyle(fontSize: 10, color: Colors.grey.shade500)),
+                          const SizedBox(width: AppSpacing.sm),
+                          const Text('Placed recent', style: AppTextStyles.caption),
                         ],
                       ),
                     ],
@@ -382,50 +425,56 @@ class _OrderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                        vertical: AppSpacing.xs,
+                      ),
                       decoration: BoxDecoration(
                         color: statusBgColor,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       child: Text(
                         statusLabel,
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: statusColor),
+                        style: AppTextStyles.caption.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: statusColor,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: AppSpacing.sm - 2),
                     Text(
                       '₦${(order.totalProductAmount + (order.agreedDeliveryFee ?? 0)).toStringAsFixed(2)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      style: AppTextStyles.label,
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            const Divider(height: 1),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.lg),
+            const Divider(height: 1, color: AppColors.border),
+            const SizedBox(height: AppSpacing.md),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.person, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
+                    const Icon(Icons.person, size: 14, color: AppColors.textTertiary),
+                    const SizedBox(width: AppSpacing.xs),
                     Text(
                       order.clientName ?? order.clientEmail ?? order.clientId.substring(0, 8),
-                      style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                      style: AppTextStyles.bodySm,
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, size: 14, color: Colors.grey),
-                    const SizedBox(width: 4),
+                    const Icon(Icons.location_on, size: 14, color: AppColors.textTertiary),
+                    const SizedBox(width: AppSpacing.xs),
                     SizedBox(
                       width: 100,
                       child: Text(
                         order.deliveryAddress,
-                        style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                        style: AppTextStyles.bodySm,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -463,8 +512,8 @@ class _FocusedView extends StatelessWidget {
 
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        color: AppColors.card,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
       child: Column(
@@ -473,50 +522,60 @@ class _FocusedView extends StatelessWidget {
           // Handle
           Center(
             child: Container(
-              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              margin: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.sm),
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: AppColors.borderStrong,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
-          
+
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('FOCUSED VIEW', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blueAccent, letterSpacing: 1.2)),
-                            const SizedBox(height: 4),
+                            Text(
+                              'FOCUSED VIEW',
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.adminAccent,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
                             Text(
                               'Order #${order.id.substring(0, 8).toUpperCase()}',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                              style: AppTextStyles.headingMd,
                             ),
                           ],
                         ),
                         IconButton(
                           onPressed: () => Navigator.pop(context),
                           icon: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade200), shape: BoxShape.circle),
+                            padding: const EdgeInsets.all(AppSpacing.xs),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: AppColors.border),
+                              shape: BoxShape.circle,
+                            ),
                             child: const Icon(Icons.close, size: 16),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  
+                  const SizedBox(height: AppSpacing.lg),
+
                   // Map Graphic Header
                   Container(
                     height: 180,
@@ -529,22 +588,35 @@ class _FocusedView extends StatelessWidget {
                         ),
                         Center(
                           child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(color: Colors.indigoAccent, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 2)),
+                            padding: const EdgeInsets.all(AppSpacing.sm),
+                            decoration: BoxDecoration(
+                              color: AppColors.adminAccent,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
                             child: const Icon(Icons.local_shipping, color: Colors.white, size: 20),
                           ),
                         ),
                         Positioned(
-                          bottom: 16,
-                          right: 16,
+                          bottom: AppSpacing.lg,
+                          right: AppSpacing.lg,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.sm - 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.card,
+                              borderRadius: BorderRadius.circular(AppRadius.pill),
+                            ),
                             child: Row(
                               children: [
-                                CircleAvatar(radius: 3, backgroundColor: Colors.green.shade600),
-                                const SizedBox(width: 6),
-                                const Text('Live Tracking', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                const CircleAvatar(radius: 3, backgroundColor: AppColors.success),
+                                const SizedBox(width: AppSpacing.sm - 2),
+                                Text(
+                                  'Live Tracking',
+                                  style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.bold),
+                                ),
                               ],
                             ),
                           ),
@@ -554,13 +626,19 @@ class _FocusedView extends StatelessWidget {
                   ),
 
                   Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(AppSpacing.xl),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('DELIVERY TIMELINE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-                        const SizedBox(height: 24),
-                        
+                        Text(
+                          'DELIVERY TIMELINE',
+                          style: AppTextStyles.bodySm.copyWith(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
+
                         const _TimelineItem(
                           isCompleted: true,
                           isLast: false,
@@ -588,34 +666,42 @@ class _FocusedView extends StatelessWidget {
                           desc: isDelivered ? 'Completed' : 'Pending arrival',
                         ),
 
-                        const SizedBox(height: 32),
-                        const Text('CUSTOMER DETAILS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.xxl),
+                        Text(
+                          'CUSTOMER DETAILS',
+                          style: AppTextStyles.bodySm.copyWith(
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
                         // --- Client Card ---
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade200)),
+                        AppCard(
+                          padding: const EdgeInsets.all(AppSpacing.lg),
                           child: Row(
                             children: [
                               Container(
                                 width: 40,
                                 height: 40,
-                                decoration: BoxDecoration(color: Colors.blue.shade50, shape: BoxShape.circle),
-                                child: Icon(Icons.person, color: Colors.blue.shade600, size: 20),
+                                decoration: BoxDecoration(
+                                  color: AppColors.info.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.person, color: AppColors.info, size: 20),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: AppSpacing.md),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       order.clientName ?? order.clientEmail ?? 'Client #${order.clientId.substring(0, 8)}',
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                      style: AppTextStyles.label,
                                     ),
                                     if (order.clientPhone != null)
-                                      Text(order.clientPhone!, style: const TextStyle(fontSize: 11, color: Colors.grey))
+                                      Text(order.clientPhone!, style: AppTextStyles.bodySm)
                                     else if (order.clientEmail != null)
-                                      Text(order.clientEmail!, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                      Text(order.clientEmail!, style: AppTextStyles.bodySm),
                                   ],
                                 ),
                               ),
@@ -626,46 +712,55 @@ class _FocusedView extends StatelessWidget {
                                     if (await canLaunchUrl(uri)) launchUrl(uri);
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(color: Colors.green.shade50, border: Border.all(color: Colors.green.shade200), borderRadius: BorderRadius.circular(8)),
-                                    child: Icon(Icons.call, size: 16, color: Colors.green.shade700),
+                                    padding: const EdgeInsets.all(AppSpacing.sm),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.success.withOpacity(0.1),
+                                      border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                                    ),
+                                    child: const Icon(Icons.call, size: 16, color: AppColors.success),
                                   ),
                                 )
                               else
                                 Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade200), borderRadius: BorderRadius.circular(8)),
-                                  child: const Icon(Icons.message, size: 16, color: Colors.black54),
+                                  padding: const EdgeInsets.all(AppSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: AppColors.border),
+                                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                                  ),
+                                  child: const Icon(Icons.message, size: 16, color: AppColors.textSecondary),
                                 ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.md),
                         // --- Vendor Card ---
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade200)),
+                        AppCard(
+                          padding: const EdgeInsets.all(AppSpacing.lg),
                           child: Row(
                             children: [
                               Container(
                                 width: 40,
                                 height: 40,
-                                decoration: BoxDecoration(color: Colors.green.shade50, shape: BoxShape.circle),
-                                child: Icon(Icons.storefront, color: Colors.green.shade600, size: 20),
+                                decoration: BoxDecoration(
+                                  color: AppColors.success.withOpacity(0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.storefront, color: AppColors.success, size: 20),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: AppSpacing.md),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       order.vendorStoreName ?? 'Vendor #${order.vendorId.substring(0, 8)}',
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                      style: AppTextStyles.label,
                                     ),
                                     if (order.vendorPhone != null)
-                                      Text(order.vendorPhone!, style: const TextStyle(fontSize: 11, color: Colors.grey))
+                                      Text(order.vendorPhone!, style: AppTextStyles.bodySm)
                                     else
-                                      const Text('No contact available', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                                      const Text('No contact available', style: AppTextStyles.bodySm),
                                   ],
                                 ),
                               ),
@@ -676,31 +771,27 @@ class _FocusedView extends StatelessWidget {
                                     if (await canLaunchUrl(uri)) launchUrl(uri);
                                   },
                                   child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(color: Colors.green.shade50, border: Border.all(color: Colors.green.shade200), borderRadius: BorderRadius.circular(8)),
-                                    child: Icon(Icons.call, size: 16, color: Colors.green.shade700),
+                                    padding: const EdgeInsets.all(AppSpacing.sm),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.success.withOpacity(0.1),
+                                      border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                                    ),
+                                    child: const Icon(Icons.call, size: 16, color: AppColors.success),
                                   ),
                                 ),
                             ],
                           ),
                         ),
-                        
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () => _showManageOrderDialog(context),
-                            icon: const Icon(Icons.settings),
-                            label: const Text('Manage Order / Update Status'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blueAccent,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            ),
-                          ),
+
+                        const SizedBox(height: AppSpacing.xl),
+                        PrimaryButton(
+                          label: 'Manage Order / Update Status',
+                          onPressed: () => _showManageOrderDialog(context),
+                          icon: Icons.settings,
+                          color: AppColors.adminAccent,
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: AppSpacing.xxxl + AppSpacing.sm),
                       ],
                     ),
                   ),
@@ -742,40 +833,44 @@ class _TimelineItem extends StatelessWidget {
                 height: 24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isCompleted ? Colors.blueAccent : (isActive ? Colors.white : Colors.grey.shade200),
-                  border: isActive ? Border.all(color: Colors.blueAccent, width: 2) : null,
+                  color: isCompleted
+                      ? AppColors.adminAccent
+                      : (isActive ? AppColors.card : AppColors.backgroundSubtle),
+                  border: isActive ? Border.all(color: AppColors.adminAccent, width: 2) : null,
                 ),
                 child: isCompleted
                     ? const Icon(Icons.check, size: 14, color: Colors.white)
-                    : (isActive ? const Center(child: CircleAvatar(radius: 4, backgroundColor: Colors.blueAccent)) : null),
+                    : (isActive
+                        ? const Center(child: CircleAvatar(radius: 4, backgroundColor: AppColors.adminAccent))
+                        : null),
               ),
               if (!isLast)
                 Expanded(
-                  child: Container(width: 2, color: isCompleted ? Colors.blueAccent : Colors.grey.shade200),
+                  child: Container(
+                    width: 2,
+                    color: isCompleted ? AppColors.adminAccent : AppColors.border,
+                  ),
                 ),
             ],
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.only(bottom: AppSpacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: isCompleted || isActive ? Colors.black87 : Colors.grey.shade400,
+                    style: AppTextStyles.label.copyWith(
+                      color: isCompleted || isActive ? AppColors.textPrimary : AppColors.textTertiary,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     desc,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isCompleted || isActive ? Colors.blueAccent : Colors.grey.shade400,
+                    style: AppTextStyles.bodySm.copyWith(
+                      color: isCompleted || isActive ? AppColors.adminAccent : AppColors.textTertiary,
                     ),
                   ),
                 ],
@@ -824,18 +919,19 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
     final order = widget.order;
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl + 4)),
+      backgroundColor: AppColors.card,
       elevation: 24,
       child: Container(
         width: 450,
-        padding: const EdgeInsets.symmetric(vertical: 8),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 16, 8),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.xl, AppSpacing.xl, AppSpacing.lg, AppSpacing.sm),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -845,21 +941,16 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
                       children: [
                         Text(
                           'MANAGE ORDER',
-                          style: TextStyle(
-                            fontSize: 11,
+                          style: AppTextStyles.caption.copyWith(
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1.5,
-                            color: Colors.blueAccent.shade700,
+                            color: AppColors.adminAccent,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           'Order #${order.id.substring(0, 8).toUpperCase()}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF1E293B),
-                          ),
+                          style: AppTextStyles.headingMd,
                         ),
                       ],
                     ),
@@ -867,120 +958,148 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
                   IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: Container(
-                      padding: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(AppSpacing.xs),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade200),
+                        border: Border.all(color: AppColors.border),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.close, size: 18, color: Colors.grey),
+                      child: const Icon(Icons.close, size: 18, color: AppColors.textSecondary),
                     ),
                   ),
                 ],
               ),
             ),
-            const Divider(height: 1),
+            const Divider(height: 1, color: AppColors.border),
             Flexible(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(AppSpacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (order.status == 'payment_made') ...[
                       _sectionHeader('PAYMENT VERIFICATION'),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.lg),
                       _buildTextField(
                         controller: _priceController,
                         label: 'Verify Agreed Price (₦)',
                         icon: Icons.payments_outlined,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.xl),
                       _primaryButton(
-                        onPressed: _isLoading ? null : () async {
-                          if (_priceController.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter agreed price')));
-                            return;
-                          }
-                          setState(() => _isLoading = true);
-                          try {
-                            await widget.ref.read(adminApiProvider).verifyPayment(
-                              orderId: order.id,
-                              agreedPrice: double.parse(_priceController.text),
-                            );
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              widget.ref.invalidate(adminOrdersProvider);
-                            }
-                          } catch (e) {
-                            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-                          } finally {
-                            setState(() => _isLoading = false);
-                          }
-                        },
+                        onPressed: _isLoading
+                            ? null
+                            : () async {
+                                if (_priceController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Please enter agreed price')));
+                                  return;
+                                }
+                                setState(() => _isLoading = true);
+                                try {
+                                  await widget.ref.read(adminApiProvider).verifyPayment(
+                                    orderId: order.id,
+                                    agreedPrice: double.parse(_priceController.text),
+                                  );
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                    widget.ref.invalidate(adminOrdersProvider);
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                                  }
+                                } finally {
+                                  setState(() => _isLoading = false);
+                                }
+                              },
                         label: 'Verify & Approve Payment',
-                        color: Colors.blueAccent,
+                        color: AppColors.adminAccent,
                         icon: Icons.verified_user_outlined,
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.xxl),
                     ],
 
                     if (order.status == 'awaiting_payment') ...[
                       _sectionHeader('MANUAL PAYMENT STATUS'),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.md),
                       Container(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(AppSpacing.lg),
                         decoration: BoxDecoration(
-                          color: Colors.amber.shade50,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.amber.shade100),
+                          color: AppColors.warning.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(AppRadius.lg),
+                          border: Border.all(color: AppColors.warning.withOpacity(0.2)),
                         ),
-                        child: Row(
+                        child: const Row(
                           children: [
-                            Icon(Icons.info_outline, color: Colors.amber.shade800, size: 20),
-                            const SizedBox(width: 12),
-                            const Expanded(
+                            Icon(Icons.info_outline, color: AppColors.warning, size: 20),
+                            SizedBox(width: AppSpacing.md),
+                            Expanded(
                               child: Text(
                                 'Waiting for client to report payment via WhatsApp.',
-                                style: TextStyle(fontSize: 13, color: Color(0xFF92400E), fontWeight: FontWeight.w500),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Color(0xFF92400E),
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.xxl),
                     ],
 
-                    if (order.status == 'pending' || order.status == 'processing' || order.status == 'awaiting_payment' || order.status == 'payment_made') ...[
+                    if (order.status == 'pending' ||
+                        order.status == 'processing' ||
+                        order.status == 'awaiting_payment' ||
+                        order.status == 'payment_made') ...[
                       _sectionHeader('LOGISTICS ASSIGNMENT'),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.lg),
                       driversAsync.when(
                         data: (drivers) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.grey.shade200),
+                            color: AppColors.backgroundSubtle,
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
+                            border: Border.all(color: AppColors.border),
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButtonFormField<String>(
                               decoration: const InputDecoration(
                                 labelText: 'Select Logistics Driver',
-                                labelStyle: TextStyle(fontSize: 14, color: Colors.grey),
+                                labelStyle: TextStyle(fontSize: 14, color: AppColors.textSecondary),
                                 border: InputBorder.none,
                               ),
-                              items: drivers.map((d) => DropdownMenuItem(
-                                value: d['id'] as String,
-                                child: Text(d['full_name'] ?? d['email'] ?? 'Driver', style: const TextStyle(fontSize: 15)),
-                              )).toList(),
+                              items: drivers
+                                  .map((d) => DropdownMenuItem(
+                                        value: d['id'] as String,
+                                        child: Text(
+                                          d['full_name'] ?? d['email'] ?? 'Driver',
+                                          style: AppTextStyles.body,
+                                        ),
+                                      ))
+                                  .toList(),
                               onChanged: (val) => setState(() => _selectedDriverId = val),
                               value: _selectedDriverId,
                             ),
                           ),
                         ),
-                        loading: () => const Center(child: Padding(padding: EdgeInsets.all(8.0), child: CircularProgressIndicator(strokeWidth: 2))),
-                        error: (e, s) => Text('Error loading drivers', style: TextStyle(color: Colors.red.shade700, fontSize: 13)),
+                        loading: () => const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(AppSpacing.sm),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.adminAccent,
+                            ),
+                          ),
+                        ),
+                        error: (e, s) => Text(
+                          'Error loading drivers',
+                          style: AppTextStyles.bodySm.copyWith(color: AppColors.destructive),
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.lg),
                       Row(
                         children: [
                           Expanded(
@@ -990,7 +1109,7 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
                               icon: Icons.shopping_bag_outlined,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: _buildTextField(
                               controller: _feeController,
@@ -1000,55 +1119,64 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.xl),
                       _primaryButton(
-                        onPressed: _isLoading ? null : () async {
-                          if (_selectedDriverId == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a driver')));
-                            return;
-                          }
-                          setState(() => _isLoading = true);
-                          try {
-                            await widget.ref.read(adminApiProvider).assignDriver(
-                              orderId: order.id,
-                              driverId: _selectedDriverId!,
-                              agreedPrice: double.parse(_priceController.text),
-                              deliveryFee: double.parse(_feeController.text),
-                            );
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              widget.ref.invalidate(adminOrdersProvider);
-                            }
-                          } catch (e) {
-                            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-                          } finally {
-                            setState(() => _isLoading = false);
-                          }
-                        },
+                        onPressed: _isLoading
+                            ? null
+                            : () async {
+                                if (_selectedDriverId == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Please select a driver')));
+                                  return;
+                                }
+                                setState(() => _isLoading = true);
+                                try {
+                                  await widget.ref.read(adminApiProvider).assignDriver(
+                                        orderId: order.id,
+                                        driverId: _selectedDriverId!,
+                                        agreedPrice: double.parse(_priceController.text),
+                                        deliveryFee: double.parse(_feeController.text),
+                                      );
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                    widget.ref.invalidate(adminOrdersProvider);
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                                  }
+                                } finally {
+                                  setState(() => _isLoading = false);
+                                }
+                              },
                         label: 'Update & Assign Driver',
-                        color: const Color(0xFF388E3C),
+                        color: AppColors.success,
                         icon: Icons.check_circle_outline,
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.xxl),
                     ] else if (order.status != 'delivered' && order.status != 'cancelled') ...[
                       _sectionHeader('STATUS SHIPMENT CONTROL'),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.lg),
                       _statusButton('picked_up', 'Confirm Picked Up', Icons.inventory),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.md),
                       _statusButton('on_the_way', 'Set as In Transit', Icons.local_shipping),
-                      const SizedBox(height: 12),
-                      _statusButton('delivered', 'Mark as Delivered', Icons.done_all, color: Colors.blue.shade700),
+                      const SizedBox(height: AppSpacing.md),
+                      _statusButton('delivered', 'Mark as Delivered', Icons.done_all,
+                          color: AppColors.adminAccent),
                     ] else ...[
-                      Center(
+                      const Center(
                         child: Column(
                           children: [
-                            const SizedBox(height: 24),
-                            Icon(Icons.check_circle, size: 64, color: Colors.green.shade600),
-                            const SizedBox(height: 16),
-                            const Text('Order Finalized', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 8),
-                            const Text('This order is completed and archived.', style: TextStyle(color: Colors.grey)),
+                            SizedBox(height: AppSpacing.xl),
+                            Icon(Icons.check_circle, size: 64, color: AppColors.success),
+                            SizedBox(height: AppSpacing.lg),
+                            Text('Order Finalized', style: AppTextStyles.headingMd),
+                            SizedBox(height: AppSpacing.sm),
+                            Text(
+                              'This order is completed and archived.',
+                              style: AppTextStyles.bodySm,
+                            ),
                           ],
                         ),
                       ),
@@ -1066,38 +1194,48 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
   Widget _sectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 10,
+      style: AppTextStyles.caption.copyWith(
         fontWeight: FontWeight.w900,
         letterSpacing: 1.2,
-        color: Colors.grey,
       ),
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon}) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+  }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        color: AppColors.backgroundSubtle,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: AppColors.border),
       ),
       child: TextField(
         controller: controller,
-        cursorColor: Colors.blueAccent,
+        cursorColor: AppColors.adminAccent,
         decoration: InputDecoration(
-          prefixIcon: Icon(icon, size: 20, color: Colors.blueAccent.shade200),
+          prefixIcon: Icon(icon, size: 20, color: AppColors.adminAccent.withOpacity(0.7)),
           labelText: label,
-          labelStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+          labelStyle: AppTextStyles.bodySm.copyWith(color: AppColors.textSecondary),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
         ),
         keyboardType: TextInputType.number,
       ),
     );
   }
 
-  Widget _primaryButton({required VoidCallback? onPressed, required String label, required Color color, IconData? icon}) {
+  Widget _primaryButton({
+    required VoidCallback? onPressed,
+    required String label,
+    required Color color,
+    IconData? icon,
+  }) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -1105,50 +1243,64 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
         foregroundColor: Colors.white,
         elevation: 0,
         minimumSize: const Size(double.infinity, 56),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
         overlayColor: Colors.white.withOpacity(0.1),
       ),
-      child: _isLoading 
-        ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-        : Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 8)],
-              Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-            ],
-          ),
+      child: _isLoading
+          ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: AppSpacing.sm)],
+                Text(
+                  label,
+                  style: AppTextStyles.button.copyWith(color: Colors.white),
+                ),
+              ],
+            ),
     );
   }
 
   Widget _statusButton(String status, String label, IconData icon, {Color? color}) {
     return OutlinedButton(
-      onPressed: _isLoading ? null : () async {
-        setState(() => _isLoading = true);
-        try {
-          await widget.ref.read(adminApiProvider).updateOrderStatus(widget.order.id, status);
-          if (context.mounted) {
-             Navigator.pop(context);
-             Navigator.pop(context);
-             widget.ref.invalidate(adminOrdersProvider);
-          }
-        } catch (e) {
-          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-        } finally {
-          setState(() => _isLoading = false);
-        }
-      },
+      onPressed: _isLoading
+          ? null
+          : () async {
+              setState(() => _isLoading = true);
+              try {
+                await widget.ref.read(adminApiProvider).updateOrderStatus(widget.order.id, status);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  widget.ref.invalidate(adminOrdersProvider);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              } finally {
+                setState(() => _isLoading = false);
+              }
+            },
       style: OutlinedButton.styleFrom(
-        foregroundColor: color ?? Colors.black87,
-        side: BorderSide(color: color?.withOpacity(0.3) ?? Colors.grey.shade300, width: 1.5),
+        foregroundColor: color ?? AppColors.textPrimary,
+        side: BorderSide(
+          color: color?.withOpacity(0.3) ?? AppColors.borderStrong,
+          width: 1.5,
+        ),
         minimumSize: const Size(double.infinity, 52),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 18),
-          const SizedBox(width: 12),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+          const SizedBox(width: AppSpacing.md),
+          Text(label, style: AppTextStyles.label.copyWith(color: color ?? AppColors.textPrimary)),
         ],
       ),
     );

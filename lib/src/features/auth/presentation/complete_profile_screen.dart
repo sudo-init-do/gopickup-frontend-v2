@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 import '../../../state/profile_provider.dart';
 import '../../../models/user_models.dart';
 import '../../../state/auth_provider.dart';
@@ -46,7 +49,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     final role = ref.read(authProvider).user?.role ?? 'client';
     final nameValid = _nameController.text.trim().length >= 3;
     final phoneValid = _phoneController.text.trim().length >= 10;
-    
+
     if (role == 'vendor') {
       return nameValid && phoneValid && _businessTypeController.text.trim().isNotEmpty;
     } else if (role == 'driver') {
@@ -54,6 +57,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     }
     return nameValid && phoneValid;
   }
+
   bool get _isAddressValid =>
       _addressController.text.trim().isNotEmpty &&
       _cityController.text.trim().isNotEmpty;
@@ -104,21 +108,24 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
       }
 
       if (!mounted) return;
-      
+
       setState(() => _isLoading = false);
 
       if (success) {
         ref.read(authProvider.notifier).markProfileComplete();
         if (role == 'vendor') {
           context.go('/vendor');
-        } else if (role == 'driver') context.go('/driver/home');
-        else context.go('/client');
+        } else if (role == 'driver') {
+          context.go('/driver/home');
+        } else {
+          context.go('/client');
+        }
       } else {
         final error = ref.read(profileProvider).error;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(ErrorHandler.getMessage(error)),
-            backgroundColor: Colors.red.shade800,
+            backgroundColor: AppColors.destructive,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -129,7 +136,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: SafeArea(
         child: Column(
           children: [
@@ -142,51 +149,16 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
             ),
             // Bottom Action Button
             Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed:
-                      (_currentStep == 0
-                          ? _isProfileValid
-                          : _isAddressValid && !_isLoading)
-                      ? _nextStep
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primarySage.withOpacity(0.5),
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _currentStep == 0 ? 'Continue' : 'Complete Setup',
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(Icons.arrow_forward_rounded, size: 20),
-                          ],
-                        ),
-                ),
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: PrimaryButton(
+                label: _currentStep == 0 ? 'Continue' : 'Complete Setup',
+                onPressed: (_currentStep == 0
+                        ? _isProfileValid
+                        : _isAddressValid && !_isLoading)
+                    ? _nextStep
+                    : null,
+                isLoading: _isLoading,
+                icon: Icons.arrow_forward_rounded,
               ),
             ),
           ],
@@ -197,15 +169,15 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
 
   Widget _buildProfileStep() {
     final role = ref.read(authProvider).user?.role ?? 'client';
-    
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 56),
           _buildHeader(),
-          const SizedBox(height: 40),
+          const SizedBox(height: AppSpacing.xxxl),
           _buildStepper(),
           const SizedBox(height: 56),
           _buildProfilePhotoPicker(),
@@ -213,45 +185,33 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
           // Name Field
           Text(
             role == 'vendor' ? 'Store Name' : 'Full Name',
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1F2937),
-            ),
+            style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           _buildCustomTextField(
             controller: _nameController,
             hintText: role == 'vendor' ? 'Enter your store name' : 'Enter your full name',
             isValid: _nameController.text.trim().length >= 3,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.xxl),
           // Phone Number Field
-          const Text(
+          Text(
             'Phone Number',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1F2937),
-            ),
+            style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           _buildCustomTextField(
             controller: _phoneController,
             hintText: 'e.g. 08087042206',
             isValid: _phoneController.text.trim().length >= 10,
           ),
           if (role == 'vendor') ...[
-            const SizedBox(height: 32),
-            const Text(
+            const SizedBox(height: AppSpacing.xxl),
+            Text(
               'Business Type',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1F2937),
-              ),
+              style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             _buildCustomTextField(
               controller: _businessTypeController,
               hintText: 'e.g. Construction Materials',
@@ -259,23 +219,19 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
             ),
           ],
           if (role == 'driver') ...[
-             const SizedBox(height: 32),
-            const Text(
+            const SizedBox(height: AppSpacing.xxl),
+            Text(
               'Driver License Number',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1F2937),
-              ),
+              style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             _buildCustomTextField(
               controller: _licenseController,
               hintText: 'e.g. ABC-123456',
               isValid: _licenseController.text.trim().isNotEmpty,
             ),
           ],
-          const SizedBox(height: 40),
+          const SizedBox(height: AppSpacing.xxxl),
         ],
       ),
     );
@@ -283,53 +239,45 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
 
   Widget _buildAddressStep() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 56),
           _buildHeader(),
-          const SizedBox(height: 40),
+          const SizedBox(height: AppSpacing.xxxl),
           _buildStepper(),
-          const SizedBox(height: 48),
+          const SizedBox(height: AppSpacing.xxl + AppSpacing.sm),
           // Street Address Input
-          const Text(
+          Text(
             'Street Address',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1F2937),
-            ),
+            style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           _buildCustomTextField(
             controller: _addressController,
             hintText: 'Enter your address',
             isValid: _addressController.text.isNotEmpty,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.xxl),
           // City Input
-          const Text(
+          Text(
             'City',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF1F2937),
-            ),
+            style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           _buildCustomTextField(
             controller: _cityController,
             hintText: 'Enter your city',
             isValid: _cityController.text.isNotEmpty,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
           // Use Current Location
           InkWell(
             onTap: () {},
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
             child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
+              padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -338,7 +286,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                     color: AppColors.primary,
                     size: 22,
                   ),
-                  SizedBox(width: 8),
+                  SizedBox(width: AppSpacing.sm),
                   Text(
                     'Use current location',
                     style: TextStyle(
@@ -357,26 +305,20 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   }
 
   Widget _buildHeader() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Complete your profile',
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF1F2937),
+          style: AppTextStyles.displayLg.copyWith(
+            color: AppColors.textPrimary,
             letterSpacing: -0.5,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           'Just a few more details to get started',
-          style: TextStyle(
-            fontSize: 16,
-            color: Color(0xFF6B7280),
-            letterSpacing: 0.1,
-          ),
+          style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );
@@ -394,11 +336,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
         Expanded(
           child: Container(
             height: 2,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
+            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             decoration: BoxDecoration(
-              color: _currentStep > 0
-                  ? AppColors.primary
-                  : const Color(0xFFF3F4F6),
+              color: _currentStep > 0 ? AppColors.primary : AppColors.backgroundSubtle,
               borderRadius: BorderRadius.circular(1),
             ),
           ),
@@ -422,12 +362,12 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
             width: 140,
             height: 140,
             decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
+              color: AppColors.backgroundSubtle,
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 4),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity( 0.03),
+                  color: Colors.black.withOpacity(0.03),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -436,7 +376,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
             child: const Icon(
               Icons.person_outline_rounded,
               size: 56,
-              color: Color(0xFF9CA3AF),
+              color: AppColors.textDisabled,
             ),
           ),
           Positioned(
@@ -461,7 +401,6 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     );
   }
 
-
   Widget _buildCustomTextField({
     required TextEditingController controller,
     required String hintText,
@@ -469,27 +408,24 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
         border: Border.all(
-          color: isValid ? AppColors.primary : const Color(0xFFF3F4F6),
+          color: isValid ? AppColors.primary : AppColors.backgroundSubtle,
           width: 1.5,
         ),
       ),
       child: TextField(
         controller: controller,
         onChanged: (_) => setState(() {}),
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        style: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(
-            color: Color(0xFF9CA3AF),
-            fontWeight: FontWeight.w400,
-          ),
+          hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 20,
+            horizontal: AppSpacing.xl,
+            vertical: AppSpacing.xl,
           ),
         ),
       ),
@@ -516,34 +452,33 @@ class _StepBubble extends StatelessWidget {
     Color contentColor;
 
     if (isCompleted) {
-      bgColor = AppColors.primaryLight.withOpacity( 0.5);
+      bgColor = AppColors.primaryLight.withOpacity(0.5);
       contentColor = AppColors.primary;
     } else if (isActive) {
       bgColor = AppColors.primary;
       contentColor = Colors.white;
     } else {
-      bgColor = const Color(0xFFF9FAFB);
-      contentColor = const Color(0xFF6B7280);
+      bgColor = AppColors.background;
+      contentColor = AppColors.textSecondary;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm + 2),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
         border: isCompleted
-            ? Border.all(color: AppColors.primary.withOpacity( 0.2))
+            ? Border.all(color: AppColors.primary.withOpacity(0.2))
             : null,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 18, color: contentColor),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
+            style: AppTextStyles.bodySm.copyWith(
               fontWeight: FontWeight.w700,
               color: contentColor,
             ),

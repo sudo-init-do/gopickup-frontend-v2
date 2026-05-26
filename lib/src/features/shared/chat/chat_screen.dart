@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/chat_models.dart';
 import '../../../state/auth_provider.dart';
 import '../../../state/chat_provider.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final Conversation chat;
@@ -43,25 +46,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final currentUser = ref.watch(authProvider).user;
     final otherUserName = widget.chat.otherUserName ?? 'User';
 
-    // Refined color palette to match mockup
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
-    const kBrandGreen = Color(0xFF45A225); // Vibrant green from mockup
-    const kIncomingBg = Color(0xFFF1F5F9);
-    const kChatBg = Color(0xFFF8F9FA);
-
     return Scaffold(
-      backgroundColor: kChatBg,
-      appBar: _buildAppBar(context, otherUserName, kDarkTextColor, kBrandGreen),
+      backgroundColor: AppColors.background,
+      appBar: _buildAppBar(context, otherUserName),
       body: Column(
         children: [
           Expanded(
             child: chatState.isLoading && chatState.currentMessages.isEmpty
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 24,
+                      horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.xl,
                     ),
                     itemCount: chatState.currentMessages.length,
                     itemBuilder: (context, index) {
@@ -69,10 +65,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       return _MessageBubble(
                         message: message,
                         isMe: message.senderId == currentUser?.id,
-                        kBrandGreen: kBrandGreen,
-                        kDarkTextColor: kDarkTextColor,
-                        kMidTextColor: kMidTextColor,
-                        kIncomingBg: kIncomingBg,
                       );
                     },
                   ),
@@ -80,78 +72,70 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           _ChatInput(
             controller: _controller,
             onSend: _sendMessage,
-            kBrandGreen: kBrandGreen,
           ),
         ],
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(
-    BuildContext context,
-    String name,
-    Color darkText,
-    Color brandGreen,
-  ) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, String name) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       elevation: 0,
       toolbarHeight: 80,
       centerTitle: false,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 12),
+        padding: const EdgeInsets.only(left: AppSpacing.md),
         child: Center(
           child: Container(
             width: 44,
             height: 44,
             decoration: const BoxDecoration(
-              color: Color(0xFFF3F4F6),
+              color: AppColors.backgroundSubtle,
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: Icon(Icons.arrow_back, color: darkText, size: 20),
+              icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary, size: 20),
               onPressed: () => Navigator.pop(context),
             ),
           ),
         ),
       ),
-      titleSpacing: 12,
+      titleSpacing: AppSpacing.md,
       title: Row(
         children: [
           Container(
             width: 50,
             height: 50,
             decoration: const BoxDecoration(
-              color: Color(0xFFE8F5E9),
+              color: AppColors.primaryLight,
               shape: BoxShape.circle,
             ),
             child: const Center(
               child: Icon(
                 Icons.person_outline_rounded,
-                color: Color(0xFF4CAF50),
+                color: AppColors.primary,
                 size: 28,
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 name,
-                style: TextStyle(
-                  color: darkText,
+                style: AppTextStyles.titleMd.copyWith(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.5,
                 ),
               ),
-              const Text(
+              Text(
                 'Online',
-                style: TextStyle(
-                  color: Color(0xFF4CAF50),
-                  fontSize: 13,
+                style: AppTextStyles.caption.copyWith(
+                  color: AppColors.success,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -161,13 +145,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
       actions: [
         _buildCircularAction(Icons.phone_outlined),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.sm),
         _buildCircularAction(Icons.more_vert),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppSpacing.lg),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(color: const Color(0xFFF1F5F9), height: 1),
+        child: Container(color: AppColors.backgroundSubtle, height: 1),
       ),
     );
   }
@@ -177,10 +161,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       width: 44,
       height: 44,
       decoration: const BoxDecoration(
-        color: Color(0xFFF3F4F6),
+        color: AppColors.backgroundSubtle,
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: const Color(0xFF6B7280), size: 20),
+      child: Icon(icon, color: AppColors.textSecondary, size: 20),
     );
   }
 }
@@ -188,38 +172,30 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 class _MessageBubble extends StatelessWidget {
   final Message message;
   final bool isMe;
-  final Color kBrandGreen;
-  final Color kDarkTextColor;
-  final Color kMidTextColor;
-  final Color kIncomingBg;
 
   const _MessageBubble({
     required this.message,
     required this.isMe,
-    required this.kBrandGreen,
-    required this.kDarkTextColor,
-    required this.kMidTextColor,
-    required this.kIncomingBg,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: isMe
             ? CrossAxisAlignment.end
             : CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 14),
             decoration: BoxDecoration(
-              color: isMe ? kBrandGreen : kIncomingBg,
+              color: isMe ? AppColors.primary : AppColors.backgroundSubtle,
               borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(24),
-                topRight: const Radius.circular(24),
-                bottomLeft: Radius.circular(isMe ? 24 : 0),
-                bottomRight: Radius.circular(isMe ? 0 : 24),
+                topLeft: const Radius.circular(AppRadius.xl),
+                topRight: const Radius.circular(AppRadius.xl),
+                bottomLeft: Radius.circular(isMe ? AppRadius.xl : 0),
+                bottomRight: Radius.circular(isMe ? 0 : AppRadius.xl),
               ),
             ),
             constraints: BoxConstraints(
@@ -230,24 +206,20 @@ class _MessageBubble extends StatelessWidget {
               children: [
                 Text(
                   message.content,
-                  style: TextStyle(
+                  style: AppTextStyles.body.copyWith(
                     color: isMe
                         ? Colors.white
-                        : kDarkTextColor.withOpacity( 0.9),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                        : AppColors.textPrimary.withOpacity(0.9),
                     height: 1.4,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   DateFormat('h:mm a').format(message.createdAt),
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
+                  style: AppTextStyles.caption.copyWith(
                     color: isMe
-                        ? Colors.white.withOpacity( 0.8)
-                        : kMidTextColor.withOpacity( 0.6),
+                        ? Colors.white.withOpacity(0.8)
+                        : AppColors.textSecondary.withOpacity(0.6),
                   ),
                 ),
               ],
@@ -262,78 +234,68 @@ class _MessageBubble extends StatelessWidget {
 class _ChatInput extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
-  final Color kBrandGreen;
 
   const _ChatInput({
     required this.controller,
     required this.onSend,
-    required this.kBrandGreen,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(
-        16,
-        16,
-        16,
-        MediaQuery.of(context).padding.bottom + 16,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        MediaQuery.of(context).padding.bottom + AppSpacing.lg,
       ),
       decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFF1F5F9))),
+        color: AppColors.card,
+        border: Border(top: BorderSide(color: AppColors.backgroundSubtle)),
       ),
       child: Row(
         children: [
           _buildInputIcon(Icons.attachment_rounded),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           _buildInputIcon(Icons.image_outlined),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Container(
               height: 52,
               decoration: BoxDecoration(
-                color: const Color(0xFFFAFAFA),
-                borderRadius: BorderRadius.circular(26),
-                border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
               ),
               child: TextField(
                 controller: controller,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Type a message...',
-                  hintStyle: TextStyle(
-                    color: Color(0xFF94A3B8),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           GestureDetector(
             onTap: onSend,
             child: Container(
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: kBrandGreen,
+                color: AppColors.primary,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: kBrandGreen.withOpacity( 0.3),
+                    color: AppColors.primary.withOpacity(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.send_rounded,
-                color: Colors.white,
-                size: 24,
-              ),
+              child: const Icon(Icons.send_rounded, color: Colors.white, size: 24),
             ),
           ),
         ],
@@ -346,10 +308,10 @@ class _ChatInput extends StatelessWidget {
       width: 44,
       height: 44,
       decoration: const BoxDecoration(
-        color: Color(0xFFF3F4F6),
+        color: AppColors.backgroundSubtle,
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: const Color(0xFF6B7280), size: 20),
+      child: Icon(icon, color: AppColors.textSecondary, size: 20),
     );
   }
 }

@@ -5,6 +5,10 @@ import 'package:intl/intl.dart';
 import '../../../models/order_models.dart';
 import '../data/vendor_repository.dart';
 import '../../../common/utils/error_handler.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 
 class VendorOrderDetailScreen extends ConsumerWidget {
   final Order order;
@@ -13,32 +17,27 @@ class VendorOrderDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF64748B);
-    const kLightBorderColor = Color(0xFFF1F5F9);
-    const kBrandGreen = Color(0xFF45A225);
-
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         elevation: 0,
         leadingWidth: 70,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
+          padding: const EdgeInsets.only(left: AppSpacing.lg),
           child: Center(
             child: InkWell(
               onTap: () => context.pop(),
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
               child: Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFF9FAFB),
+                  color: AppColors.background,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.arrow_back,
-                  color: kDarkTextColor,
+                  color: AppColors.textPrimary,
                   size: 20,
                 ),
               ),
@@ -50,44 +49,36 @@ class VendorOrderDetailScreen extends ConsumerWidget {
           children: [
             Text(
               order.id.substring(0, 8),
-              style: const TextStyle(
-                color: kDarkTextColor,
-                fontWeight: FontWeight.w900,
-                fontSize: 20,
-              ),
+              style: AppTextStyles.headingMd.copyWith(fontWeight: FontWeight.w900),
             ),
             Text(
               DateFormat('MMM d, yyyy • h:mm a').format(order.createdAt),
-              style: const TextStyle(
-                color: kMidTextColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              style: AppTextStyles.bodySm,
             ),
           ],
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Status Card
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: kLightBorderColor, width: 1.5),
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(AppRadius.xl),
+                border: Border.all(color: AppColors.border, width: 1.5),
               ),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
                       color: order.status == 'pending'
-                          ? const Color(0xFFFFF7ED)
-                          : const Color(0xFFEFF6FF),
+                          ? AppColors.warning.withOpacity(0.12)
+                          : AppColors.info.withOpacity(0.12),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -95,34 +86,28 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                           ? Icons.access_time_filled_rounded
                           : Icons.inventory_2_rounded,
                       color: order.status == 'pending'
-                          ? const Color(0xFFF97316)
-                          : const Color(0xFF3B82F6),
+                          ? AppColors.warning
+                          : AppColors.info,
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           order.status.toUpperCase(),
-                          style: const TextStyle(
-                            color: kDarkTextColor,
+                          style: AppTextStyles.titleMd.copyWith(
                             fontWeight: FontWeight.w800,
-                            fontSize: 18,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           order.status == 'pending'
                               ? 'Waiting for your action'
                               : 'Order is being processed',
-                          style: const TextStyle(
-                            color: kMidTextColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                          ),
+                          style: AppTextStyles.body,
                         ),
                       ],
                     ),
@@ -130,50 +115,44 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxl),
 
             // Customer Section
             _buildSectionHeader('Customer Information'),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: kLightBorderColor, width: 1.5),
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(AppRadius.xl),
+                border: Border.all(color: AppColors.border, width: 1.5),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Client ID: ${order.clientId.substring(0, 8)}',
-                    style: const TextStyle(
-                      color: kDarkTextColor,
+                    style: AppTextStyles.titleMd.copyWith(
                       fontWeight: FontWeight.w800,
-                      fontSize: 18,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   const Text(
                     'Address details could go here if available',
-                    style: TextStyle(
-                      color: kMidTextColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15,
-                    ),
+                    style: AppTextStyles.body,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxl),
 
             // Order Items Section
             _buildSectionHeader('Order Items'),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: kLightBorderColor, width: 1.5),
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(AppRadius.xl),
+                border: Border.all(color: AppColors.border, width: 1.5),
               ),
               child: Column(
                 children: order.items
@@ -188,10 +167,10 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                           if (order.items.indexOf(item) !=
                               order.items.length - 1)
                             const Divider(
-                              color: kLightBorderColor,
+                              color: AppColors.border,
                               height: 1,
-                              indent: 24,
-                              endIndent: 24,
+                              indent: AppSpacing.xl,
+                              endIndent: AppSpacing.xl,
                             ),
                         ],
                       ),
@@ -199,35 +178,31 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                     .toList(),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
 
             // Financial Summary
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: kLightBorderColor, width: 1.5),
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(AppRadius.xl),
+                border: Border.all(color: AppColors.border, width: 1.5),
               ),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Total Amount',
-                        style: TextStyle(
-                          color: kDarkTextColor,
+                        style: AppTextStyles.titleMd.copyWith(
                           fontWeight: FontWeight.w800,
-                          fontSize: 18,
                         ),
                       ),
                       Text(
                         '₦${order.totalProductAmount.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          color: kDarkTextColor,
+                        style: AppTextStyles.headingMd.copyWith(
                           fontWeight: FontWeight.w900,
-                          fontSize: 22,
                         ),
                       ),
                     ],
@@ -241,10 +216,10 @@ class VendorOrderDetailScreen extends ConsumerWidget {
       ),
       bottomSheet: order.status == 'pending'
           ? Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border(top: BorderSide(color: kLightBorderColor)),
+                color: AppColors.card,
+                border: Border(top: BorderSide(color: AppColors.border)),
               ),
               child: SafeArea(
                 child: Row(
@@ -257,79 +232,71 @@ class VendorOrderDetailScreen extends ConsumerWidget {
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           side: const BorderSide(
-                            color: kLightBorderColor,
+                            color: AppColors.border,
                             width: 1.5,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: BorderRadius.circular(AppRadius.xl),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Reject',
-                          style: TextStyle(
-                            color: kDarkTextColor,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
+                          style: AppTextStyles.label.copyWith(
+                            color: AppColors.textPrimary,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: AppSpacing.lg),
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          // Show loading
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
+                      child: Consumer(
+                        builder: (context, ref, _) {
+                          return PrimaryButton(
+                            label: 'Accept Order',
+                            onPressed: () async {
+                              // Show loading
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => const Center(
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              );
+
+                              final (success, error) = await ref
+                                  .read(vendorRepositoryProvider)
+                                  .updateOrderStatus(
+                                      order.id, 'searching_driver');
+
+                              if (context.mounted) {
+                                Navigator.pop(context); // Close loading
+                                if (success) {
+                                  ref.invalidate(vendorOrdersProvider);
+                                  context.pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content:
+                                          Text('Order accepted successfully!'),
+                                      backgroundColor: AppColors.primary,
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          ErrorHandler.getMessage(error)),
+                                      backgroundColor: Colors.red,
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
                           );
-
-                          final (success, error) = await ref
-                              .read(vendorRepositoryProvider)
-                              .updateOrderStatus(order.id, 'searching_driver');
-
-                          if (context.mounted) {
-                            Navigator.pop(context); // Close loading
-                            if (success) {
-                              ref.invalidate(vendorOrdersProvider);
-                              context.pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Order accepted successfully!'),
-                                  backgroundColor: kBrandGreen,
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(ErrorHandler.getMessage(error)),
-                                  backgroundColor: Colors.red.shade800,
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                            }
-                          }
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: kBrandGreen,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(24),
-                          ),
-                        ),
-                        child: const Text(
-                          'Accept Order',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 16,
-                          ),
-                        ),
                       ),
                     ),
                   ],
@@ -342,21 +309,17 @@ class VendorOrderDetailScreen extends ConsumerWidget {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8, bottom: 12),
+      padding: const EdgeInsets.only(left: AppSpacing.sm, bottom: AppSpacing.md),
       child: Text(
         title,
-        style: const TextStyle(
-          color: Color(0xFF64748B),
-          fontWeight: FontWeight.w700,
-          fontSize: 16,
-        ),
+        style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
       ),
     );
   }
 
   Widget _buildOrderItem(String name, String breakdown, String price) {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -366,19 +329,15 @@ class VendorOrderDetailScreen extends ConsumerWidget {
               children: [
                 Text(
                   name,
-                  style: const TextStyle(
-                    color: Color(0xFF111827),
+                  style: AppTextStyles.titleMd.copyWith(
                     fontWeight: FontWeight.w800,
-                    fontSize: 17,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   breakdown,
-                  style: const TextStyle(
-                    color: Color(0xFF94A3B8),
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
+                  style: AppTextStyles.bodySm.copyWith(
+                    color: AppColors.textTertiary,
                   ),
                 ),
               ],
@@ -386,11 +345,7 @@ class VendorOrderDetailScreen extends ConsumerWidget {
           ),
           Text(
             price,
-            style: const TextStyle(
-              color: Color(0xFF111827),
-              fontWeight: FontWeight.w800,
-              fontSize: 17,
-            ),
+            style: AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w800),
           ),
         ],
       ),

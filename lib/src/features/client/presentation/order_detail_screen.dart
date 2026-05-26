@@ -5,6 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/order_provider.dart';
 import '../../../models/order_models.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
+import '../../../common/config/app_config.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final Order order;
@@ -19,91 +23,94 @@ class OrderDetailScreen extends StatelessWidget {
     }
 
     // Fallback
-    const phone = "2348087042206";
-    final message = "Hello GoPickup Support, I have an inquiry about my order: ${order.id}";
-    final fallbackUrl = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
+    const phone = AppConfig.supportPhone;
+    final message =
+        "Hello GoPickup Support, I have an inquiry about my order: ${order.id}";
+    final fallbackUrl =
+        "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
     if (await canLaunchUrl(Uri.parse(fallbackUrl))) {
-      await launchUrl(Uri.parse(fallbackUrl), mode: LaunchMode.externalApplication);
+      await launchUrl(
+        Uri.parse(fallbackUrl),
+        mode: LaunchMode.externalApplication,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
-    const kLightTextColor = Color(0xFF9CA3AF);
-    const kBrandGreen = AppColors.primary;
- 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
             _buildHeader(
               context,
               order.id.length > 8 ? order.id.substring(0, 8) : order.id,
-              kDarkTextColor,
-              kLightTextColor,
             ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildTrackingTop(
-                      context,
-                      kBrandGreen,
-                      kDarkTextColor,
-                      kMidTextColor,
-                    ),
-                    _buildTimelineSection(
-                      kDarkTextColor,
-                      kMidTextColor,
-                      kLightTextColor,
-                      kBrandGreen,
-                    ),
-                    const SizedBox(height: 24),
-                    if (order.status == 'pending' || order.status == 'awaiting_payment')
+                    _buildTrackingTop(context),
+                    _buildTimelineSection(),
+                    const SizedBox(height: AppSpacing.xl),
+                    if (order.status == 'pending' ||
+                        order.status == 'awaiting_payment')
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.xl,
+                        ),
                         child: Column(
                           children: [
-                            ElevatedButton.icon(
-                              onPressed: _launchWhatsApp,
-                              icon: const Icon(Icons.chat_bubble_outline_rounded),
-                              label: const Text('Negotiate on WhatsApp'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF25D366),
-                                foregroundColor: Colors.white,
-                                minimumSize: const Size(double.infinity, 56),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 56,
+                              child: ElevatedButton.icon(
+                                onPressed: _launchWhatsApp,
+                                icon: const Icon(
+                                  Icons.chat_bubble_outline_rounded,
+                                ),
+                                label: const Text('Negotiate on WhatsApp'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.whatsapp,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(AppRadius.lg),
+                                  ),
                                 ),
                               ),
                             ),
                             if (order.status == 'awaiting_payment') ...[
-                              const SizedBox(height: 12),
+                              const SizedBox(height: AppSpacing.md),
                               Consumer(
                                 builder: (context, ref, _) {
-                                  final isLoading = ref.watch(orderProvider).isLoading;
-                                  return ElevatedButton.icon(
-                                    onPressed: isLoading ? null : () async {
-                                      final success = await ref.read(orderProvider.notifier).reportPaymentMade(order.id);
-                                      if (context.mounted && success) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(content: Text('Payment reported successfully!')),
-                                        );
-                                      }
-                                    },
-                                    icon: const Icon(Icons.check_circle_outline_rounded),
-                                    label: Text(isLoading ? 'Processing...' : 'I Have Made Payment'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: kBrandGreen,
-                                      foregroundColor: Colors.white,
-                                      minimumSize: const Size(double.infinity, 56),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                    ),
+                                  final isLoading =
+                                      ref.watch(orderProvider).isLoading;
+                                  return PrimaryButton(
+                                    label: isLoading
+                                        ? 'Processing...'
+                                        : 'I Have Made Payment',
+                                    isLoading: isLoading,
+                                    icon: Icons.check_circle_outline_rounded,
+                                    onPressed: isLoading
+                                        ? null
+                                        : () async {
+                                            final success = await ref
+                                                .read(orderProvider.notifier)
+                                                .reportPaymentMade(order.id);
+                                            if (context.mounted && success) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Payment reported successfully!',
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
                                   );
                                 },
                               ),
@@ -111,24 +118,33 @@ class OrderDetailScreen extends StatelessWidget {
                           ],
                         ),
                       )
-                    else if (order.status != 'delivered' && order.status != 'cancelled')
+                    else if (order.status != 'delivered' &&
+                        order.status != 'cancelled')
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: ElevatedButton.icon(
-                          onPressed: _launchWhatsApp,
-                          icon: const Icon(Icons.chat_bubble_outline_rounded),
-                          label: const Text('Chat with Support'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF25D366),
-                            foregroundColor: Colors.white,
-                            minimumSize: const Size(double.infinity, 56),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.xl,
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton.icon(
+                            onPressed: _launchWhatsApp,
+                            icon: const Icon(
+                              Icons.chat_bubble_outline_rounded,
+                            ),
+                            label: const Text('Chat with Support'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.whatsapp,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.lg),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: AppSpacing.xxxl),
                   ],
                 ),
               ),
@@ -139,14 +155,12 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(
-    BuildContext context,
-    String orderId,
-    Color darkText,
-    Color lightText,
-  ) {
+  Widget _buildHeader(BuildContext context, String orderId) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xl,
+        vertical: AppSpacing.lg,
+      ),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -154,11 +168,11 @@ class OrderDetailScreen extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.card,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity( 0.04),
+                    color: Colors.black.withOpacity(0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -171,21 +185,17 @@ class OrderDetailScreen extends StatelessWidget {
           ),
           Column(
             children: [
-              const Text(
+              Text(
                 'Order Tracking',
-                style: TextStyle(
+                style: AppTextStyles.headingLg.copyWith(
                   fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF1F2937),
                   letterSpacing: -0.5,
                 ),
               ),
               Text(
                 orderId,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: lightText,
+                style: AppTextStyles.label.copyWith(
+                  color: AppColors.textTertiary,
                 ),
               ),
             ],
@@ -195,28 +205,30 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTrackingTop(
-    BuildContext context,
-    Color brandGreen,
-    Color darkText,
-    Color midText,
-  ) {
+  Widget _buildTrackingTop(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+      padding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.xxl,
+        horizontal: AppSpacing.xl,
+      ),
       child: Column(
         children: [
-          Icon(Icons.local_shipping_rounded, color: brandGreen, size: 64),
-          const SizedBox(height: 32),
+          const Icon(
+            Icons.local_shipping_rounded,
+            color: AppColors.primary,
+            size: 64,
+          ),
+          const SizedBox(height: AppSpacing.xxl),
           if (order.vendor != null) ...[
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(32),
+                color: AppColors.card,
+                borderRadius: BorderRadius.circular(AppSpacing.xxl),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity( 0.03),
+                    color: Colors.black.withOpacity(0.03),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -225,7 +237,7 @@ class OrderDetailScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: const BoxDecoration(
                       color: Color(0xFFF0FDF4),
                       shape: BoxShape.circle,
@@ -236,25 +248,21 @@ class OrderDetailScreen extends StatelessWidget {
                       size: 24,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: AppSpacing.lg),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Vendor Store',
-                          style: TextStyle(
-                            fontSize: 14,
+                          style: AppTextStyles.body.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF6B7280),
                           ),
                         ),
                         Text(
                           order.vendor!.storeName,
-                          style: TextStyle(
-                            fontSize: 18,
+                          style: AppTextStyles.headingMd.copyWith(
                             fontWeight: FontWeight.w900,
-                            color: darkText,
                           ),
                         ),
                       ],
@@ -268,16 +276,16 @@ class OrderDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
           ],
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(AppSpacing.xl),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(32),
+              color: AppColors.card,
+              borderRadius: BorderRadius.circular(AppSpacing.xxl),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity( 0.03),
+                  color: Colors.black.withOpacity(0.03),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -286,45 +294,39 @@ class OrderDetailScreen extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: const BoxDecoration(
                     color: Color(0xFFFFF7ED),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.local_shipping_outlined,
-                    color: Color(0xFFF97316),
+                    color: AppColors.driverAccent,
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.lg),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'John Driver',
-                        style: TextStyle(
-                          fontSize: 18,
+                        style: AppTextStyles.headingMd.copyWith(
                           fontWeight: FontWeight.w900,
-                          color: darkText,
                         ),
                       ),
-                      Text(
+                      const Text(
                         'Toyota Hilux • ABC 1234',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: midText,
-                        ),
+                        style: AppTextStyles.body,
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: brandGreen,
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: const BoxDecoration(
+                    color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -341,12 +343,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineSection(
-    Color darkText,
-    Color midText,
-    Color lightText,
-    Color brandGreen,
-  ) {
+  Widget _buildTimelineSection() {
     final List<Map<String, dynamic>> stages = [
       {
         'status': 'pending',
@@ -402,26 +399,33 @@ class OrderDetailScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(40)),
+        color: AppColors.card,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.xxxl),
+        ),
       ),
-      padding: const EdgeInsets.fromLTRB(24, 40, 24, 40),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.xl,
+        AppSpacing.xxxl,
+        AppSpacing.xl,
+        AppSpacing.xxxl,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Delivery Timeline',
-            style: TextStyle(
+            style: AppTextStyles.headingMd.copyWith(
               fontSize: 20,
               fontWeight: FontWeight.w900,
-              color: darkText,
               letterSpacing: -0.5,
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.xxl),
           ...List.generate(stages.length, (index) {
             final stage = stages[index];
-            final bool isDone = index < currentIdx || order.status == 'delivered';
+            final bool isDone =
+                index < currentIdx || order.status == 'delivered';
             final bool isActive = index == currentIdx;
             final bool isLast = index == stages.length - 1;
 
@@ -431,10 +435,6 @@ class OrderDetailScreen extends StatelessWidget {
               isActive ? 'Now' : '',
               isDone,
               isDone || isActive,
-              brandGreen,
-              darkText,
-              midText,
-              lightText,
               isActive: isActive,
               isLast: isLast,
             );
@@ -449,14 +449,12 @@ class OrderDetailScreen extends StatelessWidget {
     String desc,
     String time,
     bool isDone,
-    bool showSolidLine,
-    Color color,
-    Color darkText,
-    Color midText,
-    Color lightText, {
+    bool showSolidLine, {
     bool isActive = false,
     bool isLast = false,
   }) {
+    const color = AppColors.primary;
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,16 +474,18 @@ class OrderDetailScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     width: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    color: showSolidLine ? color : color.withOpacity( 0.2),
+                    margin: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                    color: showSolidLine
+                        ? color
+                        : color.withOpacity(0.2),
                   ),
                 ),
             ],
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: AppSpacing.xl),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0 : 32),
+              padding: EdgeInsets.only(bottom: isLast ? 0 : AppSpacing.xxl),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -495,25 +495,23 @@ class OrderDetailScreen extends StatelessWidget {
                       children: [
                         Text(
                           label,
-                          style: TextStyle(
+                          style: AppTextStyles.titleMd.copyWith(
                             fontSize: 17,
                             fontWeight: isActive || isDone
                                 ? FontWeight.w800
                                 : FontWeight.w600,
                             color: isDone || isActive
-                                ? darkText
-                                : darkText.withOpacity( 0.4),
+                                ? AppColors.textPrimary
+                                : AppColors.textPrimary.withOpacity(0.4),
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: AppSpacing.xs),
                         Text(
                           desc,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                          style: AppTextStyles.body.copyWith(
                             color: isDone || isActive
-                                ? midText
-                                : midText.withOpacity( 0.4),
+                                ? AppColors.textSecondary
+                                : AppColors.textSecondary.withOpacity(0.4),
                           ),
                         ),
                       ],
@@ -521,10 +519,8 @@ class OrderDetailScreen extends StatelessWidget {
                   ),
                   Text(
                     time,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: isActive ? color : lightText,
+                    style: AppTextStyles.label.copyWith(
+                      color: isActive ? color : AppColors.textTertiary,
                     ),
                   ),
                 ],

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 import '../../../state/profile_provider.dart';
 import '../../../state/auth_provider.dart';
 import '../../../models/user_models.dart';
@@ -31,8 +34,7 @@ class _DriverRegistrationScreenState
 
   // Missing from UI mockup, needed by backend
   final String _mockPhone = "000-000-0000";
-  final double _mockCapacity =
-      1000.0; // Assume 1k capacity for everything by default
+  final double _mockCapacity = 1000.0; // Assume 1k capacity for everything by default
 
   @override
   void initState() {
@@ -93,7 +95,7 @@ class _DriverRegistrationScreenState
           .createDriverProfile(profile);
 
       if (!mounted) return;
-      
+
       setState(() => _isLoading = false);
 
       if (success) {
@@ -104,7 +106,7 @@ class _DriverRegistrationScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(ErrorHandler.getMessage(error)),
-            backgroundColor: Colors.red.shade800,
+            backgroundColor: AppColors.destructive,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -114,41 +116,34 @@ class _DriverRegistrationScreenState
 
   @override
   Widget build(BuildContext context) {
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
-    const kOrangeColor = Color(0xFFF97316);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 48),
-                    const Text(
+                    const SizedBox(height: AppSpacing.xxl + AppSpacing.sm),
+                    Text(
                       'Driver Registration',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        color: kDarkTextColor,
+                      style: AppTextStyles.displayLg.copyWith(
+                        color: AppColors.textPrimary,
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     Text(
                       'Complete your driver profile to start earning',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: kMidTextColor.withOpacity( 0.8),
+                      style: AppTextStyles.body.copyWith(
+                        color: AppColors.textSecondary.withOpacity(0.8),
                         letterSpacing: 0.1,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.xxl),
                     Row(
                       children: [
                         _buildTab(
@@ -156,7 +151,7 @@ class _DriverRegistrationScreenState
                           label: 'Profile',
                           isActive: _currentStep == 0,
                           isCompleted: _currentStep > 0,
-                          activeColor: kOrangeColor,
+                          activeColor: AppColors.driverAccent,
                         ),
                         _buildDivider(),
                         _buildTab(
@@ -164,7 +159,7 @@ class _DriverRegistrationScreenState
                           label: 'License',
                           isActive: _currentStep == 1,
                           isCompleted: _currentStep > 1,
-                          activeColor: kOrangeColor,
+                          activeColor: AppColors.driverAccent,
                         ),
                         _buildDivider(),
                         _buildTab(
@@ -172,28 +167,20 @@ class _DriverRegistrationScreenState
                           label: 'Vehicle',
                           isActive: _currentStep == 2,
                           isCompleted: false,
-                          activeColor: kOrangeColor,
+                          activeColor: AppColors.driverAccent,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: AppSpacing.xxxl),
                     SizedBox(
                       height: 700,
                       child: PageView(
                         controller: _pageController,
                         physics: const NeverScrollableScrollPhysics(),
                         children: [
-                          _buildProfileForm(
-                            kDarkTextColor,
-                            kMidTextColor,
-                            kOrangeColor,
-                          ),
-                          _buildLicenseForm(kDarkTextColor, kMidTextColor),
-                          _buildVehicleForm(
-                            kDarkTextColor,
-                            kMidTextColor,
-                            kOrangeColor,
-                          ),
+                          _buildProfileForm(),
+                          _buildLicenseForm(),
+                          _buildVehicleForm(),
                         ],
                       ),
                     ),
@@ -202,48 +189,12 @@ class _DriverRegistrationScreenState
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 60,
-                child: ElevatedButton(
-                  onPressed: (_isFormValid && !_isLoading) ? _nextStep : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primary.withOpacity(0.4),
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white.withOpacity(0.7),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _currentStep == 2
-                                  ? 'Complete Registration'
-                                  : 'Continue',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(Icons.arrow_forward_rounded, size: 20),
-                          ],
-                        ),
-                ),
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: PrimaryButton(
+                label: _currentStep == 2 ? 'Complete Registration' : 'Continue',
+                onPressed: (_isFormValid && !_isLoading) ? _nextStep : null,
+                isLoading: _isLoading,
+                icon: Icons.arrow_forward_rounded,
               ),
             ),
           ],
@@ -260,17 +211,17 @@ class _DriverRegistrationScreenState
     required Color activeColor,
   }) {
     final bgColor = isCompleted
-        ? const Color(0xFFE8F3E5)
-        : (isActive ? activeColor : const Color(0xFFF3F4F6));
+        ? AppColors.primaryLight
+        : (isActive ? activeColor : AppColors.backgroundSubtle);
     final contentColor = isCompleted
-        ? const Color(0xFF3B7D23)
-        : (isActive ? Colors.white : const Color(0xFF94A3B8));
+        ? AppColors.primary
+        : (isActive ? Colors.white : AppColors.textTertiary);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm + 2),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -280,11 +231,10 @@ class _DriverRegistrationScreenState
             size: 18,
             color: contentColor,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
+            style: AppTextStyles.bodySm.copyWith(
               fontWeight: FontWeight.w700,
               color: contentColor,
             ),
@@ -298,13 +248,13 @@ class _DriverRegistrationScreenState
     return Expanded(
       child: Container(
         height: 1,
-        margin: const EdgeInsets.symmetric(horizontal: 8),
-        color: const Color(0xFFE5E7EB),
+        margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+        color: AppColors.border,
       ),
     );
   }
 
-  Widget _buildProfileForm(Color darkText, Color midText, Color orange) {
+  Widget _buildProfileForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -315,22 +265,22 @@ class _DriverRegistrationScreenState
                 width: 120,
                 height: 120,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFF1F5F9),
+                  color: AppColors.backgroundSubtle,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.person_outline_rounded,
                   size: 50,
-                  color: Color(0xFFCBD5E1),
+                  color: AppColors.border,
                 ),
               ),
               Positioned(
                 bottom: 4,
                 right: 4,
                 child: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: orange,
+                    color: AppColors.driverAccent,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 3),
                   ),
@@ -344,30 +294,22 @@ class _DriverRegistrationScreenState
             ],
           ),
         ),
-        const SizedBox(height: 48),
+        const SizedBox(height: AppSpacing.xxl + AppSpacing.sm),
         Text(
           'Full Name',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: darkText,
-          ),
+          style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         _buildTextField(
           controller: _nameController,
           hintText: 'Enter your full name',
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: AppSpacing.xxl),
         Text(
           'Address',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: darkText,
-          ),
+          style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         _buildTextField(
           controller: _addressController,
           hintText: 'Enter your address',
@@ -376,71 +318,55 @@ class _DriverRegistrationScreenState
     );
   }
 
-  Widget _buildLicenseForm(Color darkText, Color midText) {
+  Widget _buildLicenseForm() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Driver's License Number",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: darkText,
-          ),
+          style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         _buildTextField(
           controller: _licenseController,
           hintText: 'Enter license number',
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: AppSpacing.xxl),
         Text(
           'Upload License Photo',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: darkText,
-          ),
+          style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 40),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxxl),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFFD1D5DB), width: 1.5),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(color: AppColors.borderStrong, width: 1.5),
           ),
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFF3F4F6),
+                  color: AppColors.backgroundSubtle,
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.file_upload_outlined,
-                  color: Color(0xFF6B7280),
+                  color: AppColors.textSecondary,
                   size: 28,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               Text(
                 'Upload license',
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  color: darkText,
-                ),
+                style: AppTextStyles.titleMd.copyWith(color: AppColors.textPrimary),
               ),
-              const SizedBox(height: 4),
-              const Text(
+              const SizedBox(height: AppSpacing.xs),
+              Text(
                 'PNG, JPG up to 5MB',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF9CA3AF),
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.bodySm.copyWith(color: AppColors.textTertiary),
               ),
             ],
           ),
@@ -455,31 +381,31 @@ class _DriverRegistrationScreenState
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
       ),
       child: TextField(
         controller: controller,
         onChanged: (_) => setState(() {}),
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        style: AppTextStyles.body.copyWith(
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w600,
+        ),
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(
-            color: Color(0xFF94A3B8),
-            fontWeight: FontWeight.w400,
-          ),
+          hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 18,
+            horizontal: AppSpacing.xl,
+            vertical: AppSpacing.lg + AppSpacing.xs,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildVehicleForm(Color darkText, Color midText, Color orange) {
+  Widget _buildVehicleForm() {
     final vehicleTypes = [
       {
         'title': 'Tricycle',
@@ -518,20 +444,16 @@ class _DriverRegistrationScreenState
       children: [
         Text(
           'Select Vehicle Type',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: darkText,
-          ),
+          style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: AppSpacing.lg),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+            crossAxisSpacing: AppSpacing.lg,
+            mainAxisSpacing: AppSpacing.lg,
             childAspectRatio: 1.4,
           ),
           itemCount: vehicleTypes.length,
@@ -543,20 +465,16 @@ class _DriverRegistrationScreenState
               subtitle: type['subtitle'] as String,
               icon: type['icon'] as IconData,
               isSelected: isSelected,
-              activeColor: orange,
+              activeColor: AppColors.driverAccent,
             );
           },
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xl),
         Text(
           'Plate Number',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: darkText,
-          ),
+          style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         _buildTextField(
           controller: _plateController,
           hintText: 'Enter plate number',
@@ -575,18 +493,18 @@ class _DriverRegistrationScreenState
     return GestureDetector(
       onTap: () => setState(() => _selectedVehicleType = title),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          color: AppColors.card,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           border: Border.all(
-            color: isSelected ? activeColor : const Color(0xFFF1F5F9),
+            color: isSelected ? activeColor : AppColors.backgroundSubtle,
             width: isSelected ? 2 : 1.5,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: activeColor.withOpacity( 0.1),
+                    color: activeColor.withOpacity(0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -598,26 +516,18 @@ class _DriverRegistrationScreenState
           children: [
             Icon(
               icon,
-              color: isSelected ? activeColor : const Color(0xFF94A3B8),
+              color: isSelected ? activeColor : AppColors.textTertiary,
               size: 28,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF111827),
-              ),
+              style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               subtitle,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF94A3B8),
-              ),
+              style: AppTextStyles.caption,
             ),
           ],
         ),

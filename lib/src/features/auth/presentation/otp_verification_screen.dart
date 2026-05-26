@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 import '../../../state/auth_provider.dart';
 import '../../../state/signup_provider.dart';
 import '../../../common/utils/error_handler.dart';
@@ -56,7 +59,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(ErrorHandler.getMessage(error)),
-          backgroundColor: Colors.red.shade800,
+          backgroundColor: AppColors.destructive,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -90,7 +93,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -100,25 +103,21 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
           icon: const Icon(
             Icons.arrow_back_ios,
             size: 16,
-            color: Color(0xFF6B7280),
+            color: AppColors.textSecondary,
           ),
-          label: const Text(
+          label: Text(
             'Back',
-            style: TextStyle(
-              color: Color(0xFF6B7280),
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
           ),
         ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.xl),
               // Logo and Name
               Row(
                 children: [
@@ -132,35 +131,29 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: AppSpacing.xxxl),
               // Title
-              const Text(
-                'Verify your email', // Adjusted from 'number' to 'email'
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1F2937),
-                ),
+              Text(
+                'Verify your email',
+                style: AppTextStyles.headingLg.copyWith(color: AppColors.textPrimary),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               // Subtext
               Text(
                 'We sent a 6-digit code to',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: const Color(0xFF6B7280).withOpacity( 0.8),
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textSecondary.withOpacity(0.8),
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 widget.email,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: AppTextStyles.body.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1F2937),
+                  color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: AppSpacing.xxxl),
               // OTP Input Boxes
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,22 +170,21 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       textAlign: TextAlign.center,
                       maxLength: 1,
-                      style: const TextStyle(
-                        fontSize: 24,
+                      style: AppTextStyles.headingMd.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                       decoration: InputDecoration(
                         counterText: "",
                         contentPadding: EdgeInsets.zero,
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          borderSide: BorderSide(
-                            color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                          borderSide: const BorderSide(
+                            color: AppColors.border,
                             width: 1.5,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
                           borderSide: const BorderSide(
                             color: AppColors.primary,
                             width: 2,
@@ -203,24 +195,23 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xxl),
               // Resend Text
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Didn't receive code? ",
-                      style: TextStyle(color: Color(0xFF6B7280), fontSize: 14),
+                      style: AppTextStyles.bodySm.copyWith(color: AppColors.textSecondary),
                     ),
                     GestureDetector(
                       onTap: () {},
-                      child: const Text(
+                      child: Text(
                         'Resend',
-                        style: TextStyle(
+                        style: AppTextStyles.bodySm.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -230,47 +221,13 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
               ),
               const Spacer(),
               // Verify Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: (_isComplete && !_isLoading) ? _verifyOtp : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primarySage.withOpacity(0.5),
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Verify',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward_rounded, size: 20),
-                          ],
-                        ),
-                ),
+              PrimaryButton(
+                label: 'Verify',
+                onPressed: (_isComplete && !_isLoading) ? _verifyOtp : null,
+                isLoading: _isLoading,
+                icon: Icons.arrow_forward_rounded,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
             ],
           ),
         ),

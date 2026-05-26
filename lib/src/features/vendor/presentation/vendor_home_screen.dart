@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../data/vendor_repository.dart';
 import '../../../common/models/order.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_states.dart';
 
 class VendorHomeScreen extends ConsumerWidget {
   const VendorHomeScreen({super.key});
@@ -13,7 +17,7 @@ class VendorHomeScreen extends ConsumerWidget {
     final dashboardAsync = ref.watch(vendorDashboardProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(vendorOrdersProvider);
@@ -33,15 +37,15 @@ class VendorHomeScreen extends ConsumerWidget {
                       width: double.infinity,
                       padding: const EdgeInsets.only(
                         top: 60,
-                        left: 24,
-                        right: 24,
+                        left: AppSpacing.xl,
+                        right: AppSpacing.xl,
                         bottom: 120,
                       ),
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [Color(0xFFA855F7), Color(0xFF9333EA)],
+                          colors: [AppColors.vendorAccent, Color(0xFF9333EA)],
                         ),
                       ),
                       child: Column(
@@ -50,9 +54,9 @@ class VendorHomeScreen extends ConsumerWidget {
                           Row(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(12),
+                                padding: const EdgeInsets.all(AppSpacing.md),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity( 0.2),
+                                  color: Colors.white.withOpacity(0.2),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -61,17 +65,15 @@ class VendorHomeScreen extends ConsumerWidget {
                                   size: 28,
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: AppSpacing.lg),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'My Store',
-                                      style: TextStyle(
+                                      style: AppTextStyles.headingLg.copyWith(
                                         color: Colors.white,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.w900,
                                         letterSpacing: -0.5,
                                       ),
                                     ),
@@ -82,12 +84,11 @@ class VendorHomeScreen extends ConsumerWidget {
                                           color: Color(0xFFFFD700),
                                           size: 18,
                                         ),
-                                        const SizedBox(width: 4),
+                                        const SizedBox(width: AppSpacing.xs),
                                         Text(
                                           'GoPickup Vendor',
-                                          style: TextStyle(
+                                          style: AppTextStyles.bodySm.copyWith(
                                             color: Colors.white.withOpacity(0.9),
-                                            fontSize: 14,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
@@ -98,7 +99,7 @@ class VendorHomeScreen extends ConsumerWidget {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: AppSpacing.xxl),
                           // Stats Grid
                           dashboardAsync.when(
                             data: (data) => Row(
@@ -159,166 +160,157 @@ class VendorHomeScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                // Floating Action Bar (Overlapping)
-                Positioned(
-                  bottom: -40,
-                  left: 20,
-                  right: 20,
-                  child: Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(32),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity( 0.12),
-                          blurRadius: 40,
-                          offset: const Offset(0, 15),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () =>
-                                context.push('/vendor/inventory/add'),
-                            icon: const Icon(
-                              Icons.add_rounded,
-                              size: 22,
-                              color: Colors.white,
-                            ),
-                            label: const Text('Add Product'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF45A225),
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
+                  // Floating Action Bar (Overlapping)
+                  Positioned(
+                    bottom: -40,
+                    left: 20,
+                    right: 20,
+                    child: Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: AppColors.card,
+                        borderRadius: BorderRadius.circular(AppRadius.xl),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.12),
+                            blurRadius: 40,
+                            offset: const Offset(0, 15),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () =>
+                                  context.push('/vendor/inventory/add'),
+                              icon: const Icon(
+                                Icons.add_rounded,
+                                size: 22,
+                                color: Colors.white,
                               ),
-                              textStyle: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 16,
-                                letterSpacing: -0.2,
+                              label: const Text('Add Product'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(vertical: 18),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                                ),
+                                textStyle: AppTextStyles.button,
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => context.go('/vendor/orders'),
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              side: const BorderSide(
-                                color: Color(0xFFF1F5F9),
-                                width: 1.5,
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => context.go('/vendor/orders'),
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: AppColors.card,
+                                padding: const EdgeInsets.symmetric(vertical: 18),
+                                side: const BorderSide(
+                                  color: AppColors.border,
+                                  width: 1.5,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                                ),
+                                textStyle: AppTextStyles.button,
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
+                              child: Text(
+                                'View Orders',
+                                style: AppTextStyles.label.copyWith(
+                                  color: AppColors.textPrimary,
+                                ),
                               ),
-                              textStyle: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 16,
-                                letterSpacing: -0.2,
-                              ),
-                            ),
-                            child: const Text(
-                              'View Orders',
-                              style: TextStyle(color: Color(0xFF111827)),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 70),
-            // Recent Orders Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Recent Orders',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF111827),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => context.go('/vendor/orders'),
-                    child: const Text(
-                      'View all',
-                      style: TextStyle(
-                        color: Color(0xFFA855F7),
-                        fontWeight: FontWeight.w800,
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
 
-            // Orders List
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: ordersAsync.when(
-                data: (orders) {
-                  if (orders.isEmpty) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(40),
-                        child: Text('No orders yet'),
+              const SizedBox(height: 70),
+              // Recent Orders Header
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xl,
+                  vertical: AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Recent Orders',
+                      style: AppTextStyles.headingMd,
+                    ),
+                    TextButton(
+                      onPressed: () => context.go('/vendor/orders'),
+                      child: Text(
+                        'View all',
+                        style: AppTextStyles.label.copyWith(
+                          color: AppColors.vendorAccent,
+                        ),
                       ),
-                    );
-                  }
-                  return Column(
-                    children: orders
-                        .take(5)
-                        .map(
-                          (order) => Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: GestureDetector(
-                              onTap: () => context.push(
-                                '/vendor/orders/${order.id}',
-                                extra: order,
-                              ),
-                              child: _buildOrderCard(order),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, _) => Center(child: Text('Error: $err')),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 120),
-          ],
+
+              // Orders List
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                child: ordersAsync.when(
+                  data: (orders) {
+                    if (orders.isEmpty) {
+                      return const AppEmptyState(
+                        icon: Icons.shopping_bag_outlined,
+                        title: 'No orders yet',
+                        message: 'Your recent orders will appear here.',
+                      );
+                    }
+                    return Column(
+                      children: orders
+                          .take(5)
+                          .map(
+                            (order) => Padding(
+                              padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                              child: GestureDetector(
+                                onTap: () => context.push(
+                                  '/vendor/orders/${order.id}',
+                                  extra: order,
+                                ),
+                                child: _buildOrderCard(order),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    );
+                  },
+                  loading: () => const AppLoading(),
+                  error: (err, _) => AppErrorState(message: 'Error: $err'),
+                ),
+              ),
+              const SizedBox(height: 120),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildStatCard(String value, String label, IconData icon) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity( 0.12),
-          borderRadius: BorderRadius.circular(24),
+          color: Colors.white.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           border: Border.all(
-            color: Colors.white.withOpacity( 0.2),
+            color: Colors.white.withOpacity(0.2),
             width: 1,
           ),
         ),
@@ -328,7 +320,7 @@ class VendorHomeScreen extends ConsumerWidget {
             const SizedBox(height: 10),
             Text(
               value,
-              style: const TextStyle(
+              style: AppTextStyles.titleMd.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
                 fontSize: 18,
@@ -338,9 +330,8 @@ class VendorHomeScreen extends ConsumerWidget {
             const SizedBox(height: 2),
             Text(
               label,
-              style: TextStyle(
-                color: Colors.white.withOpacity( 0.8),
-                fontSize: 11,
+              style: AppTextStyles.caption.copyWith(
+                color: Colors.white.withOpacity(0.8),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -356,13 +347,13 @@ class VendorHomeScreen extends ConsumerWidget {
     final tagText = order.status.color;
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF111827).withOpacity( 0.04),
+            color: AppColors.textPrimary.withOpacity(0.04),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
@@ -375,42 +366,33 @@ class VendorHomeScreen extends ConsumerWidget {
             children: [
               Text(
                 order.shortId,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 18,
-                  color: Color(0xFF111827),
-                ),
+                style: AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w900),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
-                  vertical: 6,
+                  vertical: AppSpacing.xs,
                 ),
                 decoration: BoxDecoration(
                   color: tagBg,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
                 child: Text(
                   statusText,
-                  style: TextStyle(
+                  style: AppTextStyles.caption.copyWith(
                     color: tagText,
                     fontWeight: FontWeight.w900,
-                    fontSize: 13,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
               Text(
                 'Client ID: ${order.clientId.substring(0, 8)}',
-                style: const TextStyle(
-                  color: Color(0xFF6B7280),
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
+                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -420,19 +402,11 @@ class VendorHomeScreen extends ConsumerWidget {
             children: [
               Text(
                 '${order.items.length} items',
-                style: const TextStyle(
-                  color: Color(0xFF94A3B8),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.bodySm.copyWith(color: AppColors.textTertiary),
               ),
               Text(
                 '₦${order.total.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 20,
-                  color: Color(0xFF111827),
-                ),
+                style: AppTextStyles.headingMd.copyWith(fontWeight: FontWeight.w900),
               ),
             ],
           ),

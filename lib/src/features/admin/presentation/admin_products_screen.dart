@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/product_provider.dart';
 import '../../../models/product_models.dart';
 import 'admin_providers.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_states.dart';
 
 class AdminProductsScreen extends ConsumerStatefulWidget {
   const AdminProductsScreen({super.key});
@@ -34,7 +38,11 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
     var filtered = products.where((p) => !_deletedIds.contains(p.id)).toList();
     if (_searchController.text.isNotEmpty) {
       final q = _searchController.text.toLowerCase();
-      filtered = filtered.where((p) => p.name.toLowerCase().contains(q) || p.vendorName.toLowerCase().contains(q)).toList();
+      filtered = filtered
+          .where((p) =>
+              p.name.toLowerCase().contains(q) ||
+              p.vendorName.toLowerCase().contains(q))
+          .toList();
     }
     return filtered;
   }
@@ -46,12 +54,18 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
         title: const Text('Delete Product'),
         content: const Text(
           'Are you sure you want to permanently delete this product? This action cannot be undone.',
-          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          style: TextStyle(color: AppColors.destructive, fontWeight: FontWeight.bold),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.destructive,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete Permanently'),
           ),
@@ -65,11 +79,17 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
         await ref.read(adminApiProvider).deleteProduct(id);
         setState(() => _deletedIds.add(id));
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product permanently deleted'), backgroundColor: Colors.green));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Product permanently deleted'),
+            backgroundColor: AppColors.success,
+          ));
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete product: $e'), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to delete product: $e'),
+            backgroundColor: AppColors.destructive,
+          ));
         }
       } finally {
         if (mounted) setState(() => _isLoading = false);
@@ -82,26 +102,32 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
     final productState = ref.watch(productProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('MARKETPLACE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5, color: Colors.blueGrey.shade300)),
-            const Text('Product Management', style: TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.w900, fontSize: 20, letterSpacing: -0.5)),
+            Text(
+              'MARKETPLACE',
+              style: AppTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const Text('Product Management', style: AppTextStyles.titleMd),
           ],
         ),
       ),
       body: Builder(
         builder: (context) {
           if (productState.isLoading && productState.products.isEmpty) {
-            return const _AdminLoadingState();
+            return const AppLoading();
           }
           if (productState.error != null && productState.products.isEmpty) {
-            return _AdminErrorState(
-              error: productState.error!,
+            return AppErrorState(
+              message: productState.error!,
               onRetry: () => ref.read(productProvider.notifier).fetchProducts(),
             );
           }
@@ -110,20 +136,24 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
 
           return Column(
             children: [
-              if (_isLoading) const LinearProgressIndicator(color: Colors.red, backgroundColor: Colors.white),
-              
+              if (_isLoading)
+                const LinearProgressIndicator(
+                  color: AppColors.destructive,
+                  backgroundColor: AppColors.card,
+                ),
+
               // Search Bar
               Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(AppSpacing.xl),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                   height: 56,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity( 0.03),
+                        color: Colors.black.withOpacity(0.03),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -131,17 +161,22 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.search_rounded, color: Colors.blueGrey.shade300, size: 22),
-                      const SizedBox(width: 12),
+                      const Icon(Icons.search_rounded, color: AppColors.textTertiary, size: 22),
+                      const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: TextField(
                           controller: _searchController,
                           onChanged: (_) => setState(() {}),
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                          style: AppTextStyles.body.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Search products or vendors...',
-                            hintStyle: TextStyle(fontSize: 15, color: Colors.blueGrey.shade200, fontWeight: FontWeight.w500),
+                            hintStyle: AppTextStyles.body.copyWith(
+                              color: AppColors.textTertiary,
+                            ),
                           ),
                         ),
                       ),
@@ -153,14 +188,14 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
               // Product List
               Expanded(
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                   clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                    color: AppColors.card,
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity( 0.02),
+                        color: Colors.black.withOpacity(0.02),
                         blurRadius: 12,
                         offset: const Offset(0, -4),
                       ),
@@ -170,26 +205,46 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
                     children: [
                       // Table Header
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        color: const Color(0xFFF8FAFC),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.xl,
+                          vertical: AppSpacing.lg,
+                        ),
+                        color: AppColors.backgroundSubtle,
                         child: Row(
                           children: [
-                            Text('PRODUCT IDENTITY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.blueGrey.shade400, letterSpacing: 1.2)),
+                            Text(
+                              'PRODUCT IDENTITY',
+                              style: AppTextStyles.caption.copyWith(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
                             const Spacer(),
-                            Text('PRICE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.blueGrey.shade400, letterSpacing: 1.2)),
+                            Text(
+                              'PRICE',
+                              style: AppTextStyles.caption.copyWith(
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
                             const SizedBox(width: 80),
                           ],
                         ),
                       ),
-                      
+
                       Expanded(
-                        child: filtered.isEmpty 
-                            ? _buildEmptyState()
+                        child: filtered.isEmpty
+                            ? const AppEmptyState(
+                                icon: Icons.inventory_2_outlined,
+                                title: 'No products found',
+                                message: 'Try adjusting your search query.',
+                              )
                             : ListView.separated(
                                 padding: EdgeInsets.zero,
                                 physics: const BouncingScrollPhysics(),
                                 itemCount: filtered.length,
-                                separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey.shade50),
+                                separatorBuilder: (_, __) =>
+                                    const Divider(height: 1, color: AppColors.border),
                                 itemBuilder: (context, index) {
                                   final product = filtered[index];
                                   return _buildProductRow(product);
@@ -209,7 +264,10 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
 
   Widget _buildProductRow(Product product) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.xl,
+        vertical: AppSpacing.lg,
+      ),
       child: Row(
         children: [
           // Product Image
@@ -217,33 +275,46 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.backgroundSubtle,
+              borderRadius: BorderRadius.circular(AppRadius.md),
               image: product.imageUrl.isNotEmpty
-                ? DecorationImage(image: NetworkImage(product.imageUrl), fit: BoxFit.cover)
-                : null,
+                  ? DecorationImage(
+                      image: NetworkImage(product.imageUrl),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
             ),
-            child: product.imageUrl.isEmpty 
-                ? Icon(Icons.shopping_bag_outlined, color: Colors.blueGrey.shade200, size: 24)
+            child: product.imageUrl.isEmpty
+                ? const Icon(Icons.shopping_bag_outlined, color: AppColors.textTertiary, size: 24)
                 : null,
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(product.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Color(0xFF1E293B)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(
+                  product.name,
+                  style: AppTextStyles.label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 const SizedBox(height: 2),
-                Text('Vendor: ${product.vendorName}', style: TextStyle(fontSize: 13, color: Colors.blueGrey.shade500, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(
+                  'Vendor: ${product.vendorName}',
+                  style: AppTextStyles.bodySm,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Text(
-            '₦${product.price}', 
-            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: Color(0xFF3B7D23), letterSpacing: -0.2),
+            '₦${product.price}',
+            style: AppTextStyles.label.copyWith(color: AppColors.primary),
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: AppSpacing.xl),
           _buildDeleteButton(product.id),
         ],
       ),
@@ -252,85 +323,14 @@ class _AdminProductsScreenState extends ConsumerState<AdminProductsScreen> {
 
   Widget _buildDeleteButton(String id) {
     return Material(
-      color: Colors.red.withOpacity( 0.05),
-      borderRadius: BorderRadius.circular(10),
+      color: AppColors.destructive.withOpacity(0.05),
+      borderRadius: BorderRadius.circular(AppRadius.sm + 2),
       child: InkWell(
         onTap: () => _confirmDeleteProduct(id),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppRadius.sm + 2),
         child: const Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Icon(Icons.delete_outline_rounded, color: Colors.red, size: 20),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey.shade200),
-          const SizedBox(height: 16),
-          Text('No products found', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.blueGrey.shade200)),
-        ],
-      ),
-    );
-  }
-}
-
-class _AdminLoadingState extends StatelessWidget {
-  const _AdminLoadingState();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(color: Color(0xFF1E293B), strokeWidth: 3),
-          SizedBox(height: 20),
-          Text('Fetching platform inventory...', style: TextStyle(fontWeight: FontWeight.w700, color: Colors.blueGrey)),
-        ],
-      ),
-    );
-  }
-}
-
-class _AdminErrorState extends StatelessWidget {
-  final String error;
-  final VoidCallback onRetry;
-
-  const _AdminErrorState({required this.error, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline_rounded, size: 64, color: Colors.red.shade300),
-            const SizedBox(height: 24),
-            const Text('Inventory Offline', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF1E293B))),
-            const SizedBox(height: 12),
-            Text(error, textAlign: TextAlign.center, style: TextStyle(color: Colors.blueGrey.shade400, fontSize: 14, height: 1.5)),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: onRetry,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E293B),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text('Retry Connection', style: TextStyle(fontWeight: FontWeight.w800)),
-              ),
-            ),
-          ],
+          padding: EdgeInsets.all(AppSpacing.sm),
+          child: Icon(Icons.delete_outline_rounded, color: AppColors.destructive, size: 20),
         ),
       ),
     );

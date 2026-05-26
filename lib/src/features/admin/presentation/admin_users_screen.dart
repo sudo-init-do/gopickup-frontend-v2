@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'admin_providers.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_states.dart';
 
 class AdminUsersScreen extends ConsumerStatefulWidget {
   const AdminUsersScreen({super.key});
@@ -47,12 +51,12 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   Future<void> _bulkApprove(List<Map<String, dynamic>> allUsers) async {
     setState(() => _isLoading = true);
     int successCount = 0;
-    
+
     for (final id in _selectedIds) {
       final user = allUsers.firstWhere((u) => u['id'] == id, orElse: () => {});
       final role = user['role'] as String?;
       final isApproved = user['is_approved'] == true;
-      
+
       if (role != null && !isApproved && (role == 'driver' || role == 'vendor')) {
         try {
           if (role == 'driver') {
@@ -71,7 +75,10 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     });
 
     if (context.mounted && successCount > 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Successfully approved $successCount users'), backgroundColor: Colors.green));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Successfully approved $successCount users'),
+        backgroundColor: AppColors.success,
+      ));
       ref.invalidate(adminUsersProvider);
       ref.invalidate(adminStatsProvider);
     }
@@ -84,12 +91,15 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         title: const Text('Delete User'),
         content: const Text(
           'Warning: Deleting this user will permanently erase their profile and all associated data from the system.',
-          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+          style: TextStyle(color: AppColors.destructive, fontWeight: FontWeight.bold),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.destructive,
+              foregroundColor: Colors.white,
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete Permanently'),
           ),
@@ -103,11 +113,17 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         await ref.read(adminApiProvider).deleteUser(id);
         setState(() => _deletedIds.add(id));
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('User permanently deleted'), backgroundColor: Colors.green));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('User permanently deleted'),
+            backgroundColor: AppColors.success,
+          ));
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to delete user: $e'), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Failed to delete user: $e'),
+            backgroundColor: AppColors.destructive,
+          ));
         }
       } finally {
         if (mounted) setState(() => _isLoading = false);
@@ -115,21 +131,26 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final usersAsync = ref.watch(adminUsersProvider(_selectedRole));
-    
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('ECOSYSTEM', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade600)),
-            const Text('User Management', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 18)),
+            Text(
+              'ECOSYSTEM',
+              style: AppTextStyles.caption.copyWith(
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const Text('User Management', style: AppTextStyles.titleMd),
           ],
         ),
       ),
@@ -140,36 +161,40 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
             children: [
               // Search & Filters
               Container(
-                color: const Color(0xFFF9FAFB),
-                padding: const EdgeInsets.all(16),
+                color: AppColors.background,
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Column(
                   children: [
                     Container(
                       height: 44,
-                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.grey.shade300)),
+                      decoration: BoxDecoration(
+                        color: AppColors.card,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        border: Border.all(color: AppColors.borderStrong),
+                      ),
                       child: TextField(
                         controller: _searchController,
                         onChanged: (_) => setState(() {}),
                         decoration: InputDecoration(
                           hintText: 'Search by name, email, or ID...',
-                          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+                          hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
                           prefixIcon: const Icon(Icons.search, size: 20),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
                           _buildRoleTab('All', null),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.sm),
                           _buildRoleTab('Clients', 'client'),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.sm),
                           _buildRoleTab('Drivers', 'driver'),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.sm),
                           _buildRoleTab('Vendors', 'vendor'),
                         ],
                       ),
@@ -181,32 +206,70 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               // Bulk Action Bar
               if (_selectedIds.isNotEmpty)
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.sm,
+                  ),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: Colors.indigo.shade50.withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(8),
-                    border: const Border(left: BorderSide(color: Colors.indigoAccent, width: 4)),
+                    color: AppColors.adminAccent.withOpacity(0.06),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                    border: const Border(
+                      left: BorderSide(color: AppColors.adminAccent, width: 4),
+                    ),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(color: Colors.indigo, borderRadius: BorderRadius.circular(4)),
-                        child: Text('${_selectedIds.length}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.adminAccent,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '${_selectedIds.length}',
+                          style: AppTextStyles.label.copyWith(color: Colors.white),
+                        ),
                       ),
-                      const SizedBox(width: 8),
-                      const Expanded(child: Text('Users selected from current view', style: TextStyle(fontSize: 12, color: Colors.black87))),
+                      const SizedBox(width: AppSpacing.sm),
+                      const Expanded(
+                        child: Text(
+                          'Users selected from current view',
+                          style: AppTextStyles.bodySm,
+                        ),
+                      ),
                       if (_isLoading)
-                        const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.adminAccent,
+                          ),
+                        )
                       else ...[
                         TextButton(
                           onPressed: () => _bulkApprove(users),
-                          child: const Text('Bulk Approve', style: TextStyle(color: Colors.indigoAccent, fontWeight: FontWeight.bold, fontSize: 12)),
+                          child: Text(
+                            'Bulk Approve',
+                            style: AppTextStyles.bodySm.copyWith(
+                              color: AppColors.adminAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                         TextButton(
                           onPressed: () {},
-                          child: const Text('Bulk Deactivate', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 12)),
+                          child: Text(
+                            'Bulk Deactivate',
+                            style: AppTextStyles.bodySm.copyWith(
+                              color: AppColors.destructive,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                       IconButton(
@@ -218,14 +281,31 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                 ),
 
               // List Header
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.xxl,
+                  vertical: AppSpacing.sm,
+                ),
                 child: Row(
                   children: [
-                    SizedBox(width: 24), // Checkbox spacing
-                    SizedBox(width: 16),
-                    Expanded(child: Text('USER IDENTITY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
-                    Text('ROLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                    const SizedBox(width: 24), // Checkbox spacing
+                    const SizedBox(width: AppSpacing.lg),
+                    Expanded(
+                      child: Text(
+                        'USER IDENTITY',
+                        style: AppTextStyles.caption.copyWith(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'ROLE',
+                      style: AppTextStyles.caption.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -233,61 +313,76 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               // Users List
               Expanded(
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16).copyWith(bottom: 16),
+                  margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg)
+                      .copyWith(bottom: AppSpacing.lg),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4))],
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Column(
                     children: [
                       Expanded(
                         child: filtered.isEmpty
-                            ? Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.people_outline, size: 40, color: Colors.grey.shade300),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'No users found',
-                                      style: TextStyle(color: Colors.grey.shade500, fontSize: 14, fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
+                            ? const AppEmptyState(
+                                icon: Icons.people_outline,
+                                title: 'No users found',
+                                message: 'Try adjusting your search or role filter.',
                               )
                             : ListView.separated(
                                 itemCount: filtered.length,
-                                separatorBuilder: (_, __) => const Divider(height: 1),
-                                itemBuilder: (context, index) => _buildUserRow(filtered[index]),
+                                separatorBuilder: (_, __) => const Divider(
+                                  height: 1,
+                                  color: AppColors.border,
+                                ),
+                                itemBuilder: (context, index) =>
+                                    _buildUserRow(filtered[index]),
                               ),
                       ),
-                      const Divider(height: 1),
+                      const Divider(height: 1, color: AppColors.border),
                       // Pagination Footer
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.md,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               '${filtered.length} ${filtered.length == 1 ? 'result' : 'results'}',
-                              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                              style: AppTextStyles.bodySm,
                             ),
                             Row(
                               children: [
-                                const Icon(Icons.chevron_left, color: Colors.grey),
-                                const SizedBox(width: 8),
+                                const Icon(Icons.chevron_left, color: AppColors.textTertiary),
+                                const SizedBox(width: AppSpacing.sm),
                                 Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(color: Colors.indigo, borderRadius: BorderRadius.circular(4)),
-                                  child: const Text('1', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                  padding: const EdgeInsets.all(AppSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.adminAccent,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    '1',
+                                    style: AppTextStyles.caption.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                                const SizedBox(width: 8),
-                                const Text('2', style: TextStyle(fontSize: 12)),
-                                const SizedBox(width: 8),
-                                const Text('3', style: TextStyle(fontSize: 12)),
-                                const SizedBox(width: 8),
-                                const Icon(Icons.chevron_right, color: Colors.black87),
+                                const SizedBox(width: AppSpacing.sm),
+                                const Text('2', style: AppTextStyles.bodySm),
+                                const SizedBox(width: AppSpacing.sm),
+                                const Text('3', style: AppTextStyles.bodySm),
+                                const SizedBox(width: AppSpacing.sm),
+                                const Icon(Icons.chevron_right, color: AppColors.textPrimary),
                               ],
                             ),
                           ],
@@ -300,8 +395,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, stack) => Center(child: Text('Error: $e')),
+        loading: () => const AppLoading(),
+        error: (e, stack) => AppErrorState(message: 'Error: $e'),
       ),
     );
   }
@@ -322,15 +417,16 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
         decoration: BoxDecoration(
-          color: isActive ? Colors.indigo : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isActive ? Colors.indigo : Colors.grey.shade300),
+          color: isActive ? AppColors.adminAccent : AppColors.card,
+          borderRadius: BorderRadius.circular(AppRadius.pill),
+          border: Border.all(
+            color: isActive ? AppColors.adminAccent : AppColors.borderStrong,
+          ),
         ),
         child: Text(
           label,
-          style: TextStyle(
-            color: isActive ? Colors.white : Colors.black87,
-            fontSize: 13,
+          style: AppTextStyles.bodySm.copyWith(
+            color: isActive ? Colors.white : AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -345,18 +441,29 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     final name = (user['full_name'] as String?) ?? email.split('@').first;
     final isSelected = _selectedIds.contains(id);
 
-    Color badgeColor = Colors.blueAccent;
-    Color badgeText = Colors.blue;
+    // Role badge colors per design system spec
+    Color badgeBg;
+    Color badgeFg;
     if (role == 'driver') {
-      badgeColor = Colors.greenAccent;
-      badgeText = Colors.green.shade700;
+      badgeBg = AppColors.success.withOpacity(0.12);
+      badgeFg = AppColors.success;
     } else if (role == 'vendor') {
-      badgeColor = Colors.purpleAccent;
-      badgeText = Colors.purple;
+      badgeBg = AppColors.vendorAccent.withOpacity(0.12);
+      badgeFg = AppColors.vendorAccent;
+    } else if (role == 'admin') {
+      badgeBg = AppColors.adminAccent.withOpacity(0.12);
+      badgeFg = AppColors.adminAccent;
+    } else {
+      // client
+      badgeBg = AppColors.info.withOpacity(0.12);
+      badgeFg = AppColors.info;
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
       child: Row(
         children: [
           GestureDetector(
@@ -365,41 +472,53 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               width: 20,
               height: 20,
               decoration: BoxDecoration(
-                color: isSelected ? Colors.indigo : Colors.white,
-                border: Border.all(color: isSelected ? Colors.indigo : Colors.grey.shade300),
+                color: isSelected ? AppColors.adminAccent : AppColors.card,
+                border: Border.all(
+                  color: isSelected ? AppColors.adminAccent : AppColors.borderStrong,
+                ),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: isSelected ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+              child: isSelected
+                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  : null,
             ),
           ),
-          const SizedBox(width: 16),
-          CircleAvatar(
-            backgroundColor: Colors.grey.shade200,
-            child: Icon(Icons.person, color: Colors.grey.shade600),
+          const SizedBox(width: AppSpacing.lg),
+          const CircleAvatar(
+            backgroundColor: AppColors.backgroundSubtle,
+            child: Icon(Icons.person, color: AppColors.textSecondary),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                Text(email, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
-                const SizedBox(height: 4),
+                Text(name, style: AppTextStyles.label),
+                Text(email, style: AppTextStyles.bodySm),
+                const SizedBox(height: AppSpacing.xs),
                 Row(
                   children: [
-                    Icon(Icons.phone_outlined, size: 12, color: Colors.grey.shade400),
-                    const SizedBox(width: 4),
+                    const Icon(Icons.phone_outlined, size: 12, color: AppColors.textTertiary),
+                    const SizedBox(width: AppSpacing.xs),
                     Text(
-                      (user['vendor_profile']?['phone_number'] ?? user['client_profile']?['phone_number'] ?? user['driver_profile']?['phone_number'] ?? 'No phone').toString(),
-                      style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                      (user['vendor_profile']?['phone_number'] ??
+                              user['client_profile']?['phone_number'] ??
+                              user['driver_profile']?['phone_number'] ??
+                              'No phone')
+                          .toString(),
+                      style: AppTextStyles.caption,
                     ),
-                    const SizedBox(width: 8),
-                    Icon(Icons.location_on_outlined, size: 12, color: Colors.grey.shade400),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: AppSpacing.sm),
+                    const Icon(Icons.location_on_outlined, size: 12, color: AppColors.textTertiary),
+                    const SizedBox(width: AppSpacing.xs),
                     Expanded(
                       child: Text(
-                        (user['vendor_profile']?['address'] ?? user['client_profile']?['address'] ?? user['driver_profile']?['address'] ?? 'No address').toString(),
-                        style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+                        (user['vendor_profile']?['address'] ??
+                                user['client_profile']?['address'] ??
+                                user['driver_profile']?['address'] ??
+                                'No address')
+                            .toString(),
+                        style: AppTextStyles.caption,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -410,20 +529,26 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.xs,
+            ),
             decoration: BoxDecoration(
-              color: badgeColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: badgeColor.withOpacity(0.3)),
+              color: badgeBg,
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+              border: Border.all(color: badgeFg.withOpacity(0.3)),
             ),
             child: Text(
               role.toUpperCase(),
-              style: TextStyle(color: badgeText, fontSize: 10, fontWeight: FontWeight.bold),
+              style: AppTextStyles.caption.copyWith(
+                color: badgeFg,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+            icon: const Icon(Icons.delete_outline, color: AppColors.destructive, size: 20),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             onPressed: () => _confirmDeleteUser(id),

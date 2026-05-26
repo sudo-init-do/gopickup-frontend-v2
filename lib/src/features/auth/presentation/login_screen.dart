@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 import '../../../state/auth_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../common/config/app_config.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -18,15 +22,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
   final TextEditingController _passwordController = TextEditingController();
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
-  
+
   bool _obscurePassword = true;
   bool _isFormValid = false;
   bool _isLoading = false;
 
   Future<void> _launchSupport() async {
-    final Uri url = Uri.parse('whatsapp://send?phone=2348087042206');
+    final Uri url = Uri.parse('whatsapp://send?phone=${AppConfig.supportPhone}');
     if (!await launchUrl(url)) {
-      final Uri webUrl = Uri.parse('https://wa.me/2348087042206');
+      final Uri webUrl = Uri.parse('https://wa.me/${AppConfig.supportPhone}');
       await launchUrl(webUrl, mode: LaunchMode.externalApplication);
     }
   }
@@ -65,12 +69,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
 
   String _cleanErrorMessage(String rawError) {
     String msg = rawError.replaceAll('Exception: ', '').trim();
-    
+
     // Map common technical errors to user-friendly messages
     if (msg.toLowerCase().contains('invalid email or password')) {
       return 'Incorrect email or password. Please try again.';
     }
-    if (msg.toLowerCase().contains('connection refused') || 
+    if (msg.toLowerCase().contains('connection refused') ||
         msg.toLowerCase().contains('xmlhttprequest') ||
         msg.toLowerCase().contains('socketexception')) {
       return 'Network issue, please check your connection.';
@@ -78,7 +82,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
     if (msg.toLowerCase().contains('not verified')) {
       return 'Account not verified. Please check your email for OTP.';
     }
-    
+
     return msg.isEmpty ? 'Login failed' : msg;
   }
 
@@ -92,7 +96,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
         .login(_emailController.text.trim(), _passwordController.text);
 
     if (!mounted) return;
-    
+
     setState(() => _isLoading = false);
 
     if (success) {
@@ -107,10 +111,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
     } else {
       final error = ref.read(authProvider).error ?? '';
       final friendlyMsg = _cleanErrorMessage(error);
-      
+
       // Trigger visual feedback
       _shake();
-      
+
       // If unauthorized, clear password
       if (error.toLowerCase().contains('invalid email or password')) {
         _passwordController.clear();
@@ -120,7 +124,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(friendlyMsg),
-          backgroundColor: Colors.red.shade800,
+          backgroundColor: AppColors.destructive,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -130,10 +134,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.lg),
           child: AnimatedBuilder(
             animation: _shakeAnimation,
             builder: (context, child) {
@@ -148,7 +152,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: AppSpacing.xxxl),
 
                 // Logo
                 SizedBox(
@@ -159,16 +163,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                     fit: BoxFit.fitHeight,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
 
                 // Subtitle
                 Text(
                   'Sign in to your account',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
+                  style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: AppSpacing.xxxl),
 
                 // Email Field
                 TextField(
@@ -178,26 +180,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Email address',
+                    hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
                     prefixIcon: const Icon(
                       Icons.mail_outline,
-                      color: Colors.grey,
+                      color: AppColors.textTertiary,
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      borderSide: const BorderSide(color: AppColors.border),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      borderSide: const BorderSide(color: AppColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(color: AppColors.primarySage),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      borderSide: const BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Password Field
                 TextField(
@@ -207,16 +210,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     hintText: 'Password',
+                    hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
                     prefixIcon: const Icon(
                       Icons.lock_outline,
-                      color: Colors.grey,
+                      color: AppColors.textTertiary,
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
-                        color: Colors.grey,
+                        color: AppColors.textTertiary,
                       ),
                       onPressed: () {
                         setState(() {
@@ -224,22 +228,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                         });
                       },
                     ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      borderSide: const BorderSide(color: AppColors.border),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      borderSide: const BorderSide(color: AppColors.border),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: const BorderSide(color: AppColors.primarySage),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      borderSide: const BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.md),
 
                 // Forgot Password
                 Align(
@@ -247,113 +251,76 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                   child: TextButton(
                     onPressed: _isLoading ? null : () => context.push('/forgot-password'),
                     style: TextButton.styleFrom(
-                      foregroundColor: AppColors.primarySage,
+                      foregroundColor: AppColors.primary,
                       padding: EdgeInsets.zero,
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Forgot password?',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: AppTextStyles.label.copyWith(color: AppColors.primary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Sign In Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: (_isFormValid && !_isLoading) ? _signIn : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      disabledBackgroundColor: Colors.grey.shade300,
-                      foregroundColor: Colors.white,
-                      disabledForegroundColor: Colors.grey.shade500,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: _isLoading 
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Sign In',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward, size: 20),
-                          ],
-                        ),
-                  ),
+                PrimaryButton(
+                  label: 'Sign In',
+                  onPressed: (_isFormValid && !_isLoading) ? _signIn : null,
+                  isLoading: _isLoading,
+                  icon: Icons.arrow_forward,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // OR Divider
                 Row(
                   children: [
-                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                    const Expanded(child: Divider(color: AppColors.border)),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                       child: Text(
                         'OR',
-                        style: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: AppTextStyles.bodySm.copyWith(color: AppColors.textSecondary),
                       ),
                     ),
-                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                    const Expanded(child: Divider(color: AppColors.border)),
                   ],
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Create Account Button
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: 54,
                   child: OutlinedButton(
                     onPressed: _isLoading ? null : () => context.push('/signup'),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.black87,
-                      side: BorderSide(color: Colors.grey.shade300),
+                      foregroundColor: AppColors.textPrimary,
+                      side: const BorderSide(color: AppColors.border),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Create an account',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: AppTextStyles.button.copyWith(color: AppColors.textPrimary),
                     ),
                   ),
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: AppSpacing.xxl + AppSpacing.lg),
 
                 // Footer
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                    style: AppTextStyles.caption,
                     children: [
                       const TextSpan(text: 'By signing in, you agree to our '),
                       TextSpan(
                         text: 'Terms of Service',
-                        style: const TextStyle(
-                          color: AppColors.primarySage,
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),
                         recognizer: TapGestureRecognizer()
@@ -362,8 +329,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                       const TextSpan(text: ' and\n'),
                       TextSpan(
                         text: 'Privacy Policy',
-                        style: const TextStyle(
-                          color: AppColors.primarySage,
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.primary,
                           fontWeight: FontWeight.bold,
                         ),
                         recognizer: TapGestureRecognizer()
@@ -372,32 +339,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 GestureDetector(
                   onTap: _isLoading ? null : _launchSupport,
                   child: Text(
                     'Need help? Contact Support',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 13,
+                    style: AppTextStyles.bodySm.copyWith(
+                      color: AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
                       decoration: TextDecoration.underline,
-                      decorationColor: Colors.grey.shade400,
+                      decorationColor: AppColors.borderStrong,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 TextButton(
                   onPressed: _isLoading ? null : () => context.go('/admin/login'),
                   child: Text(
                     'Admin Portal',
-                    style: TextStyle(
-                      color: Colors.grey.shade400,
-                      fontSize: 12,
-                    ),
+                    style: AppTextStyles.caption.copyWith(color: AppColors.textDisabled),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
               ],
             ),
           ),

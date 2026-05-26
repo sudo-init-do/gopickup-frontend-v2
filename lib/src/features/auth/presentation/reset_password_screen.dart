@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 import '../../../state/auth_provider.dart';
 import '../../../common/utils/error_handler.dart';
 
@@ -19,14 +22,14 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
-  
+
   bool _obscurePassword = true;
   bool _isFormValid = false;
 
   void _validateForm() {
     final otpStr = _otpControllers.map((c) => c.text).join();
     setState(() {
-      _isFormValid = 
+      _isFormValid =
           otpStr.length == 6 &&
           _passwordController.text.length >= 6 &&
           _passwordController.text == _confirmPasswordController.text;
@@ -62,7 +65,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(ErrorHandler.getMessage(error)),
-          backgroundColor: Colors.red.shade800,
+          backgroundColor: AppColors.destructive,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -74,45 +77,48 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
           onPressed: () => context.pop(),
         ),
         title: const Text(
           'Reset Password',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: AppTextStyles.titleMd,
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
-              
+              const SizedBox(height: AppSpacing.xl),
+
               Text(
                 'Verify your email and create a new password for account ending in',
-                style: TextStyle(fontSize: 16, color: Colors.grey[600], height: 1.5),
+                style: AppTextStyles.body.copyWith(color: AppColors.textSecondary, height: 1.5),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 widget.email,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1F2937)),
+                style: AppTextStyles.body.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xxl),
 
               // OTP Label
               const Text(
                 'Verification Code',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1F2937)),
+                style: AppTextStyles.label,
               ),
-              const SizedBox(height: 12),
-              
+              const SizedBox(height: AppSpacing.md),
+
               // OTP Input Boxes
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -127,89 +133,102 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textAlign: TextAlign.center,
                     maxLength: 1,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.headingMd.copyWith(fontWeight: FontWeight.bold),
                     decoration: InputDecoration(
                       counterText: "",
                       contentPadding: EdgeInsets.zero,
                       filled: true,
-                      fillColor: Colors.grey.shade50,
+                      fillColor: AppColors.background,
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey.shade200),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        borderSide: const BorderSide(color: AppColors.border),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
                         borderSide: const BorderSide(color: AppColors.primary, width: 2),
                       ),
                     ),
                   ),
                 )),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xxl),
 
               // New Password Label
               const Text(
                 'New Password',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1F2937)),
+                style: AppTextStyles.label,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               TextField(
                 controller: _passwordController,
                 onChanged: (_) => _validateForm(),
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   hintText: 'Enter new password',
-                  prefixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.grey),
+                  hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
+                  prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.textTertiary),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: Colors.grey),
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                      color: AppColors.textTertiary,
+                    ),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                   ),
                   filled: true,
-                  fillColor: Colors.grey.shade50,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey.shade200)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey.shade200)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.primary, width: 2)),
+                  fillColor: AppColors.background,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.xl),
 
               // Confirm Password Label
               const Text(
                 'Confirm Password',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1F2937)),
+                style: AppTextStyles.label,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               TextField(
                 controller: _confirmPasswordController,
                 onChanged: (_) => _validateForm(),
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   hintText: 'Re-type your password',
-                  prefixIcon: const Icon(Icons.lock_outline_rounded, color: Colors.grey),
+                  hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
+                  prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppColors.textTertiary),
                   filled: true,
-                  fillColor: Colors.grey.shade50,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey.shade200)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Colors.grey.shade200)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.primary, width: 2)),
+                  fillColor: AppColors.background,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderSide: const BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: AppSpacing.xxl + AppSpacing.lg),
 
               // Reset Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: (_isFormValid && !authState.isLoading) ? _resetPassword : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: authState.isLoading
-                      ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Reset Password', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
-                ),
+              PrimaryButton(
+                label: 'Reset Password',
+                onPressed: (_isFormValid && !authState.isLoading) ? _resetPassword : null,
+                isLoading: authState.isLoading,
               ),
             ],
           ),

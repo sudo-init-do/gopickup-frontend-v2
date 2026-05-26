@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
-    const kBrandGreen = Color(0xFF3B7D23);
-
     final notifications = [
       {
         'title': 'Order Delivered',
@@ -46,25 +45,20 @@ class NotificationsScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context, kDarkTextColor),
+            _buildHeader(context),
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.sm + 2,
                 ),
                 itemCount: notifications.length,
                 itemBuilder: (context, index) {
-                  return _buildNotificationCard(
-                    notifications[index],
-                    kDarkTextColor,
-                    kMidTextColor,
-                    kBrandGreen,
-                  );
+                  return _buildNotificationCard(notifications[index]);
                 },
               ),
             ),
@@ -74,9 +68,9 @@ class NotificationsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, Color darkText) {
+  Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -84,11 +78,11 @@ class NotificationsScreen extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.card,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity( 0.04),
+                    color: Colors.black.withOpacity(0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -101,10 +95,9 @@ class NotificationsScreen extends StatelessWidget {
           ),
           Text(
             'Notifications',
-            style: TextStyle(
+            style: AppTextStyles.headingMd.copyWith(
               fontSize: 22,
               fontWeight: FontWeight.w900,
-              color: darkText,
               letterSpacing: -0.5,
             ),
           ),
@@ -112,12 +105,9 @@ class NotificationsScreen extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: () {},
-              child: const Text(
+              child: Text(
                 'Clear all',
-                style: TextStyle(
-                  color: Color(0xFF6B7280),
-                  fontWeight: FontWeight.w700,
-                ),
+                style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -126,12 +116,7 @@ class NotificationsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationCard(
-    Map<String, dynamic> notification,
-    Color darkText,
-    Color midText,
-    Color brandGreen,
-  ) {
+  Widget _buildNotificationCard(Map<String, dynamic> notification) {
     final bool isRead = notification['isRead'] as bool;
     final String type = notification['type'] as String;
 
@@ -142,45 +127,45 @@ class NotificationsScreen extends StatelessWidget {
     switch (type) {
       case 'order':
         icon = Icons.inventory_2_outlined;
-        iconColor = const Color(0xFF3B82F6);
-        bgColor = const Color(0xFFEFF6FF);
+        iconColor = AppColors.info;
+        bgColor = AppColors.info.withOpacity(0.1);
         break;
       case 'chat':
         icon = Icons.chat_bubble_outline_rounded;
-        iconColor = const Color(0xFF10B981);
-        bgColor = const Color(0xFFECFDF5);
+        iconColor = AppColors.success;
+        bgColor = AppColors.success.withOpacity(0.1);
         break;
       case 'bid':
         icon = Icons.gavel_rounded;
-        iconColor = const Color(0xFFF59E0B);
-        bgColor = const Color(0xFFFFFBEB);
+        iconColor = AppColors.warning;
+        bgColor = AppColors.warning.withOpacity(0.1);
         break;
       case 'wallet':
         icon = Icons.account_balance_wallet_outlined;
         iconColor = const Color(0xFF8B5CF6);
-        bgColor = const Color(0xFFF5F3FF);
+        bgColor = const Color(0xFF8B5CF6).withOpacity(0.1);
         break;
       default:
         icon = Icons.notifications_none_rounded;
-        iconColor = brandGreen;
-        bgColor = const Color(0xFFF0FDF4);
+        iconColor = AppColors.primary;
+        bgColor = AppColors.primaryLight;
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: isRead ? Colors.transparent : Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: isRead ? Colors.transparent : AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
         border: Border.all(
-          color: isRead ? const Color(0xFFF1F5F9) : Colors.transparent,
+          color: isRead ? AppColors.backgroundSubtle : Colors.transparent,
           width: 1.5,
         ),
         boxShadow: isRead
             ? []
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity( 0.03),
+                  color: Colors.black.withOpacity(0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -190,11 +175,11 @@ class NotificationsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
             child: Icon(icon, color: iconColor, size: 22),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,41 +189,31 @@ class NotificationsScreen extends StatelessWidget {
                   children: [
                     Text(
                       notification['title'] as String,
-                      style: TextStyle(
-                        fontSize: 16,
+                      style: AppTextStyles.titleMd.copyWith(
                         fontWeight: isRead ? FontWeight.w700 : FontWeight.w800,
-                        color: darkText,
                       ),
                     ),
                     if (!isRead)
                       Container(
                         width: 8,
                         height: 8,
-                        decoration: BoxDecoration(
-                          color: brandGreen,
+                        decoration: const BoxDecoration(
+                          color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
                       ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   notification['message'] as String,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: midText,
-                    height: 1.4,
-                  ),
+                  style: AppTextStyles.bodySm.copyWith(height: 1.4),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
-                  DateFormat(
-                    'h:mm a • MMM d',
-                  ).format(notification['time'] as DateTime),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: midText.withOpacity( 0.6),
+                  DateFormat('h:mm a • MMM d').format(notification['time'] as DateTime),
+                  style: AppTextStyles.caption.copyWith(
+                    color: AppColors.textTertiary.withOpacity(0.6),
                     fontWeight: FontWeight.w600,
                   ),
                 ),

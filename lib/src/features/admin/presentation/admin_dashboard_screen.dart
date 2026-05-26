@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'admin_providers.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_card.dart';
+import '../../../common/widgets/app_states.dart';
 
 class AdminDashboardScreen extends ConsumerWidget {
   const AdminDashboardScreen({super.key});
@@ -11,10 +16,10 @@ class AdminDashboardScreen extends ConsumerWidget {
     final statsAsync = ref.watch(adminStatsProvider);
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 768;
-    final padding = isMobile ? 16.0 : 32.0;
+    final padding = isMobile ? AppSpacing.lg : AppSpacing.xxl;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       body: statsAsync.when(
         data: (stats) {
           return SingleChildScrollView(
@@ -24,56 +29,47 @@ class AdminDashboardScreen extends ConsumerWidget {
               children: [
                 Text(
                   'MARKETPLACE OVERVIEW',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+                  style: AppTextStyles.caption.copyWith(
                     letterSpacing: 1.2,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Analytics Dashboard',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.xs),
+                const Text(
+                  'Analytics Dashboard',
+                  style: AppTextStyles.headingMd,
+                ),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Top Actions Row
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade200),
+                AppCard(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.lg,
+                    horizontal: AppSpacing.md,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildTopAction(Icons.check_circle_outline, 'Approve\n5 Drivers', Colors.blue),
-                      Container(width: 1, height: 30, color: Colors.grey.shade300),
-                      _buildTopAction(Icons.pending_actions, 'Review 3\nPending Orders', Colors.grey.shade600),
-                      Container(width: 1, height: 30, color: Colors.grey.shade300),
-                      _buildTopAction(Icons.add, 'New\nCampaign', Colors.grey.shade600),
+                      _buildTopAction(Icons.check_circle_outline, 'Approve\n5 Drivers', AppColors.adminAccent),
+                      Container(width: 1, height: 30, color: AppColors.border),
+                      _buildTopAction(Icons.pending_actions, 'Review 3\nPending Orders', AppColors.textSecondary),
+                      Container(width: 1, height: 30, color: AppColors.border),
+                      _buildTopAction(Icons.add, 'New\nCampaign', AppColors.textSecondary),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 Align(
                   alignment: Alignment.centerRight,
                   child: Text(
                     'LAST 24 HOURS ▼',
-                    style: TextStyle(
-                      fontSize: 10,
+                    style: AppTextStyles.caption.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade600,
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
 
                 // Main Stats Column
                 Column(
@@ -82,71 +78,68 @@ class AdminDashboardScreen extends ConsumerWidget {
                       title: 'Total Users',
                       value: stats.totalUsers.toString(),
                       icon: Icons.people,
-                      iconBgColor: Colors.blue.shade50,
-                      iconColor: Colors.blue.shade600,
+                      iconBgColor: AppColors.info.withOpacity(0.1),
+                      iconColor: AppColors.info,
                       percentage: '+12%',
                       isPositive: true,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     _StatCard(
                       title: 'Approved Drivers',
                       value: stats.totalDrivers.toString(),
                       icon: Icons.local_shipping,
-                      iconBgColor: Colors.orange.shade50,
-                      iconColor: Colors.orange.shade600,
+                      iconBgColor: AppColors.driverAccent.withOpacity(0.1),
+                      iconColor: AppColors.driverAccent,
                       percentage: '+5.2%',
                       isPositive: true,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     _StatCard(
                       title: 'Approved Vendors',
                       value: stats.totalVendors.toString(),
                       icon: Icons.storefront,
-                      iconBgColor: Colors.green.shade50,
-                      iconColor: Colors.green.shade600,
+                      iconBgColor: AppColors.success.withOpacity(0.1),
+                      iconColor: AppColors.success,
                       percentage: 'Stable',
                       isPositive: true,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     _StatCard(
                       title: 'Total Orders',
                       value: stats.totalOrders.toString(),
                       icon: Icons.receipt_long,
-                      iconBgColor: Colors.red.shade50,
-                      iconColor: Colors.red.shade600,
+                      iconBgColor: AppColors.destructive.withOpacity(0.1),
+                      iconColor: AppColors.destructive,
                       percentage: '-2.4%',
                       isPositive: false,
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
 
                 // Revenue Trend Chart
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                AppCard(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
+                          const Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Revenue Trend', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                              Text('Monthly growth and volume', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+                              Text('Revenue Trend', style: AppTextStyles.titleMd),
+                              SizedBox(height: AppSpacing.xs),
+                              Text('Monthly growth and volume', style: AppTextStyles.caption),
                             ],
                           ),
                           Container(
-                            padding: const EdgeInsets.all(4),
+                            padding: const EdgeInsets.all(AppSpacing.xs),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.backgroundSubtle,
+                              borderRadius: BorderRadius.circular(AppRadius.sm),
                             ),
                             child: Row(
                               children: [
@@ -157,7 +150,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                           )
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.xl),
                       SizedBox(
                         height: 150,
                         child: LineChart(
@@ -174,8 +167,11 @@ class AdminDashboardScreen extends ConsumerWidget {
                                     const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL'];
                                     if (value.toInt() >= 0 && value.toInt() < months.length) {
                                       return Padding(
-                                        padding: const EdgeInsets.only(top: 8.0),
-                                        child: Text(months[value.toInt()], style: TextStyle(fontSize: 10, color: Colors.grey.shade500, fontWeight: FontWeight.bold)),
+                                        padding: const EdgeInsets.only(top: AppSpacing.sm),
+                                        child: Text(
+                                          months[value.toInt()],
+                                          style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.bold),
+                                        ),
                                       );
                                     }
                                     return const Text('');
@@ -196,7 +192,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                                   FlSpot(6, 4.5),
                                 ],
                                 isCurved: true,
-                                color: Colors.blueAccent,
+                                color: AppColors.adminAccent,
                                 barWidth: 2,
                                 isStrokeCapRound: true,
                                 dotData: const FlDotData(show: false),
@@ -204,8 +200,8 @@ class AdminDashboardScreen extends ConsumerWidget {
                                   show: true,
                                   gradient: LinearGradient(
                                     colors: [
-                                      Colors.blueAccent.withOpacity(0.3),
-                                      Colors.blueAccent.withOpacity(0.0),
+                                      AppColors.adminAccent.withOpacity(0.3),
+                                      AppColors.adminAccent.withOpacity(0.0),
                                     ],
                                     begin: Alignment.topCenter,
                                     end: Alignment.bottomCenter,
@@ -220,20 +216,16 @@ class AdminDashboardScreen extends ConsumerWidget {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
 
                 // Order Categories Donut Chart
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                AppCard(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Order Categories', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      const SizedBox(height: 24),
+                      const Text('Order Categories', style: AppTextStyles.titleMd),
+                      const SizedBox(height: AppSpacing.xl),
                       SizedBox(
                         height: 180,
                         child: Stack(
@@ -244,57 +236,62 @@ class AdminDashboardScreen extends ConsumerWidget {
                                 centerSpaceRadius: 50,
                                 startDegreeOffset: -90,
                                 sections: [
-                                  PieChartSectionData(color: Colors.indigoAccent, value: 64, title: '', radius: 15),
-                                  PieChartSectionData(color: Colors.orange.shade600, value: 24, title: '', radius: 15),
-                                  PieChartSectionData(color: Colors.red.shade600, value: 12, title: '', radius: 15),
+                                  PieChartSectionData(color: AppColors.adminAccent, value: 64, title: '', radius: 15),
+                                  PieChartSectionData(color: AppColors.driverAccent, value: 24, title: '', radius: 15),
+                                  PieChartSectionData(color: AppColors.destructive, value: 12, title: '', radius: 15),
                                 ],
                               ),
                             ),
-                            const Center(
+                            Center(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text('12.4k', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
-                                  Text('TOTAL ORDERS', style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.grey)),
+                                  const Text('12.4k', style: AppTextStyles.headingMd),
+                                  Text(
+                                    'TOTAL ORDERS',
+                                    style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.bold),
+                                  ),
                                 ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      _buildLegendItem(Colors.indigoAccent, 'Electronics', '64%'),
-                      const SizedBox(height: 8),
-                      _buildLegendItem(Colors.orange.shade600, 'Home & Living', '24%'),
-                      const SizedBox(height: 8),
-                      _buildLegendItem(Colors.red.shade600, 'Fashion', '12%'),
+                      const SizedBox(height: AppSpacing.xl),
+                      _buildLegendItem(AppColors.adminAccent, 'Electronics', '64%'),
+                      const SizedBox(height: AppSpacing.sm),
+                      _buildLegendItem(AppColors.driverAccent, 'Home & Living', '24%'),
+                      const SizedBox(height: AppSpacing.sm),
+                      _buildLegendItem(AppColors.destructive, 'Fashion', '12%'),
                     ],
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xl),
 
                 // Recent Activity
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                AppCard(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Recent Activity', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                          Text('View All History', style: TextStyle(color: Colors.blueAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                          const Text('Recent Activity', style: AppTextStyles.titleMd),
+                          Text(
+                            'View All History',
+                            style: AppTextStyles.bodySm.copyWith(
+                              color: AppColors.adminAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.xl),
                       _buildActivityItem(
                         icon: Icons.person_add,
-                        iconColor: Colors.blueAccent,
+                        iconColor: AppColors.adminAccent,
                         title: 'New Vendor Registered',
                         time: '2 mins ago',
                         desc: '"Urban Artisan Collective" joined the platform. Store pending review.',
@@ -302,7 +299,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                       ),
                       _buildActivityItem(
                         icon: Icons.payments,
-                        iconColor: Colors.orange.shade600,
+                        iconColor: AppColors.driverAccent,
                         title: 'High Value Order Placed',
                         time: '14 mins ago',
                         desc: 'Order #88219 reached ₦4,200 threshold. Fraud verification required.',
@@ -310,7 +307,7 @@ class AdminDashboardScreen extends ConsumerWidget {
                       ),
                       _buildActivityItem(
                         icon: Icons.verified,
-                        iconColor: Colors.green.shade600,
+                        iconColor: AppColors.success,
                         title: 'Compliance Checklist Completed',
                         time: '1 hour ago',
                         desc: 'Driver "Sarah Jenkins" verified with 5-star safety rating.',
@@ -319,19 +316,19 @@ class AdminDashboardScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                
-                const SizedBox(height: 48), // Padding for fab or bottom scroll
+
+                const SizedBox(height: AppSpacing.xxxl + AppSpacing.sm), // Padding for fab or bottom scroll
               ],
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, stack) => Center(child: Text('Error: $e')),
+        loading: () => const AppLoading(),
+        error: (e, stack) => AppErrorState(message: 'Error: $e'),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: Colors.blueAccent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        backgroundColor: AppColors.adminAccent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -341,10 +338,13 @@ class AdminDashboardScreen extends ConsumerWidget {
     return Row(
       children: [
         Icon(icon, color: color, size: 20),
-        const SizedBox(width: 8),
+        const SizedBox(width: AppSpacing.sm),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black87),
+          style: AppTextStyles.bodySm.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );
@@ -352,18 +352,19 @@ class AdminDashboardScreen extends ConsumerWidget {
 
   Widget _buildTogglePill(String label, bool isActive) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm - 2),
       decoration: BoxDecoration(
-        color: isActive ? Colors.white : Colors.transparent,
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: isActive ? [const BoxShadow(color: Colors.black12, blurRadius: 2, offset: Offset(0, 1))] : null,
+        color: isActive ? AppColors.card : Colors.transparent,
+        borderRadius: BorderRadius.circular(AppRadius.sm - 2),
+        boxShadow: isActive
+            ? [const BoxShadow(color: Colors.black12, blurRadius: 2, offset: Offset(0, 1))]
+            : null,
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 10,
+        style: AppTextStyles.caption.copyWith(
           fontWeight: FontWeight.bold,
-          color: isActive ? Colors.black87 : Colors.grey.shade600,
+          color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
         ),
       ),
     );
@@ -376,11 +377,14 @@ class AdminDashboardScreen extends ConsumerWidget {
         Row(
           children: [
             CircleAvatar(radius: 4, backgroundColor: color),
-            const SizedBox(width: 8),
-            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+            const SizedBox(width: AppSpacing.sm),
+            Text(label, style: AppTextStyles.bodySm),
           ],
         ),
-        Text(percentage, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+        Text(
+          percentage,
+          style: AppTextStyles.bodySm.copyWith(fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }
@@ -402,37 +406,42 @@ class AdminDashboardScreen extends ConsumerWidget {
               Container(
                 width: 32,
                 height: 32,
-                decoration: BoxDecoration(color: iconColor, borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: iconColor, borderRadius: BorderRadius.circular(AppRadius.sm)),
                 child: Icon(icon, color: Colors.white, size: 16),
               ),
               if (!isLast)
                 Expanded(
                   child: Container(
                     width: 1,
-                    color: Colors.grey.shade300,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    color: AppColors.border,
+                    margin: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
                   ),
                 ),
             ],
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.lg),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.only(bottom: AppSpacing.xl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
-                      Text(time, style: TextStyle(color: Colors.grey.shade500, fontSize: 10)),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: AppTextStyles.label,
+                        ),
+                      ),
+                      Text(time, style: AppTextStyles.caption),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     desc,
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12, height: 1.4),
+                    style: AppTextStyles.bodySm.copyWith(height: 1.4),
                   ),
                 ],
               ),
@@ -465,12 +474,16 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+    final isStable = percentage == 'Stable';
+    final badgeBg = isStable
+        ? AppColors.backgroundSubtle
+        : (isPositive ? AppColors.success.withOpacity(0.1) : AppColors.destructive.withOpacity(0.1));
+    final badgeFg = isStable
+        ? AppColors.textSecondary
+        : (isPositive ? AppColors.success : AppColors.destructive);
+
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -478,33 +491,35 @@ class _StatCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: iconBgColor, borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
                 child: Icon(icon, color: iconColor, size: 20),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                 decoration: BoxDecoration(
-                  color: percentage == 'Stable' ? Colors.grey.shade100 : (isPositive ? Colors.green.shade50 : Colors.red.shade50),
-                  borderRadius: BorderRadius.circular(20),
+                  color: badgeBg,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       percentage,
-                      style: TextStyle(
-                        fontSize: 10,
+                      style: AppTextStyles.caption.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: percentage == 'Stable' ? Colors.grey.shade600 : (isPositive ? Colors.green.shade700 : Colors.red.shade700),
+                        color: badgeFg,
                       ),
                     ),
-                    if (percentage != 'Stable') ...[
+                    if (!isStable) ...[
                       const SizedBox(width: 2),
                       Icon(
                         isPositive ? Icons.trending_up : Icons.trending_down,
                         size: 10,
-                        color: isPositive ? Colors.green.shade700 : Colors.red.shade700,
+                        color: badgeFg,
                       )
                     ]
                   ],
@@ -512,10 +527,16 @@ class _StatCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24),
-          Text(title, style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black)),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            title,
+            style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            value,
+            style: AppTextStyles.headingLg,
+          ),
         ],
       ),
     );

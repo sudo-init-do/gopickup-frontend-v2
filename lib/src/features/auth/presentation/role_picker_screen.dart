@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 import '../../../state/auth_provider.dart';
 import '../../../state/signup_provider.dart';
 import '../../../common/utils/error_handler.dart';
@@ -33,7 +36,7 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
         .register(signupData.email, signupData.password, roleValue);
 
     if (!mounted) return;
-    
+
     setState(() {
       _isLoading = false;
     });
@@ -45,7 +48,7 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(ErrorHandler.getMessage(error)),
-          backgroundColor: Colors.red.shade800,
+          backgroundColor: AppColors.destructive,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -55,17 +58,17 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 40),
+                    const SizedBox(height: AppSpacing.xxxl),
                     // Logo and Name
                     Row(
                       children: [
@@ -79,33 +82,28 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: AppSpacing.xxl + AppSpacing.lg),
                     // Title
-                    const Text(
+                    Text(
                       'Choose your role',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF1F2937),
-                      ),
+                      style: AppTextStyles.displayLg.copyWith(color: AppColors.textPrimary),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     // Subtitle
-                    const Text(
+                    Text(
                       'Select how you want to use Go Pickup',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF6B7280),
+                      style: AppTextStyles.body.copyWith(
+                        color: AppColors.textSecondary,
                         letterSpacing: 0.1,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.xxl),
                     // Role Cards
                     _RoleOptionCard(
                       title: 'Client',
                       subtitle: 'Buy materials & book deliveries',
                       icon: Icons.person_outline,
-                      iconColor: const Color(0xFF3B82F6),
+                      iconColor: AppColors.info,
                       iconBgColor: const Color(0xFFEFF6FF),
                       tags: const [
                         'Browse Go-Market',
@@ -116,12 +114,12 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                       isSelected: _selectedRole == 'Client',
                       onTap: () => setState(() => _selectedRole = 'Client'),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.lg),
                     _RoleOptionCard(
                       title: 'Driver',
                       subtitle: 'Deliver loads & earn money',
                       icon: Icons.local_shipping_outlined,
-                      iconColor: const Color(0xFFF97316),
+                      iconColor: AppColors.driverAccent,
                       iconBgColor: const Color(0xFFFFF7ED),
                       tags: const [
                         'Accept jobs',
@@ -132,12 +130,12 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                       isSelected: _selectedRole == 'Driver',
                       onTap: () => setState(() => _selectedRole = 'Driver'),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.lg),
                     _RoleOptionCard(
                       title: 'Vendor',
                       subtitle: 'Sell your products online',
                       icon: Icons.store_outlined,
-                      iconColor: const Color(0xFFA855F7),
+                      iconColor: AppColors.vendorAccent,
                       iconBgColor: const Color(0xFFFAF5FF),
                       tags: const [
                         'List products',
@@ -148,57 +146,19 @@ class _RolePickerScreenState extends ConsumerState<RolePickerScreen> {
                       isSelected: _selectedRole == 'Vendor',
                       onTap: () => setState(() => _selectedRole = 'Vendor'),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.xxl),
                   ],
                 ),
               ),
             ),
             // Continue Button at the bottom
             Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: (_selectedRole != null && !_isLoading)
-                      ? _onContinue
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B7D23),
-                    disabledBackgroundColor: const Color(
-                      0xFF3B7D23,
-                    ).withOpacity( 0.5),
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white.withOpacity(0.7),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Continue',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward_rounded, size: 20),
-                          ],
-                        ),
-                ),
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: PrimaryButton(
+                label: 'Continue',
+                onPressed: (_selectedRole != null && !_isLoading) ? _onContinue : null,
+                isLoading: _isLoading,
+                icon: Icons.arrow_forward_rounded,
               ),
             ),
           ],
@@ -235,20 +195,20 @@ class _RoleOptionCard extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primaryLight.withOpacity( 0.5)
-              : Colors.white,
-          borderRadius: BorderRadius.circular(32),
+              ? AppColors.primaryLight.withOpacity(0.5)
+              : AppColors.card,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
           border: Border.all(
-            color: isSelected ? AppColors.primary : const Color(0xFFF3F4F6),
+            color: isSelected ? AppColors.primary : AppColors.backgroundSubtle,
             width: isSelected ? 2 : 1.5,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity( 0.05),
+                    color: Colors.black.withOpacity(0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -261,33 +221,26 @@ class _RoleOptionCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
                     color: iconBgColor,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(icon, color: iconColor, size: 28),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSpacing.lg),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F2937),
-                        ),
+                        style: AppTextStyles.titleMd,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         subtitle,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF6B7280),
-                        ),
+                        style: AppTextStyles.bodySm.copyWith(color: AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -297,13 +250,9 @@ class _RoleOptionCard extends StatelessWidget {
                   height: 24,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isSelected
-                        ? const Color(0xFF4CAF50)
-                        : Colors.transparent,
+                    color: isSelected ? AppColors.success : Colors.transparent,
                     border: Border.all(
-                      color: isSelected
-                          ? const Color(0xFF4CAF50)
-                          : const Color(0xFFD1D5DB),
+                      color: isSelected ? AppColors.success : AppColors.borderStrong,
                       width: 2,
                     ),
                   ),
@@ -313,10 +262,10 @@ class _RoleOptionCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
               children: tags.map((tag) => _FeatureTag(tag: tag)).toList(),
             ),
           ],
@@ -333,18 +282,14 @@ class _FeatureTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs + 2),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F6),
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.backgroundSubtle,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
       child: Text(
         tag,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: Color(0xFF4B5563),
-        ),
+        style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
       ),
     );
   }

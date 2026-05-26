@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 import '../../../state/auth_provider.dart';
 import '../../../common/utils/error_handler.dart';
 
@@ -18,7 +21,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   void _validateForm() {
     setState(() {
-      _isFormValid = _emailController.text.isNotEmpty && 
+      _isFormValid = _emailController.text.isNotEmpty &&
           RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
           .hasMatch(_emailController.text);
     });
@@ -45,7 +48,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(ErrorHandler.getMessage(error)),
-          backgroundColor: Colors.red.shade800,
+          backgroundColor: AppColors.destructive,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -57,23 +60,23 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.textPrimary, size: 20),
           onPressed: () => context.pop(),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
-              // Logo/Icon
+              const SizedBox(height: AppSpacing.xl),
+              // Icon
               Container(
                 width: 64,
                 height: 64,
@@ -87,94 +90,67 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   color: AppColors.primary,
                 ),
               ),
-              const SizedBox(height: 32),
-              
+              const SizedBox(height: AppSpacing.xxl),
+
               // Title
               Text(
                 'Forgot Password',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                style: AppTextStyles.headingLg.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF1F2937),
+                  color: AppColors.textPrimary,
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 12),
-              
+              const SizedBox(height: AppSpacing.md),
+
               // Subtitle
               Text(
                 'Enter your registered email address to receive a 6-digit verification code.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textSecondary,
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: AppSpacing.xxxl),
 
-              // Email Field
-              Text(
+              // Email Field Label
+              const Text(
                 'Email Address',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.grey[800],
-                ),
+                style: AppTextStyles.label,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               TextField(
                 controller: _emailController,
                 onChanged: (_) => _validateForm(),
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: 'user@example.com',
-                  prefixIcon: const Icon(Icons.mail_outline_rounded, color: Colors.grey),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 18),
+                  hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
+                  prefixIcon: const Icon(Icons.mail_outline_rounded, color: AppColors.textTertiary),
+                  contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg + AppSpacing.xs),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderSide: const BorderSide(color: AppColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: Colors.grey.shade200),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    borderSide: const BorderSide(color: AppColors.border),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
                     borderSide: const BorderSide(color: AppColors.primary, width: 2),
                   ),
                   filled: true,
-                  fillColor: Colors.grey.shade50,
+                  fillColor: AppColors.background,
                 ),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: AppSpacing.xxl + AppSpacing.lg),
 
               // Reset Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: (_isFormValid && !authState.isLoading) ? _requestReset : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: authState.isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                        )
-                      : const Text(
-                          'Send Code',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                ),
+              PrimaryButton(
+                label: 'Send Code',
+                onPressed: (_isFormValid && !authState.isLoading) ? _requestReset : null,
+                isLoading: authState.isLoading,
               ),
             ],
           ),

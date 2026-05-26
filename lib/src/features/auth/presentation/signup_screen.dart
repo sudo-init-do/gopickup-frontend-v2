@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
+import '../../../common/config/app_config.dart';
 import '../../../state/signup_provider.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
@@ -21,9 +25,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _agreeToPolicy = false;
 
   Future<void> _launchSupport() async {
-    final Uri url = Uri.parse('whatsapp://send?phone=2348087042206');
+    final Uri url = Uri.parse('whatsapp://send?phone=${AppConfig.supportPhone}');
     if (!await launchUrl(url)) {
-      final Uri webUrl = Uri.parse('https://wa.me/2348087042206');
+      final Uri webUrl = Uri.parse('https://wa.me/${AppConfig.supportPhone}');
       await launchUrl(webUrl, mode: LaunchMode.externalApplication);
     }
   }
@@ -53,14 +57,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 40),
+              const SizedBox(height: AppSpacing.xxxl),
               // Logo and Name
               Row(
                 children: [
@@ -74,35 +78,29 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: AppSpacing.xxl + AppSpacing.lg),
               // Welcome Text
-              const Text(
+              Text(
                 'Welcome!',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1F2937),
+                style: AppTextStyles.displayLg.copyWith(
+                  color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               // Subtext
-              const Text(
+              Text(
                 'Enter your details to get started',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF6B7280),
-                  letterSpacing: 0.1,
-                ),
+                style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xxl),
               // Email Input
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
                   border: Border.all(
                     color: _emailController.text.isNotEmpty
                         ? AppColors.primary
-                        : const Color(0xFFF3F4F6),
+                        : AppColors.backgroundSubtle,
                     width: 1.5,
                   ),
                 ),
@@ -110,32 +108,32 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   controller: _emailController,
                   onChanged: (_) => _validateForm(),
                   keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(fontSize: 16),
-                  decoration: const InputDecoration(
+                  style: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
+                  decoration: InputDecoration(
                     hintText: 'Email address',
-                    hintStyle: TextStyle(color: Color(0xFF9CA3AF)),
-                    prefixIcon: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                    hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
+                    prefixIcon: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                       child: Icon(
                         Icons.mail_outline,
-                        color: Color(0xFF6B7280),
+                        color: AppColors.textSecondary,
                         size: 20,
                       ),
                     ),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 20),
+                    contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
               // Password Input
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
                   border: Border.all(
                     color: _passwordController.text.isNotEmpty
                         ? AppColors.primary
-                        : const Color(0xFFF3F4F6),
+                        : AppColors.backgroundSubtle,
                     width: 1.5,
                   ),
                 ),
@@ -143,15 +141,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   controller: _passwordController,
                   onChanged: (_) => _validateForm(),
                   obscureText: _obscurePassword,
-                  style: const TextStyle(fontSize: 16),
+                  style: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
                   decoration: InputDecoration(
                     hintText: 'Password',
-                    hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+                    hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
                     prefixIcon: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                       child: Icon(
                         Icons.lock_outline,
-                        color: Color(0xFF6B7280),
+                        color: AppColors.textSecondary,
                         size: 20,
                       ),
                     ),
@@ -160,7 +158,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         _obscurePassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
-                        color: Colors.grey,
+                        color: AppColors.textTertiary,
                       ),
                       onPressed: () {
                         setState(() {
@@ -169,11 +167,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       },
                     ),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 20),
+                    contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl),
               // Policy Checkbox
               Row(
                 children: [
@@ -181,7 +179,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     value: _agreeToPolicy,
                     activeColor: AppColors.primary,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(AppRadius.sm / 2),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -193,17 +191,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   Expanded(
                     child: Text.rich(
                       TextSpan(
-                        style: const TextStyle(
-                          color: Color(0xFF6B7280),
-                          fontSize: 13,
+                        style: AppTextStyles.bodySm.copyWith(
+                          color: AppColors.textSecondary,
                           height: 1.5,
                         ),
                         children: [
                           const TextSpan(text: 'By continuing, you agree to our '),
                           TextSpan(
                             text: 'Privacy Policy',
-                            style: const TextStyle(
-                              color: Color(0xFF3B7D23),
+                            style: AppTextStyles.bodySm.copyWith(
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w700,
                             ),
                             recognizer: TapGestureRecognizer()
@@ -212,8 +209,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           const TextSpan(text: ' and '),
                           TextSpan(
                             text: 'terms of use',
-                            style: const TextStyle(
-                              color: Color(0xFF3B7D23),
+                            style: AppTextStyles.bodySm.copyWith(
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w700,
                             ),
                             recognizer: TapGestureRecognizer()
@@ -226,57 +223,29 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: AppSpacing.xxxl),
               // Next Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isFormValid ? _onNext : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    disabledBackgroundColor:
-                        AppColors.primarySage.withOpacity( 0.5),
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Next',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, size: 20),
-                    ],
-                  ),
-                ),
+              PrimaryButton(
+                label: 'Next',
+                onPressed: _isFormValid ? _onNext : null,
+                icon: Icons.arrow_forward_rounded,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xxl),
               Center(
                 child: GestureDetector(
                   onTap: _launchSupport,
                   child: Text(
                     'Need help? Contact Support',
-                    style: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 13,
+                    style: AppTextStyles.bodySm.copyWith(
+                      color: AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
                       decoration: TextDecoration.underline,
-                      decorationColor: Colors.grey.shade300,
+                      decorationColor: AppColors.border,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: AppSpacing.xxl + AppSpacing.lg),
             ],
           ),
         ),

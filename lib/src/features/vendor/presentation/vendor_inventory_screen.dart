@@ -2,59 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../data/vendor_repository.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_states.dart';
 
 class VendorInventoryScreen extends ConsumerWidget {
   const VendorInventoryScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const kPurple = Color(0xFFA855F7);
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF64748B);
-    const kLightBorderColor = Color(0xFFF1F5F9);
-    const kBrandGreen = Color(0xFF45A225);
-
     final inventoryAsync = ref.watch(vendorInventoryProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: SafeArea(
         child: Column(
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.xl, AppSpacing.xl, AppSpacing.xl, AppSpacing.lg,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Products',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: kDarkTextColor,
-                      letterSpacing: -0.5,
-                    ),
+                    style: AppTextStyles.displayLg.copyWith(letterSpacing: -0.5),
                   ),
                   ElevatedButton.icon(
                     onPressed: () => context.push('/vendor/inventory/add'),
                     icon: const Icon(Icons.add, size: 18),
                     label: const Text('Add'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: kBrandGreen,
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
-                        vertical: 12,
+                        vertical: AppSpacing.md,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(AppRadius.xl),
                       ),
-                      textStyle: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                      ),
+                      textStyle: AppTextStyles.label,
                     ),
                   ),
                 ],
@@ -63,48 +55,47 @@ class VendorInventoryScreen extends ConsumerWidget {
 
             // Search and Filter Row
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Row(
                 children: [
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF9FAFB),
-                        borderRadius: BorderRadius.circular(24),
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(AppRadius.xl),
                         border: Border.all(
-                          color: kLightBorderColor,
+                          color: AppColors.border,
                           width: 1.5,
                         ),
                       ),
-                      child: const TextField(
+                      child: TextField(
                         decoration: InputDecoration(
                           hintText: 'Search products...',
-                          hintStyle: TextStyle(
-                            color: Color(0xFF94A3B8),
-                            fontSize: 16,
+                          hintStyle: AppTextStyles.body.copyWith(
+                            color: AppColors.textTertiary,
                           ),
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.search,
-                            color: Color(0xFF94A3B8),
+                            color: AppColors.textTertiary,
                           ),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 14),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: kLightBorderColor, width: 1.5),
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(AppRadius.xl),
+                      border: Border.all(color: AppColors.border, width: 1.5),
                     ),
                     child: const Icon(
                       Icons.tune_rounded,
-                      color: Color(0xFF64748B),
+                      color: AppColors.textSecondary,
                       size: 24,
                     ),
                   ),
@@ -116,34 +107,36 @@ class VendorInventoryScreen extends ConsumerWidget {
             const SizedBox(height: 20),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Row(
                 children: [
-                  _buildFilterTab('All', true, kPurple),
-                  _buildFilterTab('Active', false, kPurple),
-                  _buildFilterTab('Inactive', false, kPurple),
-                  _buildFilterTab('Low Stock', false, kPurple),
+                  _buildFilterTab('All', true),
+                  _buildFilterTab('Active', false),
+                  _buildFilterTab('Inactive', false),
+                  _buildFilterTab('Low Stock', false),
                 ],
               ),
             ),
 
-            const SizedBox(height: 12),
-            const Divider(color: kLightBorderColor, height: 1),
+            const SizedBox(height: AppSpacing.md),
+            const Divider(color: AppColors.border, height: 1),
 
             // Products List
             Expanded(
               child: inventoryAsync.when(
                 data: (products) {
                   if (products.isEmpty) {
-                    return const Center(
-                      child: Text('No products in inventory'),
+                    return const AppEmptyState(
+                      icon: Icons.inventory_2_outlined,
+                      title: 'No products yet',
+                      message: 'Add your first product to get started.',
                     );
                   }
                   return RefreshIndicator(
                     onRefresh: () async =>
                         ref.invalidate(vendorInventoryProvider),
                     child: ListView.builder(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(AppSpacing.xl),
                       itemCount: products.length,
                       itemBuilder: (context, index) {
                         final product = products[index];
@@ -157,17 +150,14 @@ class VendorInventoryScreen extends ConsumerWidget {
                             '${product.moq}',
                             '0 sold', // Mock sold for now
                             product.imageUrl,
-                            kDarkTextColor,
-                            kMidTextColor,
-                            kLightBorderColor,
                           ),
                         );
                       },
                     ),
                   );
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, _) => Center(child: Text('Error: $err')),
+                loading: () => const AppLoading(),
+                error: (err, _) => AppErrorState(message: 'Error: $err'),
               ),
             ),
           ],
@@ -176,20 +166,18 @@ class VendorInventoryScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFilterTab(String label, bool isActive, Color activeColor) {
+  Widget _buildFilterTab(String label, bool isActive) {
     return Container(
-      margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      margin: const EdgeInsets.only(right: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
       decoration: BoxDecoration(
-        color: isActive ? activeColor : const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(24),
+        color: isActive ? AppColors.vendorAccent : AppColors.background,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
       child: Text(
         label,
-        style: TextStyle(
-          color: isActive ? Colors.white : const Color(0xFF64748B),
-          fontWeight: FontWeight.w700,
-          fontSize: 15,
+        style: AppTextStyles.label.copyWith(
+          color: isActive ? Colors.white : AppColors.textSecondary,
         ),
       ),
     );
@@ -203,19 +191,16 @@ class VendorInventoryScreen extends ConsumerWidget {
     String moq,
     String sold,
     String imageUrl,
-    Color kDarkTextColor,
-    Color kMidTextColor,
-    Color kLightBorderColor,
   ) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: kLightBorderColor, width: 1.5),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.border, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: kDarkTextColor.withOpacity( 0.04),
+            color: AppColors.textPrimary.withOpacity(0.04),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -230,8 +215,8 @@ class VendorInventoryScreen extends ConsumerWidget {
                 width: 64,
                 height: 64,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(20),
+                  color: AppColors.backgroundSubtle,
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                   image: imageUrl.isNotEmpty
                       ? DecorationImage(
                           image: NetworkImage(imageUrl),
@@ -242,12 +227,12 @@ class VendorInventoryScreen extends ConsumerWidget {
                 child: imageUrl.isEmpty
                     ? const Icon(
                         Icons.inventory_2_outlined,
-                        color: Color(0xFF94A3B8),
+                        color: AppColors.textTertiary,
                         size: 30,
                       )
                     : null,
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.lg),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,54 +242,41 @@ class VendorInventoryScreen extends ConsumerWidget {
                       children: [
                         Text(
                           title,
-                          style: TextStyle(
-                            fontSize: 18,
+                          style: AppTextStyles.titleMd.copyWith(
                             fontWeight: FontWeight.w800,
-                            color: kDarkTextColor,
                           ),
                         ),
                         const Icon(
                           Icons.more_vert_rounded,
-                          color: Color(0xFF94A3B8),
+                          color: AppColors.textTertiary,
                         ),
                       ],
                     ),
                     Text(
                       category,
-                      style: TextStyle(
-                        color: kMidTextColor,
+                      style: AppTextStyles.bodySm.copyWith(
+                        color: AppColors.textSecondary,
                         fontWeight: FontWeight.w600,
-                        fontSize: 14,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     Row(
                       children: [
                         Text(
                           price,
-                          style: TextStyle(
-                            fontSize: 20,
+                          style: AppTextStyles.headingMd.copyWith(
                             fontWeight: FontWeight.w900,
-                            color: kDarkTextColor,
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: AppSpacing.lg),
                         Text(
                           'Stock: $stock',
-                          style: TextStyle(
-                            color: kMidTextColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
+                          style: AppTextStyles.bodySm,
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: AppSpacing.lg),
                         Text(
                           'MOQ: $moq',
-                          style: TextStyle(
-                            color: kMidTextColor,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
+                          style: AppTextStyles.bodySm,
                         ),
                       ],
                     ),
@@ -314,23 +286,19 @@ class VendorInventoryScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Divider(color: kLightBorderColor, height: 1),
+          const Divider(color: AppColors.border, height: 1),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 sold,
-                style: TextStyle(
-                  color: kMidTextColor,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15,
-                ),
+                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
               ),
               Row(
                 children: [
                   _buildCardAction(Icons.edit_outlined),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.md),
                   _buildCardAction(Icons.visibility_outlined),
                 ],
               ),
@@ -343,12 +311,12 @@ class VendorInventoryScreen extends ConsumerWidget {
 
   Widget _buildCardAction(IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
-      child: Icon(icon, color: const Color(0xFF45A225), size: 20),
+      child: Icon(icon, color: AppColors.primary, size: 20),
     );
   }
 }

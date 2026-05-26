@@ -7,6 +7,10 @@ import '../../../api/api_client.dart';
 import '../../../state/auth_provider.dart';
 import '../../../state/profile_provider.dart';
 import '../../auth/data/auth_repository.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -46,12 +50,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final user = ref.watch(authProvider).user;
     final profileAsync = ref.watch(fullProfileProvider);
 
-    const kBrandGreen = Color(0xFF3B7D23);
-    const kDeepGreen = Color(0xFF1B4332);
-    const kSurfaceColor = Color(0xFFF8FAFC);
-
     return Scaffold(
-      backgroundColor: kSurfaceColor,
+      backgroundColor: AppColors.background,
       body: profileAsync.when(
         data: (profile) {
           _setupControllers(profile);
@@ -66,30 +66,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   user?.role ?? 'client',
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSpacing.xxl),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildSectionTitle('Account Details'),
-                      const SizedBox(height: 16),
-                      
+                      const SizedBox(height: AppSpacing.lg),
+
                       _buildModernField(
                         label: user?.role == 'vendor' ? 'Store Name' : 'Full Name',
                         controller: _nameController,
                         isEditing: _isEditing,
                         icon: Icons.person_outline_rounded,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.lg),
                       _buildModernField(
                         label: 'Phone Number',
                         controller: _phoneController,
                         isEditing: _isEditing,
                         icon: Icons.phone_android_rounded,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.lg),
                       _buildModernField(
                         label: 'Address',
                         controller: _addressController,
@@ -97,14 +97,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         icon: Icons.location_on_outlined,
                         maxLines: 2,
                       ),
-                      
-                      const SizedBox(height: 40),
-                      
+
+                      const SizedBox(height: AppSpacing.xxxl),
+
                       // Action Buttons
-                      _buildPrimaryAction(
+                      PrimaryButton(
                         label: _isEditing ? 'Save Changes' : 'Edit Profile',
                         icon: _isEditing ? Icons.check_circle_outline : Icons.edit_note_rounded,
-                        onTap: () {
+                        onPressed: () {
                           if (_isEditing) {
                             _saveProfile();
                           } else {
@@ -112,24 +112,37 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           }
                         },
                         isLoading: ref.watch(profileProvider).isLoading,
-                        color: kBrandGreen,
+                        color: AppColors.primary,
                       ),
-                      
-                      const SizedBox(height: 16),
-                      
-                      _buildPrimaryAction(
-                        label: 'Log Out',
-                        icon: Icons.logout_rounded,
-                        onTap: _handleLogout,
-                        color: Colors.redAccent,
-                        isOutlined: true,
+
+                      const SizedBox(height: AppSpacing.lg),
+
+                      // Log Out (outlined style preserved)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 60,
+                        child: OutlinedButton.icon(
+                          onPressed: _handleLogout,
+                          icon: const Icon(Icons.logout_rounded, size: 22),
+                          label: Text(
+                            'Log Out',
+                            style: AppTextStyles.button.copyWith(fontSize: 17, fontWeight: FontWeight.w800),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.destructive,
+                            side: const BorderSide(color: AppColors.destructive, width: 2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
+                            ),
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildPrimaryAction(
+                      const SizedBox(height: AppSpacing.lg),
+                      PrimaryButton(
                         label: 'Delete Account',
                         icon: Icons.delete_forever_rounded,
-                        onTap: _showDeleteAccountConfirmation,
-                        color: Colors.redAccent,
+                        onPressed: _showDeleteAccountConfirmation,
+                        color: AppColors.destructive,
                       ),
                       const SizedBox(height: 60),
                     ],
@@ -153,7 +166,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       width: double.infinity,
       height: 380,
       decoration: const BoxDecoration(
-        color: Color(0xFF3B7D23),
+        color: AppColors.primary,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(40),
           bottomRight: Radius.circular(40),
@@ -168,14 +181,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             right: -50,
             child: CircleAvatar(
               radius: 100,
-              backgroundColor: Colors.white.withOpacity( 0.05),
+              backgroundColor: Colors.white.withOpacity(0.05),
             ),
           ),
-          
+
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 40),
+              const SizedBox(height: AppSpacing.xxxl),
               // Profile Photo
               Stack(
                 children: [
@@ -187,7 +200,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       border: Border.all(color: Colors.white, width: 4),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity( 0.1),
+                          color: Colors.black.withOpacity(0.1),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -197,7 +210,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       child: photoUrl != null
                           ? Image.network(photoUrl, fit: BoxFit.cover)
                           : Container(
-                              color: Colors.white.withOpacity( 0.2),
+                              color: Colors.white.withOpacity(0.2),
                               child: const Icon(Icons.person, size: 80, color: Colors.white),
                             ),
                     ),
@@ -208,7 +221,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     child: GestureDetector(
                       onTap: _pickAndUploadImage,
                       child: Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(AppSpacing.sm + 2),
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
@@ -216,36 +229,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         child: const Icon(
                           Icons.camera_alt_rounded,
                           size: 20,
-                          color: Color(0xFF3B7D23),
+                          color: AppColors.primary,
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.xl),
               Text(
                 email,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.5,
-                ),
+                style: AppTextStyles.headingLg.copyWith(color: Colors.white),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.md),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs + 2),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity( 0.2),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white.withOpacity( 0.3)),
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  border: Border.all(color: Colors.white.withOpacity(0.3)),
                 ),
                 child: Text(
                   role.toUpperCase(),
-                  style: const TextStyle(
+                  style: AppTextStyles.bodySm.copyWith(
                     color: Colors.white,
-                    fontSize: 13,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.2,
                   ),
@@ -261,10 +268,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: AppTextStyles.headingLg.copyWith(
         fontSize: 22,
         fontWeight: FontWeight.w900,
-        color: Color(0xFF1E293B),
         letterSpacing: -0.5,
       ),
     );
@@ -281,28 +287,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          padding: const EdgeInsets.only(left: AppSpacing.xs, bottom: AppSpacing.sm),
           child: Text(
             label,
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
+            style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: isEditing ? Colors.white : Colors.grey.shade50,
-            borderRadius: BorderRadius.circular(16),
+            color: isEditing ? AppColors.card : AppColors.backgroundSubtle,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(
-              color: isEditing ? const Color(0xFF3B7D23).withOpacity( 0.3) : Colors.grey.shade200,
+              color: isEditing ? AppColors.primary.withOpacity(0.3) : AppColors.border,
               width: 1.5,
             ),
             boxShadow: isEditing
                 ? [
                     BoxShadow(
-                      color: const Color(0xFF3B7D23).withOpacity( 0.05),
+                      color: AppColors.primary.withOpacity(0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     )
@@ -313,61 +315,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             controller: controller,
             enabled: isEditing,
             maxLines: maxLines,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1E293B)),
+            style: AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w600),
             decoration: InputDecoration(
               prefixIcon: Icon(
                 icon,
-                color: isEditing ? const Color(0xFF3B7D23) : Colors.grey.shade400,
+                color: isEditing ? AppColors.primary : AppColors.textTertiary,
                 size: 22,
               ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
               hintText: 'Enter $label',
-              hintStyle: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w400),
+              hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildPrimaryAction({
-    required String label,
-    required IconData icon,
-    required VoidCallback onTap,
-    required Color color,
-    bool isLoading = false,
-    bool isOutlined = false,
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      height: 60,
-      child: isOutlined
-          ? OutlinedButton.icon(
-              onPressed: isLoading ? null : onTap,
-              icon: Icon(icon, size: 22),
-              label: Text(label, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: color,
-                side: BorderSide(color: color, width: 2),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              ),
-            )
-          : ElevatedButton.icon(
-              onPressed: isLoading ? null : onTap,
-              icon: isLoading
-                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : Icon(icon, size: 22),
-              label: isLoading
-                  ? const SizedBox()
-                  : Text(label, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: color,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              ),
-            ),
     );
   }
 
@@ -394,12 +356,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           'profile_picture_url': imageUrl,
         });
         if (success && mounted) {
-           _showToast('Profile photo updated!', Icons.check_circle_outline, Colors.green);
+          _showToast('Profile photo updated!', Icons.check_circle_outline, AppColors.success);
         }
       }
     } catch (e) {
       if (mounted) {
-        _showToast('Upload failed: ${e.toString().split(':').last}', Icons.error_outline, Colors.redAccent);
+        _showToast('Upload failed: ${e.toString().split(':').last}', Icons.error_outline, AppColors.destructive);
       }
     }
   }
@@ -416,9 +378,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final success = await ref.read(profileProvider.notifier).updateProfile(updates);
     if (success && mounted) {
       setState(() => _isEditing = false);
-      _showToast('Profile updated!', Icons.check_circle_outline, Colors.green);
+      _showToast('Profile updated!', Icons.check_circle_outline, AppColors.success);
     } else if (mounted) {
-      _showToast('Update failed!', Icons.error_outline, Colors.redAccent);
+      _showToast('Update failed!', Icons.error_outline, AppColors.destructive);
     }
   }
 
@@ -428,14 +390,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         content: Row(
           children: [
             Icon(icon, color: Colors.white, size: 20),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Text(message, style: const TextStyle(fontWeight: FontWeight.w700)),
           ],
         ),
         backgroundColor: color ?? Colors.black87,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+        margin: const EdgeInsets.all(AppSpacing.lg),
       ),
     );
   }
@@ -449,8 +411,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
           TextButton(
-            onPressed: () => Navigator.pop(context, true), 
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.destructive),
             child: const Text('Log Out'),
           ),
         ],
@@ -478,7 +440,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.destructive),
               onPressed: () => Navigator.of(ctx).pop(true),
               child: const Text('Confirm Delete', style: TextStyle(color: Colors.white)),
             ),
@@ -492,7 +454,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (ctx) => const Center(child: CircularProgressIndicator(color: Colors.redAccent)),
+        builder: (ctx) => const Center(child: CircularProgressIndicator(color: AppColors.destructive)),
       );
 
       final success = await ref.read(authRepositoryProvider).deleteAccount();
@@ -502,7 +464,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         if (success) {
           context.go('/');
         } else {
-          _showToast('Failed to delete account. Please try again later.', Icons.error_outline, Colors.redAccent);
+          _showToast('Failed to delete account. Please try again later.', Icons.error_outline, AppColors.destructive);
         }
       }
     }
@@ -514,15 +476,15 @@ class _ProfileLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(color: Color(0xFF3B7D23)),
-          SizedBox(height: 20),
+          const CircularProgressIndicator(color: AppColors.primary),
+          const SizedBox(height: AppSpacing.lg),
           Text(
             'Syncing your profile...',
-            style: TextStyle(fontWeight: FontWeight.w700, color: Colors.grey),
+            style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -540,45 +502,37 @@ class _ProfileErrorState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxxl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity( 0.1),
+                color: AppColors.destructive.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.error_outline_rounded, size: 64, color: Colors.redAccent),
+              child: const Icon(Icons.error_outline_rounded, size: 64, color: AppColors.destructive),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'Connection Issue',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF1E293B)),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.xl),
             Text(
-              error.contains('404') 
-                  ? 'We couldn\'t find your profile record. It might not be created yet.' 
+              'Connection Issue',
+              style: AppTextStyles.headingLg.copyWith(fontSize: 22, fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              error.contains('404')
+                  ? 'We couldn\'t find your profile record. It might not be created yet.'
                   : 'Something went wrong while fetching your profile.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 15, height: 1.5),
+              style: AppTextStyles.body.copyWith(height: 1.5),
             ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Try Again', style: TextStyle(fontWeight: FontWeight.w800)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1E293B),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-              ),
+            const SizedBox(height: AppSpacing.xxl),
+            PrimaryButton(
+              label: 'Try Again',
+              onPressed: onRetry,
+              icon: Icons.refresh_rounded,
+              color: AppColors.textPrimary,
             ),
           ],
         ),

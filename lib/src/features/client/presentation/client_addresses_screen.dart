@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 
 class ClientAddressesScreen extends StatelessWidget {
   const ClientAddressesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF64748B);
-    const kBrandGreen = Color(0xFF3B7D23);
-
     final List<Map<String, String>> addresses = [
       {
         'label': 'Home',
@@ -24,28 +24,24 @@ class ClientAddressesScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
+          padding: const EdgeInsets.only(left: AppSpacing.lg),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: kDarkTextColor),
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
             onPressed: () => context.pop(),
             style: IconButton.styleFrom(
-              backgroundColor: const Color(0xFFF9FAFB),
+              backgroundColor: AppColors.background,
               shape: const CircleBorder(),
             ),
           ),
         ),
-        title: const Text(
+        title: Text(
           'Saved Addresses',
-          style: TextStyle(
-            color: kDarkTextColor,
-            fontWeight: FontWeight.w900,
-            fontSize: 22,
-          ),
+          style: AppTextStyles.headingLg.copyWith(fontSize: 22),
         ),
         centerTitle: false,
       ),
@@ -53,20 +49,23 @@ class ClientAddressesScreen extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.xl),
               itemCount: addresses.length,
               itemBuilder: (context, index) {
                 final addr = addresses[index];
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  padding: const EdgeInsets.all(20),
+                  margin: const EdgeInsets.only(bottom: AppSpacing.xl),
+                  padding: const EdgeInsets.all(AppSpacing.xl),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(32),
-                    border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+                    color: AppColors.card,
+                    borderRadius: BorderRadius.circular(AppSpacing.xxl),
+                    border: Border.all(
+                      color: AppColors.backgroundSubtle,
+                      width: 1.5,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity( 0.02),
+                        color: Colors.black.withOpacity(0.02),
                         blurRadius: 15,
                         offset: const Offset(0, 6),
                       ),
@@ -75,46 +74,44 @@ class ClientAddressesScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
-                          color: kBrandGreen.withOpacity( 0.1),
+                          color: AppColors.primary.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           addr['type'] == 'home'
                               ? Icons.home_outlined
                               : Icons.work_outline,
-                          color: kBrandGreen,
+                          color: AppColors.primary,
                           size: 24,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: AppSpacing.lg),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               addr['label']!,
-                              style: const TextStyle(
+                              style: AppTextStyles.titleMd.copyWith(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w800,
-                                color: kDarkTextColor,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: AppSpacing.xs),
                             Text(
                               addr['address']!,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: kMidTextColor,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              style: AppTextStyles.body,
                             ),
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.more_vert, color: Color(0xFFCBD5E1)),
+                        icon: const Icon(
+                          Icons.more_vert,
+                          color: AppColors.borderStrong,
+                        ),
                         onPressed: () {},
                       ),
                     ],
@@ -124,34 +121,14 @@ class ClientAddressesScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: SizedBox(
-              width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: PrimaryButton(
+              label: 'Add New Address',
+              icon: Icons.add_rounded,
               height: 64,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Show add address dialog or navigate
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrandGreen,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.add_rounded),
-                    SizedBox(width: 8),
-                    Text(
-                      'Add New Address',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                    ),
-                  ],
-                ),
-              ),
+              onPressed: () {
+                // Show add address dialog or navigate
+              },
             ),
           ),
         ],

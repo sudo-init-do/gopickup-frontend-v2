@@ -2,22 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../state/auth_provider.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
 
 class ClientProfileScreen extends ConsumerWidget {
   const ClientProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const kBrandGreen = Color(0xFF3B7D23);
-    const kStatTextColor = Color(0xFF1E293B);
-    const kLightGrey = Color(0xFFF1F5F9);
-    const kIconBgColor = Color(0xFFF1FDF4);
-    const kIconColor = Color(0xFF22C55E);
-
     final user = ref.watch(authProvider).user;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -32,7 +29,7 @@ class ClientProfileScreen extends ConsumerWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Color(0xFF3B7D23), Color(0xFF4CA634)],
+                      colors: [AppColors.primary, Color(0xFF4CA634)],
                     ),
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(48),
@@ -45,18 +42,16 @@ class ClientProfileScreen extends ConsumerWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'My Profile',
-                            style: TextStyle(
+                            style: AppTextStyles.displayLg.copyWith(
                               color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
                               letterSpacing: -0.5,
                             ),
                           ),
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity( 0.2),
+                              color: Colors.white.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
@@ -70,17 +65,17 @@ class ClientProfileScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.xxl),
                       Row(
                         children: [
                           Container(
                             width: 100,
                             height: 100,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity( 0.2),
+                              color: Colors.white.withOpacity(0.2),
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.white.withOpacity( 0.3),
+                                color: Colors.white.withOpacity(0.3),
                                 width: 4,
                               ),
                             ),
@@ -92,35 +87,29 @@ class ClientProfileScreen extends ConsumerWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 20),
+                          const SizedBox(width: AppSpacing.xl),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Client Name',
-                                  style: TextStyle(
+                                  style: AppTextStyles.headingLg.copyWith(
                                     color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: AppSpacing.xs),
                                 Text(
                                   user?.email ?? 'client@example.com',
-                                  style: const TextStyle(
+                                  style: AppTextStyles.body.copyWith(
                                     color: Colors.white70,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                const SizedBox(height: 12),
-                                const Text(
+                                const SizedBox(height: AppSpacing.md),
+                                Text(
                                   'Lagos, Nigeria',
-                                  style: TextStyle(
+                                  style: AppTextStyles.label.copyWith(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
                                   ),
                                 ),
                               ],
@@ -139,12 +128,15 @@ class ClientProfileScreen extends ConsumerWidget {
                   child: Container(
                     height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(40),
-                      border: Border.all(color: kLightGrey, width: 1.5),
+                      color: AppColors.card,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      border: Border.all(
+                        color: AppColors.backgroundSubtle,
+                        width: 1.5,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity( 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -152,11 +144,15 @@ class ClientProfileScreen extends ConsumerWidget {
                     ),
                     child: Row(
                       children: [
-                        _buildStatItem('12', 'Active Orders', kStatTextColor),
+                        _buildStatItem('12', 'Active Orders', AppColors.textPrimary),
                         _buildDivider(),
-                        _buildStatItem('156', 'Total Orders', kStatTextColor),
+                        _buildStatItem(
+                          '156',
+                          'Total Orders',
+                          AppColors.textPrimary,
+                        ),
                         _buildDivider(),
-                        _buildStatItem('₦4.8k', 'Spent', kBrandGreen),
+                        _buildStatItem('₦4.8k', 'Spent', AppColors.primary),
                       ],
                     ),
                   ),
@@ -168,7 +164,7 @@ class ClientProfileScreen extends ConsumerWidget {
 
             // Menu Items List
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Column(
                 children: [
                   _buildMenuItem(
@@ -176,8 +172,8 @@ class ClientProfileScreen extends ConsumerWidget {
                     ref,
                     Icons.inventory_2_outlined,
                     'My Orders',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.primaryLight,
+                    AppColors.success,
                     '/client/orders',
                   ),
                   _buildMenuItem(
@@ -185,8 +181,8 @@ class ClientProfileScreen extends ConsumerWidget {
                     ref,
                     Icons.account_balance_wallet_outlined,
                     'My Wallet',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.primaryLight,
+                    AppColors.success,
                     '/client/wallet',
                   ),
                   _buildMenuItem(
@@ -194,8 +190,8 @@ class ClientProfileScreen extends ConsumerWidget {
                     ref,
                     Icons.location_on_outlined,
                     'Delivery Addresses',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.primaryLight,
+                    AppColors.success,
                     '/client/addresses',
                   ),
                   _buildMenuItem(
@@ -203,8 +199,8 @@ class ClientProfileScreen extends ConsumerWidget {
                     ref,
                     Icons.notifications_none_rounded,
                     'Notifications',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.primaryLight,
+                    AppColors.success,
                     '/notifications',
                   ),
                   _buildMenuItem(
@@ -212,8 +208,8 @@ class ClientProfileScreen extends ConsumerWidget {
                     ref,
                     Icons.shield_outlined,
                     'Privacy & Security',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.primaryLight,
+                    AppColors.success,
                     '/settings/privacy',
                   ),
                   _buildMenuItem(
@@ -221,8 +217,8 @@ class ClientProfileScreen extends ConsumerWidget {
                     ref,
                     Icons.settings_outlined,
                     'Settings',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.primaryLight,
+                    AppColors.success,
                     '/settings',
                   ),
                   _buildMenuItem(
@@ -230,8 +226,8 @@ class ClientProfileScreen extends ConsumerWidget {
                     ref,
                     Icons.help_outline_rounded,
                     'Help & Support',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.primaryLight,
+                    AppColors.success,
                     '/help',
                   ),
                   _buildMenuItem(
@@ -240,14 +236,14 @@ class ClientProfileScreen extends ConsumerWidget {
                     Icons.logout_rounded,
                     'Log Out',
                     const Color(0xFFFFEBEE),
-                    const Color(0xFFEF5350),
+                    AppColors.destructive,
                     '',
                     isLogout: true,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxl),
           ],
         ),
       ),
@@ -261,28 +257,24 @@ class ClientProfileScreen extends ConsumerWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontSize: 20,
+            style: AppTextStyles.headingMd.copyWith(
               fontWeight: FontWeight.w900,
               color: valueColor,
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF94A3B8),
-            ),
-          ),
+          Text(label, style: AppTextStyles.caption),
         ],
       ),
     );
   }
 
   Widget _buildDivider() {
-    return Container(width: 1.5, height: 40, color: const Color(0xFFF1F5F9));
+    return Container(
+      width: 1.5,
+      height: 40,
+      color: AppColors.backgroundSubtle,
+    );
   }
 
   Widget _buildMenuItem(
@@ -296,7 +288,7 @@ class ClientProfileScreen extends ConsumerWidget {
     bool isLogout = false,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       child: InkWell(
         onTap: () async {
           if (isLogout) {
@@ -308,42 +300,45 @@ class ClientProfileScreen extends ConsumerWidget {
             context.push(route);
           }
         },
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(AppSpacing.xxl),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(AppSpacing.xxl),
+            border: Border.all(
+              color: AppColors.backgroundSubtle,
+              width: 1.5,
+            ),
           ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   color: bgColor,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: iconColor, size: 24),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: AppSpacing.xl),
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: AppTextStyles.titleMd.copyWith(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
                     color: isLogout
-                        ? const Color(0xFFEF5350)
-                        : const Color(0xFF1E293B),
+                        ? AppColors.destructive
+                        : AppColors.textPrimary,
                   ),
                 ),
               ),
               Icon(
                 Icons.chevron_right_rounded,
                 color: isLogout
-                    ? const Color(0xFFEF5350).withOpacity( 0.5)
-                    : const Color(0xFFCBD5E1),
+                    ? AppColors.destructive.withOpacity(0.5)
+                    : AppColors.borderStrong,
                 size: 24,
               ),
             ],

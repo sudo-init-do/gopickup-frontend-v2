@@ -3,36 +3,36 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/data/auth_repository.dart';
+import '../../../common/config/app_config.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   Future<void> _launchWhatsApp() async {
-    final Uri url = Uri.parse('whatsapp://send?phone=2348087042206');
+    final Uri url = Uri.parse('whatsapp://send?phone=${AppConfig.supportPhone}');
     if (!await launchUrl(url)) {
       // Fallback to web link if app not installed
-      final Uri webUrl = Uri.parse('https://wa.me/2348087042206');
+      final Uri webUrl = Uri.parse('https://wa.me/${AppConfig.supportPhone}');
       await launchUrl(webUrl, mode: LaunchMode.externalApplication);
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const kDarkTextColor = Color(0xFF111827);
-
-    const kBrandGreen = Color(0xFF3B7D23);
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context, kDarkTextColor),
+            _buildHeader(context),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.sm + 2,
                 ),
                 children: [
                   _buildSectionHeader('ACCOUNT'),
@@ -53,28 +53,25 @@ class SettingsScreen extends ConsumerWidget {
                     suffix: 'English',
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xl),
                   _buildSectionHeader('PREFERENCES'),
                   _buildToggleItem(
                     Icons.notifications_none_rounded,
                     'Push Notifications',
                     true,
-                    kBrandGreen,
                   ),
                   _buildToggleItem(
                     Icons.dark_mode_outlined,
                     'Dark Mode',
                     false,
-                    kBrandGreen,
                   ),
                   _buildToggleItem(
                     Icons.location_on_outlined,
                     'Location Services',
                     true,
-                    kBrandGreen,
                   ),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.xl),
                   _buildSectionHeader('SUPPORT'),
                   _buildSettingItem(
                     Icons.help_outline_rounded,
@@ -101,13 +98,13 @@ class SettingsScreen extends ConsumerWidget {
                     onTap: () {},
                   ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSpacing.xxl),
                   _buildDangerItem(
                     Icons.delete_outline_rounded,
                     'Delete Account',
                     onTap: () => _showDeleteAccountConfirmation(context, ref),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: AppSpacing.xxxl),
                 ],
               ),
             ),
@@ -117,9 +114,9 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, Color darkText) {
+  Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -127,11 +124,11 @@ class SettingsScreen extends ConsumerWidget {
             alignment: Alignment.centerLeft,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.card,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity( 0.04),
+                    color: Colors.black.withOpacity(0.04),
                     blurRadius: 10,
                   ),
                 ],
@@ -144,10 +141,9 @@ class SettingsScreen extends ConsumerWidget {
           ),
           Text(
             'Settings',
-            style: TextStyle(
+            style: AppTextStyles.headingMd.copyWith(
               fontSize: 22,
               fontWeight: FontWeight.w900,
-              color: darkText,
               letterSpacing: -0.5,
             ),
           ),
@@ -158,13 +154,12 @@ class SettingsScreen extends ConsumerWidget {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 12, bottom: 12),
+      padding: const EdgeInsets.only(left: AppSpacing.md, bottom: AppSpacing.md),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 13,
+        style: AppTextStyles.caption.copyWith(
           fontWeight: FontWeight.w800,
-          color: Color(0xFF94A3B8),
+          color: AppColors.textTertiary,
           letterSpacing: 1.2,
         ),
       ),
@@ -179,52 +174,37 @@ class SettingsScreen extends ConsumerWidget {
     VoidCallback? onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
         leading: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.sm + 2),
           decoration: const BoxDecoration(
-            color: Color(0xFFF8FAFC),
+            color: AppColors.background,
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: const Color(0xFF1E293B), size: 22),
+          child: Icon(icon, color: AppColors.textPrimary, size: 22),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1E293B),
-          ),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF64748B),
-          ),
-        ),
+        title: Text(title, style: AppTextStyles.titleMd),
+        subtitle: Text(subtitle, style: AppTextStyles.bodySm),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (suffix != null)
               Text(
                 suffix,
-                style: const TextStyle(
-                  color: Color(0xFF3B7D23),
+                style: AppTextStyles.bodySm.copyWith(
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w700,
-                  fontSize: 13,
                 ),
               ),
-            const SizedBox(width: 4),
-            const Icon(Icons.chevron_right_rounded, color: Color(0xFFCBD5E1)),
+            const SizedBox(width: AppSpacing.xs),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.border),
           ],
         ),
         onTap: onTap,
@@ -236,37 +216,29 @@ class SettingsScreen extends ConsumerWidget {
     IconData icon,
     String title,
     bool value,
-    Color brandGreen,
   ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
         leading: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.sm + 2),
           decoration: const BoxDecoration(
-            color: Color(0xFFF8FAFC),
+            color: AppColors.background,
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: const Color(0xFF1E293B), size: 22),
+          child: Icon(icon, color: AppColors.textPrimary, size: 22),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1E293B),
-          ),
-        ),
+        title: Text(title, style: AppTextStyles.titleMd),
         trailing: Switch.adaptive(
           value: value,
           onChanged: (val) {},
-          activeTrackColor: brandGreen,
+          activeTrackColor: AppColors.primary,
         ),
       ),
     );
@@ -287,7 +259,7 @@ class SettingsScreen extends ConsumerWidget {
               child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.destructive),
               onPressed: () => Navigator.of(ctx).pop(true),
               child: const Text('Confirm Delete', style: TextStyle(color: Colors.white)),
             ),
@@ -321,31 +293,27 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildDangerItem(IconData icon, String title, {VoidCallback? onTap}) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF1F2),
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.destructive.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
         leading: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.sm + 2),
           decoration: const BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: Colors.redAccent, size: 22),
+          child: Icon(icon, color: AppColors.destructive, size: 22),
         ),
         title: Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
+          style: AppTextStyles.titleMd.copyWith(
             fontWeight: FontWeight.w800,
-            color: Colors.redAccent,
+            color: AppColors.destructive,
           ),
         ),
-        trailing: const Icon(
-          Icons.chevron_right_rounded,
-          color: Colors.redAccent,
-        ),
+        trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.destructive),
         onTap: onTap,
       ),
     );

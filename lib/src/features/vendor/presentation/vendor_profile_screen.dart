@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
 
 class VendorProfileScreen extends StatelessWidget {
   const VendorProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const kBrandGreen = Color(0xFF3B7D23);
-    const kStatTextColor = Color(0xFF1E293B);
-    const kLightGrey = Color(0xFFF1F5F9);
-    const kIconBgColor = Color(0xFFEFF6FF);
-    const kIconColor = Color(0xFF3B82F6);
-
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -41,18 +38,16 @@ class VendorProfileScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Store Profile',
-                            style: TextStyle(
+                            style: AppTextStyles.displayLg.copyWith(
                               color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
                               letterSpacing: -0.5,
                             ),
                           ),
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity( 0.2),
+                              color: Colors.white.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
@@ -66,17 +61,17 @@ class VendorProfileScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.xxl),
                       Row(
                         children: [
                           Container(
                             width: 100,
                             height: 100,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity( 0.2),
+                              color: Colors.white.withOpacity(0.2),
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.white.withOpacity( 0.3),
+                                color: Colors.white.withOpacity(0.3),
                                 width: 4,
                               ),
                             ),
@@ -89,42 +84,37 @@ class VendorProfileScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 20),
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   'BuildMart Supplies',
-                                  style: TextStyle(
+                                  style: AppTextStyles.headingLg.copyWith(
                                     color: Colors.white,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: AppSpacing.xs),
                                 Text(
                                   'Hardware • Lagos',
-                                  style: TextStyle(
+                                  style: AppTextStyles.body.copyWith(
                                     color: Colors.white70,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                SizedBox(height: 12),
+                                const SizedBox(height: AppSpacing.md),
                                 Row(
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.star_rounded,
-                                      color: Colors.orange,
+                                      color: AppColors.warning,
                                       size: 18,
                                     ),
-                                    SizedBox(width: 4),
+                                    const SizedBox(width: AppSpacing.xs),
                                     Text(
                                       '4.9 (1.2k reviews)',
-                                      style: TextStyle(
+                                      style: AppTextStyles.bodySm.copyWith(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600,
-                                        fontSize: 14,
                                       ),
                                     ),
                                   ],
@@ -145,12 +135,12 @@ class VendorProfileScreen extends StatelessWidget {
                   child: Container(
                     height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.card,
                       borderRadius: BorderRadius.circular(40),
-                      border: Border.all(color: kLightGrey, width: 1.5),
+                      border: Border.all(color: AppColors.border, width: 1.5),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity( 0.05),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -158,11 +148,11 @@ class VendorProfileScreen extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        _buildStatItem('45', 'Active Sales', kStatTextColor),
+                        _buildStatItem('45', 'Active Sales', AppColors.textPrimary),
                         _buildDivider(),
-                        _buildStatItem('2.4k', 'Products', kStatTextColor),
+                        _buildStatItem('2.4k', 'Products', AppColors.textPrimary),
                         _buildDivider(),
-                        _buildStatItem('₦24.5k', 'Revenue', kBrandGreen),
+                        _buildStatItem('₦24.5k', 'Revenue', AppColors.primary),
                       ],
                     ),
                   ),
@@ -174,78 +164,78 @@ class VendorProfileScreen extends StatelessWidget {
 
             // Menu Items List
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
               child: Column(
                 children: [
                   _buildMenuItem(
                     context,
                     Icons.inventory_2_outlined,
                     'Manage Inventory',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.info.withOpacity(0.12),
+                    AppColors.info,
                     '/vendor/inventory',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.assignment_outlined,
                     'Sales History',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.info.withOpacity(0.12),
+                    AppColors.info,
                     '/vendor/orders',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.account_balance_wallet_outlined,
                     'Store Wallet',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.info.withOpacity(0.12),
+                    AppColors.info,
                     '/vendor/wallet',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.business_outlined,
                     'Business Details',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.info.withOpacity(0.12),
+                    AppColors.info,
                     '/vendor/details',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.notifications_none_rounded,
                     'Notifications',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.info.withOpacity(0.12),
+                    AppColors.info,
                     '/notifications',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.insights_outlined,
                     'Analytics & Reports',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.info.withOpacity(0.12),
+                    AppColors.info,
                     '/vendor/analytics',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.help_outline_rounded,
                     'Help & Support',
-                    kIconBgColor,
-                    kIconColor,
+                    AppColors.info.withOpacity(0.12),
+                    AppColors.info,
                     '/help',
                   ),
                   _buildMenuItem(
                     context,
                     Icons.logout_rounded,
                     'Log Out',
-                    const Color(0xFFFFEBEE),
-                    const Color(0xFFEF5350),
+                    AppColors.destructive.withOpacity(0.1),
+                    AppColors.destructive,
                     '',
                     isLogout: true,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xxl),
           ],
         ),
       ),
@@ -259,8 +249,7 @@ class VendorProfileScreen extends StatelessWidget {
         children: [
           Text(
             value,
-            style: TextStyle(
-              fontSize: 20,
+            style: AppTextStyles.headingMd.copyWith(
               fontWeight: FontWeight.w900,
               color: valueColor,
             ),
@@ -268,11 +257,7 @@ class VendorProfileScreen extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF94A3B8),
-            ),
+            style: AppTextStyles.caption,
           ),
         ],
       ),
@@ -280,7 +265,11 @@ class VendorProfileScreen extends StatelessWidget {
   }
 
   Widget _buildDivider() {
-    return Container(width: 1.5, height: 40, color: const Color(0xFFF1F5F9));
+    return Container(
+      width: 1.5,
+      height: 40,
+      color: AppColors.border,
+    );
   }
 
   Widget _buildMenuItem(
@@ -293,7 +282,7 @@ class VendorProfileScreen extends StatelessWidget {
     bool isLogout = false,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       child: InkWell(
         onTap: () {
           if (isLogout) {
@@ -302,18 +291,18 @@ class VendorProfileScreen extends StatelessWidget {
             context.push(route);
           }
         },
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(color: AppColors.border, width: 1.5),
           ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
                   color: bgColor,
                   shape: BoxShape.circle,
@@ -324,20 +313,18 @@ class VendorProfileScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
+                  style: AppTextStyles.titleMd.copyWith(
                     color: isLogout
-                        ? const Color(0xFFEF5350)
-                        : const Color(0xFF1E293B),
+                        ? AppColors.destructive
+                        : AppColors.textPrimary,
                   ),
                 ),
               ),
               Icon(
                 Icons.chevron_right_rounded,
                 color: isLogout
-                    ? const Color(0xFFEF5350).withOpacity( 0.5)
-                    : const Color(0xFFCBD5E1),
+                    ? AppColors.destructive.withOpacity(0.5)
+                    : AppColors.borderStrong,
                 size: 24,
               ),
             ],

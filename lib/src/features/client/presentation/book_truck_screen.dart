@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../shared/presentation/coming_soon_screen.dart';
+import '../../../common/styles/app_colors.dart';
 
 class BookTruckScreen extends StatelessWidget {
   const BookTruckScreen({super.key});
@@ -9,7 +10,7 @@ class BookTruckScreen extends StatelessWidget {
     return const ComingSoonScreen(
       featureName: 'Book Truck',
       icon: Icons.local_shipping_rounded,
-      accentColor: Color(0xFF8B5CF6),
+      accentColor: AppColors.vendorAccent,
     );
   }
 }

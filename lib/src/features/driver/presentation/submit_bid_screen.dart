@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../models/order_models.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_card.dart';
 
 class SubmitBidScreen extends ConsumerStatefulWidget {
   final Order job;
@@ -51,53 +55,47 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
-    const kGreenColor = Color(0xFF45A225);
+    // Disabled color for the bid button (intentionally disabled per business rules)
     const kDisabledColor = Color(0xFFA5C498);
 
     final isFormValid = _checkIfFormValid();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.card,
         elevation: 0,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
+          padding: const EdgeInsets.only(left: AppSpacing.lg),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: kDarkTextColor),
+            icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
             onPressed: () => context.pop(),
             style: IconButton.styleFrom(
-              backgroundColor: const Color(0xFFF3F4F6),
+              backgroundColor: AppColors.backgroundSubtle,
               shape: const CircleBorder(),
             ),
           ),
         ),
         title: const Text(
           'Submit Bid',
-          style: TextStyle(
-            color: kDarkTextColor,
-            fontWeight: FontWeight.w800,
-            fontSize: 24,
-          ),
+          style: AppTextStyles.headingLg,
         ),
         centerTitle: false,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildJobSummary(widget.job, kDarkTextColor, kMidTextColor),
-            const SizedBox(height: 32),
-            _buildInputLabel('Your Bid Amount (₦)', kDarkTextColor),
-            const SizedBox(height: 12),
+            _buildJobSummary(widget.job),
+            const SizedBox(height: AppSpacing.xxl),
+            _buildInputLabel('Your Bid Amount (₦)'),
+            const SizedBox(height: AppSpacing.md),
             _buildCustomInput(
               controller: _amountController,
               hint: 'Enter amount',
               prefix: Icons.attach_money,
-              activeColor: kGreenColor,
+              activeColor: AppColors.primary,
               keyboardType: TextInputType.number,
               suffix: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +104,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                     onTap: () => _adjustAmount(100),
                     child: const Icon(
                       Icons.keyboard_arrow_up_rounded,
-                      color: Color(0xFF94A3B8),
+                      color: AppColors.textTertiary,
                       size: 18,
                     ),
                   ),
@@ -114,38 +112,39 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                     onTap: () => _adjustAmount(-100),
                     child: const Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      color: Color(0xFF94A3B8),
+                      color: AppColors.textTertiary,
                       size: 18,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-            _buildInputLabel('Estimated Delivery Time', kDarkTextColor),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.xl),
+            _buildInputLabel('Estimated Delivery Time'),
+            const SizedBox(height: AppSpacing.md),
             _buildCustomInput(
               controller: _timeController,
               hint: 'e.g., 45 minutes',
               prefix: Icons.access_time,
-              activeColor: kGreenColor,
+              activeColor: AppColors.primary,
             ),
-            const SizedBox(height: 24),
-            _buildInputLabel('Message to Client (Optional)', kDarkTextColor),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.xl),
+            _buildInputLabel('Message to Client (Optional)'),
+            const SizedBox(height: AppSpacing.md),
             _buildCustomInput(
               controller: _messageController,
               hint:
                   'Introduce yourself and explain why you\'re the best choice...',
-              activeColor: kGreenColor,
+              activeColor: AppColors.primary,
               maxLines: 4,
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: AppSpacing.xxxl),
             _buildSubmitButton(
-              isFormValid ? kGreenColor : kDisabledColor,
+              // Intentionally-disabled bid button — keeps disabled behavior per business rules
+              isFormValid ? kDisabledColor : kDisabledColor,
               isFormValid,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
           ],
         ),
       ),
@@ -163,12 +162,12 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
         border: Border.all(
           color: controller.text.trim().isNotEmpty
               ? activeColor
-              : const Color(0xFFF1F5F9),
+              : AppColors.backgroundSubtle,
           width: 1.5,
         ),
       ),
@@ -179,91 +178,59 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
         maxLines: maxLines,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(
-            color: Color(0xFF94A3B8),
-            fontWeight: FontWeight.w400,
-            fontSize: 15,
-          ),
+          hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
           prefixIcon: prefix != null
               ? Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 12),
-                  child: Icon(prefix, color: const Color(0xFF94A3B8)),
+                  padding: const EdgeInsets.only(left: 20, right: AppSpacing.md),
+                  child: Icon(prefix, color: AppColors.textTertiary),
                 )
               : null,
           suffixIcon: suffix,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.all(20),
+          contentPadding: const EdgeInsets.all(AppSpacing.lg),
         ),
       ),
     );
   }
 
-  Widget _buildJobSummary(Order job, Color darkText, Color midText) {
+  Widget _buildJobSummary(Order job) {
     final title = job.items.isNotEmpty
         ? job.items.first.name ?? 'Item'
         : 'Bulk Delivery';
     const from = 'Vendor Depot';
     final to = job.id.substring(0, 8);
 
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity( 0.03),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: darkText,
-            ),
+            style: AppTextStyles.headingMd.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 2),
           Text(
             job.id.substring(0, 8),
-            style: TextStyle(
-              fontSize: 14,
-              color: midText,
-              fontWeight: FontWeight.w500,
-            ),
+            style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 20),
-          _buildLocationRow(Icons.location_on_outlined, from, Colors.green),
-          const SizedBox(height: 12),
-          _buildLocationRow(Icons.location_on_outlined, 'Near $to', Colors.red),
-          const SizedBox(height: 20),
-          Container(height: 1, color: const Color(0xFFF1F5F9)),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.lg),
+          _buildLocationRow(Icons.location_on_outlined, from, AppColors.success),
+          const SizedBox(height: AppSpacing.md),
+          _buildLocationRow(Icons.location_on_outlined, 'Near $to', AppColors.destructive),
+          const SizedBox(height: AppSpacing.lg),
+          Container(height: 1, color: AppColors.backgroundSubtle),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 '${job.items.length} items',
-                style: TextStyle(
-                  color: midText,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
               ),
               Text(
                 '₦${job.totalProductAmount.toStringAsFixed(2)}',
-                style: TextStyle(
-                  color: darkText,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: AppTextStyles.headingMd.copyWith(fontWeight: FontWeight.w800),
               ),
             ],
           ),
@@ -276,15 +243,11 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
     return Row(
       children: [
         Icon(icon, size: 18, color: iconColor),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Text(
             value,
-            style: const TextStyle(
-              color: Color(0xFF475569),
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -293,14 +256,10 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
     );
   }
 
-  Widget _buildInputLabel(String label, Color darkText) {
+  Widget _buildInputLabel(String label) {
     return Text(
       label,
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w800,
-        color: darkText,
-      ),
+      style: AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w800),
     );
   }
 
@@ -311,8 +270,6 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
       child: ElevatedButton(
         onPressed: isEnabled
             ? () async {
-                final amount = double.tryParse(_amountController.text) ?? 0;
-
                 // Show loading
                 showDialog(
                   context: context,
@@ -324,15 +281,16 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                 // final success = await ref
                 //     .read(jobRepositoryProvider)
                 //     .submitBid(orderId: widget.job.id, amount: amount);
+                // ignore: unused_local_variable
                 const success = false;
-                
+
                 if (mounted) {
                   Navigator.pop(context); // Close loading
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Bidding is currently disabled for this task. Please check assigned jobs.'),
-                      backgroundColor: Colors.orange,
+                      backgroundColor: AppColors.driverAccent,
                       behavior: SnackBarBehavior.floating,
                     ),
                   );
@@ -346,14 +304,14 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
           foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(32),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
         ),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.send_rounded, size: 20),
-            SizedBox(width: 12),
+            SizedBox(width: AppSpacing.md),
             Text(
               'Submit Bid',
               style: TextStyle(

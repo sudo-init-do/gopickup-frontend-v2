@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../shared/presentation/coming_soon_screen.dart';
+import '../../../common/styles/app_colors.dart';
 
 class CreateJobScreen extends StatelessWidget {
   const CreateJobScreen({super.key});
@@ -9,7 +10,7 @@ class CreateJobScreen extends StatelessWidget {
     return const ComingSoonScreen(
       featureName: 'Post Load',
       icon: Icons.inventory_2_rounded,
-      accentColor: Color(0xFFF59E0B),
+      accentColor: AppColors.warning,
     );
   }
 }

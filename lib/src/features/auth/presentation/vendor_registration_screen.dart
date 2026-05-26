@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/primary_button.dart';
 import '../../../state/profile_provider.dart';
 import '../../../state/auth_provider.dart';
 import '../../../models/user_models.dart';
@@ -83,13 +87,6 @@ class _VendorRegistrationScreenState
 
   @override
   Widget build(BuildContext context) {
-    const kPurple = Color(0xFFA855F7);
-    const kLightPurpleBg = Color(0xFFF5F3FF);
-    const kDarkTextColor = Color(0xFF111827);
-    const kMidTextColor = Color(0xFF6B7280);
-    const kGreenButton = Color(0xFFA5C498);
-    const kActiveGreen = Color(0xFF45A225);
-
     bool isCurrentStepValid = _currentStep == 0
         ? _isStep1Valid
         : (_currentStep == 1 ? _isStep2Valid : _isStep3Valid);
@@ -97,38 +94,32 @@ class _VendorRegistrationScreenState
     final isLoading = ref.watch(profileProvider).isLoading;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.card,
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 24,
+                  horizontal: AppSpacing.xl,
+                  vertical: AppSpacing.xl,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Vendor Registration',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        color: kDarkTextColor,
+                      style: AppTextStyles.displayLg.copyWith(
+                        color: AppColors.textPrimary,
                         letterSpacing: -0.8,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
                       'Set up your store and start selling',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: kMidTextColor,
-                      ),
+                      style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.xxl),
 
                     // Progress Chips
                     SingleChildScrollView(
@@ -139,42 +130,33 @@ class _VendorRegistrationScreenState
                             'Store Info',
                             Icons.store_mall_directory_rounded,
                             _currentStep == 0,
-                            kPurple,
+                            AppColors.vendorAccent,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.md),
                           _buildStepChip(
                             'Location',
                             Icons.location_on_outlined,
                             _currentStep == 1,
-                            kPurple,
+                            AppColors.vendorAccent,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.md),
                           _buildStepChip(
                             'Verification',
                             Icons.assignment_outlined,
                             _currentStep == 2,
-                            kPurple,
+                            AppColors.vendorAccent,
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: AppSpacing.xxxl),
 
                     if (_currentStep == 0)
-                      _buildStoreInfoStep(
-                        kPurple,
-                        kLightPurpleBg,
-                        kDarkTextColor,
-                        kMidTextColor,
-                      ),
+                      _buildStoreInfoStep(),
                     if (_currentStep == 1)
-                      _buildLocationStep(kDarkTextColor, kMidTextColor),
+                      _buildLocationStep(),
                     if (_currentStep == 2)
-                      _buildVerificationStep(
-                        kDarkTextColor,
-                        kMidTextColor,
-                        kPurple,
-                      ),
+                      _buildVerificationStep(),
                   ],
                 ),
               ),
@@ -182,49 +164,14 @@ class _VendorRegistrationScreenState
 
             // Bottom Action Bar
             Padding(
-              padding: const EdgeInsets.all(24),
-              child: SizedBox(
-                width: double.infinity,
-                height: 64,
-                child: ElevatedButton(
-                  onPressed: (isCurrentStepValid && !isLoading)
-                      ? _handleContinue
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isCurrentStepValid
-                        ? kActiveGreen
-                        : kGreenButton,
-                    disabledBackgroundColor: kGreenButton,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                  ),
-                  child: isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _currentStep == 2 ? 'Complete Setup' : 'Continue',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(Icons.arrow_forward_rounded, size: 22),
-                          ],
-                        ),
-                ),
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: PrimaryButton(
+                label: _currentStep == 2 ? 'Complete Setup' : 'Continue',
+                onPressed: (isCurrentStepValid && !isLoading)
+                    ? _handleContinue
+                    : null,
+                isLoading: isLoading,
+                icon: Icons.arrow_forward_rounded,
               ),
             ),
           ],
@@ -235,7 +182,7 @@ class _VendorRegistrationScreenState
 
   void _handleContinue() async {
     debugPrint('Current Step: $_currentStep. Validating...');
-    
+
     if (_currentStep < 2) {
       debugPrint('Moving from $_currentStep to ${_currentStep + 1}');
       setState(() => _currentStep++);
@@ -261,9 +208,9 @@ class _VendorRegistrationScreenState
             .createVendorProfile(profile);
 
         debugPrint('Profile creation success: $success');
-        
+
         if (!mounted) return;
-        
+
         if (success) {
           debugPrint('Marking profile as complete for local state...');
           ref.read(authProvider.notifier).markProfileComplete();
@@ -275,7 +222,7 @@ class _VendorRegistrationScreenState
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(ErrorHandler.getMessage(error)),
-              backgroundColor: Colors.red.shade800,
+              backgroundColor: AppColors.destructive,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -286,19 +233,14 @@ class _VendorRegistrationScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Submission error: ${e.toString()}'),
-            backgroundColor: Colors.orange.shade800,
+            backgroundColor: AppColors.warning,
           ),
         );
       }
     }
   }
 
-  Widget _buildStoreInfoStep(
-    Color kPurple,
-    Color kLightPurpleBg,
-    Color kDarkTextColor,
-    Color kMidTextColor,
-  ) {
+  Widget _buildStoreInfoStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -309,14 +251,14 @@ class _VendorRegistrationScreenState
                 width: 110,
                 height: 110,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6).withOpacity( 0.5),
-                  borderRadius: BorderRadius.circular(40),
+                  color: AppColors.backgroundSubtle.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
                 ),
                 child: const Center(
                   child: Icon(
                     Icons.storefront_rounded,
                     size: 40,
-                    color: Color(0xFF475569),
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ),
@@ -324,9 +266,9 @@ class _VendorRegistrationScreenState
                 bottom: 4,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: kPurple,
+                    color: AppColors.vendorAccent,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2.5),
                   ),
@@ -340,21 +282,21 @@ class _VendorRegistrationScreenState
             ],
           ),
         ),
-        const SizedBox(height: 32),
-        _buildInputLabel('Store Name', kDarkTextColor),
+        const SizedBox(height: AppSpacing.xxl),
+        _buildInputLabel('Store Name'),
         _buildTextField(_storeNameController, 'Enter store name'),
-        const SizedBox(height: 24),
-        _buildInputLabel('Owner Name', kDarkTextColor),
+        const SizedBox(height: AppSpacing.xl),
+        _buildInputLabel('Owner Name'),
         _buildTextField(_ownerNameController, 'Enter your full name'),
-        const SizedBox(height: 24),
-        _buildInputLabel('Phone Number', kDarkTextColor),
+        const SizedBox(height: AppSpacing.xl),
+        _buildInputLabel('Phone Number'),
         _buildTextField(_phoneController, 'Enter phone number'),
-        const SizedBox(height: 24),
-        _buildInputLabel('Category', kDarkTextColor),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.xl),
+        _buildInputLabel('Category'),
+        const SizedBox(height: AppSpacing.md),
         Wrap(
-          spacing: 12,
-          runSpacing: 12,
+          spacing: AppSpacing.md,
+          runSpacing: AppSpacing.md,
           children: _categories.map((cat) {
             final isSelected = _selectedCategory == cat;
             return GestureDetector(
@@ -362,31 +304,32 @@ class _VendorRegistrationScreenState
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
+                  horizontal: AppSpacing.xl,
+                  vertical: AppSpacing.md,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected ? kLightPurpleBg : const Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(24),
+                  color: isSelected
+                      ? AppColors.vendorAccent.withOpacity(0.08)
+                      : AppColors.backgroundSubtle,
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
                   border: Border.all(
-                    color: isSelected ? kPurple : Colors.transparent,
+                    color: isSelected ? AppColors.vendorAccent : Colors.transparent,
                     width: 1.5,
                   ),
                 ),
                 child: Text(
                   cat,
-                  style: TextStyle(
-                    color: isSelected ? kPurple : kMidTextColor,
+                  style: AppTextStyles.bodySm.copyWith(
+                    color: isSelected ? AppColors.vendorAccent : AppColors.textSecondary,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                    fontSize: 14,
                   ),
                 ),
               ),
             );
           }).toList(),
         ),
-        const SizedBox(height: 24),
-        _buildInputLabel('Store Description', kDarkTextColor),
+        const SizedBox(height: AppSpacing.xl),
+        _buildInputLabel('Store Description'),
         _buildTextField(
           _descriptionController,
           'Describe your store...',
@@ -396,55 +339,50 @@ class _VendorRegistrationScreenState
     );
   }
 
-  Widget _buildLocationStep(Color kDarkTextColor, Color kMidTextColor) {
+  Widget _buildLocationStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildInputLabel('Store Address', kDarkTextColor),
+        _buildInputLabel('Store Address'),
         _buildTextField(_addressController, 'Enter full address'),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xl),
 
         // Pin on map action
-        const Row(
+        Row(
           children: [
-            Icon(Icons.location_on_rounded, color: Color(0xFFA855F7), size: 20),
-            SizedBox(width: 8),
+            const Icon(Icons.location_on_rounded, color: AppColors.vendorAccent, size: 20),
+            const SizedBox(width: AppSpacing.sm),
             Text(
               'Pin location on map',
-              style: TextStyle(
-                color: Color(0xFFA855F7),
-                fontSize: 16,
+              style: AppTextStyles.body.copyWith(
+                color: AppColors.vendorAccent,
                 fontWeight: FontWeight.w700,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.xl),
 
         // Map Preview
         Container(
           width: double.infinity,
           height: 220,
           decoration: BoxDecoration(
-            color: const Color(0xFFF3F4F6).withOpacity( 0.5),
-            borderRadius: BorderRadius.circular(32),
+            color: AppColors.backgroundSubtle.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.location_on_outlined,
                 size: 48,
-                color: Color(0xFF94A3B8),
+                color: AppColors.textTertiary,
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 'Map preview',
-                style: TextStyle(
-                  color: Color(0xFF94A3B8),
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
               ),
             ],
           ),
@@ -453,53 +391,41 @@ class _VendorRegistrationScreenState
     );
   }
 
-  Widget _buildVerificationStep(
-    Color kDarkTextColor,
-    Color kMidTextColor,
-    Color kPurple,
-  ) {
+  Widget _buildVerificationStep() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Business Verification Header Card
         Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.xl),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+            color: AppColors.card,
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
           ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: kPurple.withOpacity( 0.1),
-                  borderRadius: BorderRadius.circular(16),
+                  color: AppColors.vendorAccent.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
-                child: Icon(Icons.business_rounded, color: kPurple, size: 28),
+                child: const Icon(Icons.business_rounded, color: AppColors.vendorAccent, size: 28),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: AppSpacing.xl),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Business Verification',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF111827),
-                      ),
+                      style: AppTextStyles.titleMd,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       'Verify your business to start selling',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: kMidTextColor,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppTextStyles.bodySm.copyWith(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -507,26 +433,24 @@ class _VendorRegistrationScreenState
             ],
           ),
         ),
-        const SizedBox(height: 32),
+        const SizedBox(height: AppSpacing.xxl),
 
-        _buildInputLabel('Business Registration Number', kDarkTextColor),
+        _buildInputLabel('Business Registration Number'),
         _buildTextField(_registrationController, 'Enter registration number'),
-        const SizedBox(height: 32),
+        const SizedBox(height: AppSpacing.xxl),
 
         // Note section
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.xl),
           decoration: BoxDecoration(
             color: const Color(0xFFFFF7ED),
-            borderRadius: BorderRadius.circular(32),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
-          child: const Text(
+          child: Text(
             'Note: Verification may take 1-2 business days. You can still set up your store while waiting.',
-            style: TextStyle(
-              color: Color(0xFF9A3412),
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
+            style: AppTextStyles.body.copyWith(
+              color: const Color(0xFF9A3412),
               height: 1.5,
             ),
           ),
@@ -546,46 +470,45 @@ class _VendorRegistrationScreenState
     if (label == 'Store Info' && _currentStep > 0) isCompleted = true;
     if (label == 'Location' && _currentStep > 1) isCompleted = true;
 
-    Color bgColor = const Color(0xFFF3F4F6);
-    Color contentColor = const Color(0xFF6B7280);
+    Color bgColor = AppColors.backgroundSubtle;
+    Color contentColor = AppColors.textSecondary;
     Widget? prefix;
 
     if (isActive) {
       bgColor = activeColor;
       contentColor = Colors.white;
       prefix = Container(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(AppSpacing.xs),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity( 0.2),
+          color: Colors.white.withOpacity(0.2),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: Colors.white, size: 16),
       );
     } else if (isCompleted) {
-      bgColor = const Color(0xFFEAF5E9);
-      contentColor = const Color(0xFF45A225);
-      prefix = const Icon(Icons.check, color: Color(0xFF45A225), size: 16);
+      bgColor = AppColors.primaryLight;
+      contentColor = AppColors.primary;
+      prefix = const Icon(Icons.check, color: AppColors.primary, size: 16);
     } else {
       prefix = Icon(icon, color: contentColor, size: 16);
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm + 2),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           prefix,
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           Text(
             label,
-            style: TextStyle(
+            style: AppTextStyles.bodySm.copyWith(
               color: contentColor,
               fontWeight: FontWeight.w700,
-              fontSize: 14,
             ),
           ),
         ],
@@ -593,16 +516,12 @@ class _VendorRegistrationScreenState
     );
   }
 
-  Widget _buildInputLabel(String label, Color color) {
+  Widget _buildInputLabel(String label) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w800,
-          color: color,
-        ),
+        style: AppTextStyles.label.copyWith(color: AppColors.textPrimary),
       ),
     );
   }
@@ -614,9 +533,9 @@ class _VendorRegistrationScreenState
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        border: Border.all(color: AppColors.backgroundSubtle, width: 1.5),
       ),
       child: TextField(
         controller: controller,
@@ -624,15 +543,11 @@ class _VendorRegistrationScreenState
         onChanged: (_) => setState(() {}),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(
-            color: Color(0xFF94A3B8),
-            fontWeight: FontWeight.w400,
-            fontSize: 16,
-          ),
+          hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 18,
+            horizontal: AppSpacing.xl,
+            vertical: AppSpacing.lg + AppSpacing.xs,
           ),
         ),
       ),

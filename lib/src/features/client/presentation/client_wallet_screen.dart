@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../shared/presentation/coming_soon_screen.dart';
+import '../../../common/styles/app_colors.dart';
 
 // Original client wallet implementation preserved in git history.
 
@@ -11,7 +12,7 @@ class ClientWalletScreen extends StatelessWidget {
     return const ComingSoonScreen(
       featureName: 'Wallet',
       icon: Icons.account_balance_wallet_rounded,
-      accentColor: Color(0xFF3B7D23),
+      accentColor: AppColors.primary,
     );
   }
 }

@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../data/vendor_repository.dart';
 import '../../../common/models/product.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
+import '../../../common/widgets/app_states.dart';
 
 class VendorStorefrontScreen extends ConsumerWidget {
   final String vendorId;
@@ -15,11 +18,11 @@ class VendorStorefrontScreen extends ConsumerWidget {
     final profileAsync = ref.watch(vendorProfileProvider(vendorId));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FAFB),
+      backgroundColor: AppColors.background,
       body: profileAsync.when(
         data: (data) => _buildStorefront(context, data),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error loading store: $err')),
+        loading: () => const AppLoading(),
+        error: (err, _) => AppErrorState(message: 'Error loading store: $err'),
       ),
     );
   }
@@ -38,11 +41,11 @@ class VendorStorefrontScreen extends ConsumerWidget {
           flexibleSpace: FlexibleSpaceBar(
             title: Text(
               storeName,
-              style: const TextStyle(
+              style: AppTextStyles.titleMd.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -0.5,
-                shadows: [Shadow(color: Colors.black45, blurRadius: 10)],
+                shadows: const [Shadow(color: Colors.black45, blurRadius: 10)],
               ),
             ),
             background: Stack(
@@ -54,11 +57,11 @@ class VendorStorefrontScreen extends ConsumerWidget {
                   Container(
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFFA855F7), Color(0xFF9333EA)],
+                        colors: [AppColors.vendorAccent, Color(0xFF9333EA)],
                       ),
                     ),
                   ),
-                Container(color: Colors.black.withOpacity( 0.2)),
+                Container(color: Colors.black.withOpacity(0.2)),
               ],
             ),
           ),
@@ -69,33 +72,35 @@ class VendorStorefrontScreen extends ConsumerWidget {
         ),
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.all(24.0),
+            padding: const EdgeInsets.all(AppSpacing.xl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Store Products',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF111827),
-                  ),
+                  style: AppTextStyles.headingMd,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 if (products.isEmpty)
-                  const Center(child: Text('No products available in this store.'))
+                  const AppEmptyState(
+                    icon: Icons.shopping_bag_outlined,
+                    title: 'No products available',
+                    message: 'This store has not added any products yet.',
+                  )
                 else
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: 0.75,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
+                      mainAxisSpacing: AppSpacing.lg,
+                      crossAxisSpacing: AppSpacing.lg,
                     ),
                     itemCount: products.length,
-                    itemBuilder: (context, index) => _buildProductCard(context, products[index]),
+                    itemBuilder: (context, index) =>
+                        _buildProductCard(context, products[index]),
                   ),
               ],
             ),
@@ -108,11 +113,11 @@ class VendorStorefrontScreen extends ConsumerWidget {
   Widget _buildProductCard(BuildContext context, Product product) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity( 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -124,19 +129,29 @@ class VendorStorefrontScreen extends ConsumerWidget {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(AppRadius.xl),
+                ),
                 image: product.imageUrl.isNotEmpty
-                    ? DecorationImage(image: NetworkImage(product.imageUrl), fit: BoxFit.cover)
+                    ? DecorationImage(
+                        image: NetworkImage(product.imageUrl),
+                        fit: BoxFit.cover,
+                      )
                     : null,
-                color: const Color(0xFFF3F4F6),
+                color: AppColors.backgroundSubtle,
               ),
               child: product.imageUrl.isEmpty
-                  ? const Center(child: Icon(Icons.shopping_bag_outlined, color: Color(0xFFCBD5E1)))
+                  ? const Center(
+                      child: Icon(
+                        Icons.shopping_bag_outlined,
+                        color: AppColors.borderStrong,
+                      ),
+                    )
                   : null,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -144,12 +159,12 @@ class VendorStorefrontScreen extends ConsumerWidget {
                   product.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                  style: AppTextStyles.label,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   '₦${product.price.toStringAsFixed(2)}',
-                  style: const TextStyle(
+                  style: AppTextStyles.body.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w900,
                     fontSize: 16,

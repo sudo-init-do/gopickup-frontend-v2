@@ -14,6 +14,19 @@ class AppConfig {
   // WebSocket endpoint
   static const String wsUrl = 'wss://api.gopickup.com.ng/api/v1/ws';
 
+  // ─── Support ────────────────────────────────────────────────────────────────
+  // GoPickup support WhatsApp/phone number (no '+' prefix). Single source of
+  // truth — do not hardcode this elsewhere.
+  static const String supportPhone = '2348087042206';
+
+  /// Builds a WhatsApp deep link to support with an optional prefilled message.
+  static String supportWhatsappUrl([String? message]) {
+    const base = 'https://wa.me/$supportPhone';
+    return (message == null || message.isEmpty)
+        ? base
+        : '$base?text=${Uri.encodeComponent(message)}';
+  }
+
   // Always use the full backend URL — Flutter Web bakes URLs at compile time
   static String get baseUrl => kDebugMode ? devBaseUrl : prodBaseUrl;
 }

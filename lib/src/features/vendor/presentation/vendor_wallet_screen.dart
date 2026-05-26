@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../shared/presentation/coming_soon_screen.dart';
+import '../../../common/styles/app_colors.dart';
 
 // Original vendor wallet implementation preserved in git history.
 
@@ -11,7 +12,7 @@ class VendorWalletScreen extends StatelessWidget {
     return const ComingSoonScreen(
       featureName: 'Wallet',
       icon: Icons.account_balance_wallet_rounded,
-      accentColor: Color(0xFF45A225), // Vendor uses a slightly different green
+      accentColor: AppColors.vendorAccent,
     );
   }
 }
