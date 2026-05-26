@@ -47,7 +47,7 @@ class User {
       email: email ?? this.email,
       role: role ?? this.role,
       createdAt: createdAt ?? this.createdAt,
-      isProfileComplete: isComplete ?? this.isProfileComplete,
+      isProfileComplete: isComplete ?? isProfileComplete,
     );
   }
 }

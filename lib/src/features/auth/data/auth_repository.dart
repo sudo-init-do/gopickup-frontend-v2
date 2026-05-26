@@ -12,7 +12,7 @@ class AuthRepository {
   Future<bool> login(String email, String password) async {
     try {
       final response = await _apiClient.post(
-        '/auth/login',
+        'auth/login',
         data: {'email': email, 'password': password},
       );
 
@@ -35,7 +35,7 @@ class AuthRepository {
   Future<bool> register(String email, String password, String role) async {
     try {
       final response = await _apiClient.post(
-        '/auth/register',
+        'auth/register',
         data: {
           'email': email,
           'password': password,
@@ -51,8 +51,8 @@ class AuthRepository {
   Future<bool> verifyOTP(String email, String otp) async {
     try {
       final response = await _apiClient.post(
-        '/auth/verify-otp',
-        data: {'email': email, 'code': otp},
+        'auth/verify-otp',
+        data: {'email': email, 'otp': otp},
       );
       return response.statusCode == 200;
     } catch (e) {
@@ -63,7 +63,7 @@ class AuthRepository {
   Future<bool> completeOnboarding(Map<String, dynamic> profileData) async {
     try {
       final response = await _apiClient.post(
-        '/auth/onboarding/complete',
+        'auth/onboarding/complete',
         data: profileData,
       );
       return response.statusCode == 200;
@@ -80,7 +80,7 @@ class AuthRepository {
 
   Future<bool> deleteAccount() async {
     try {
-      final response = await _apiClient.delete('/profile/delete');
+      final response = await _apiClient.delete('profile/delete');
       if (response.statusCode == 200) {
         await logout();
         return true;

@@ -284,10 +284,10 @@ class AdminDashboardScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Recent Activity', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text('Recent Activity', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                           Text('View All History', style: TextStyle(color: Colors.blueAccent, fontSize: 12, fontWeight: FontWeight.bold)),
                         ],
                       ),
@@ -344,7 +344,7 @@ class AdminDashboardScreen extends ConsumerWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black87),
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black87),
         ),
       ],
     );

@@ -275,7 +275,7 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
       ),
       bottomSheet: Container(
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(top: BorderSide(color: kLightBorderColor)),
         ),

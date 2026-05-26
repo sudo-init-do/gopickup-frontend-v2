@@ -109,8 +109,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
 
       if (success) {
         ref.read(authProvider.notifier).markProfileComplete();
-        if (role == 'vendor') context.go('/vendor');
-        else if (role == 'driver') context.go('/driver/home');
+        if (role == 'vendor') {
+          context.go('/vendor');
+        } else if (role == 'driver') context.go('/driver/home');
         else context.go('/client');
       } else {
         final error = ref.read(profileProvider).error;
@@ -327,11 +328,11 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
           InkWell(
             onTap: () {},
             borderRadius: BorderRadius.circular(8),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Icon(
                     Icons.location_on_outlined,
                     color: AppColors.primary,
@@ -356,9 +357,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   }
 
   Widget _buildHeader() {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
+      children: [
         Text(
           'Complete your profile',
           style: TextStyle(

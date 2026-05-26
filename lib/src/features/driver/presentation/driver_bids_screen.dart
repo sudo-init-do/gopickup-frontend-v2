@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/job_repository.dart';
 
 class DriverBidsScreen extends ConsumerStatefulWidget {
   const DriverBidsScreen({super.key});

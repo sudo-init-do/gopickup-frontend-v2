@@ -241,10 +241,10 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
           const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
           // Quick Actions Title
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
-              child: const Text(
+              padding: EdgeInsets.fromLTRB(24, 0, 24, 20),
+              child: Text(
                 'Quick Actions',
                 style: TextStyle(
                   fontSize: 20,
@@ -344,7 +344,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                               color: Colors.white.withOpacity( 0.6),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.local_shipping_outlined,
                               color: AppColors.primary,
                               size: 26,
@@ -377,7 +377,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                           ),
                           Container(
                             padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: AppColors.primary,
                               shape: BoxShape.circle,
                             ),
@@ -663,8 +663,8 @@ class _FloatingSearchBar extends StatelessWidget {
             fontSize: 15,
             fontWeight: FontWeight.w400,
           ),
-          prefixIcon: Padding(
-            padding: const EdgeInsets.only(left: 20, right: 12),
+          prefixIcon: const Padding(
+            padding: EdgeInsets.only(left: 20, right: 12),
             child: Icon(
               Icons.search_rounded,
               color: AppColors.primary,
@@ -683,7 +683,7 @@ class _FloatingSearchBar extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.tune_rounded,
                     color: AppColors.primary,
                     size: 22,

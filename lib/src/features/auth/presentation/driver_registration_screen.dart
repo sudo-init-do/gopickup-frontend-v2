@@ -130,7 +130,7 @@ class _DriverRegistrationScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 48),
-                    Text(
+                    const Text(
                       'Driver Registration',
                       style: TextStyle(
                         fontSize: 32,
@@ -604,10 +604,10 @@ class _DriverRegistrationScreenState
             const SizedBox(height: 12),
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF111827),
+                color: Color(0xFF111827),
               ),
             ),
             const SizedBox(height: 2),

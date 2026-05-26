@@ -159,18 +159,18 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildFilterDropdown('Role:\nAll', Colors.indigo, Colors.white, () {}),
+                          _buildRoleTab('All', null),
                           const SizedBox(width: 8),
-                          _buildFilterDropdown('Status:\nActive', Colors.grey.shade200, Colors.black87, null),
+                          _buildRoleTab('Clients', 'client'),
                           const SizedBox(width: 8),
-                          _buildFilterDropdown('Date\nJoined', Colors.grey.shade200, Colors.black87, null, icon: Icons.calendar_today),
-                          const SizedBox(width: 12),
-                          const Icon(Icons.filter_list, color: Colors.black87),
+                          _buildRoleTab('Drivers', 'driver'),
+                          const SizedBox(width: 8),
+                          _buildRoleTab('Vendors', 'vendor'),
                         ],
                       ),
                     ),
@@ -186,7 +186,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                   decoration: BoxDecoration(
                     color: Colors.indigo.shade50.withOpacity(0.5),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border(left: BorderSide(color: Colors.indigoAccent, width: 4)),
+                    border: const Border(left: BorderSide(color: Colors.indigoAccent, width: 4)),
                   ),
                   child: Row(
                     children: [
@@ -218,14 +218,14 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                 ),
 
               // List Header
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
                 child: Row(
                   children: [
-                    const SizedBox(width: 24), // Checkbox spacing
-                    const SizedBox(width: 16),
-                    const Expanded(child: Text('USER IDENTITY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
-                    const Text('ROLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                    SizedBox(width: 24), // Checkbox spacing
+                    SizedBox(width: 16),
+                    Expanded(child: Text('USER IDENTITY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2))),
+                    Text('ROLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                   ],
                 ),
               ),
@@ -242,11 +242,25 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                   child: Column(
                     children: [
                       Expanded(
-                        child: ListView.separated(
-                          itemCount: filtered.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1),
-                          itemBuilder: (context, index) => _buildUserRow(filtered[index]),
-                        ),
+                        child: filtered.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.people_outline, size: 40, color: Colors.grey.shade300),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'No users found',
+                                      style: TextStyle(color: Colors.grey.shade500, fontSize: 14, fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ListView.separated(
+                                itemCount: filtered.length,
+                                separatorBuilder: (_, __) => const Divider(height: 1),
+                                itemBuilder: (context, index) => _buildUserRow(filtered[index]),
+                              ),
                       ),
                       const Divider(height: 1),
                       // Pagination Footer
@@ -256,7 +270,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Showing 1 to ${filtered.length > 4 ? 4 : filtered.length} of ${filtered.length} results',
+                              '${filtered.length} ${filtered.length == 1 ? 'result' : 'results'}',
                               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                             ),
                             Row(
@@ -292,18 +306,33 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     );
   }
 
-  Widget _buildFilterDropdown(String text, Color bgColor, Color textColor, VoidCallback? onTap, {IconData? icon}) {
+  /// A role filter tab. Tapping it sets [_selectedRole], which the build method
+  /// passes to adminUsersProvider so the list re-fetches just that role
+  /// (null = all users).
+  Widget _buildRoleTab(String label, String? roleValue) {
+    final isActive = _selectedRole == roleValue;
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        if (_selectedRole == roleValue) return;
+        setState(() {
+          _selectedRole = roleValue;
+          _selectedIds.clear(); // selections don't carry across role views
+        });
+      },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
-        child: Row(
-          children: [
-            Text(text, style: TextStyle(color: textColor, fontSize: 12, fontWeight: FontWeight.w500, height: 1.2)),
-            const SizedBox(width: 8),
-            Icon(icon ?? Icons.keyboard_arrow_down, color: textColor, size: 16),
-          ],
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+        decoration: BoxDecoration(
+          color: isActive ? Colors.indigo : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isActive ? Colors.indigo : Colors.grey.shade300),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.white : Colors.black87,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

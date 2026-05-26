@@ -32,7 +32,7 @@ class OrderDetailScreen extends StatelessWidget {
     const kDarkTextColor = Color(0xFF111827);
     const kMidTextColor = Color(0xFF6B7280);
     const kLightTextColor = Color(0xFF9CA3AF);
-    final kBrandGreen = AppColors.primary;
+    const kBrandGreen = AppColors.primary;
  
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
@@ -287,8 +287,8 @@ class OrderDetailScreen extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF7ED),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF7ED),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(

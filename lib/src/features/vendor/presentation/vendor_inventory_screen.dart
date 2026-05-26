@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../data/vendor_repository.dart';
-import '../../../common/config/app_config.dart';
 
 class VendorInventoryScreen extends ConsumerWidget {
   const VendorInventoryScreen({super.key});

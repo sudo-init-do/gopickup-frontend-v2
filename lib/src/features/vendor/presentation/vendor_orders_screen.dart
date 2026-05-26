@@ -24,11 +24,11 @@ class VendorOrdersScreen extends ConsumerWidget {
         child: Column(
           children: [
             // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(24, 24, 24, 16),
               child: Row(
                 children: [
-                  const Text(
+                  Text(
                     'Orders',
                     style: TextStyle(
                       fontSize: 28,

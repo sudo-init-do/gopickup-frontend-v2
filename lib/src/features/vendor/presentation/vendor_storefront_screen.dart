@@ -149,7 +149,7 @@ class VendorStorefrontScreen extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   '₦${product.price.toStringAsFixed(2)}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w900,
                     fontSize: 16,

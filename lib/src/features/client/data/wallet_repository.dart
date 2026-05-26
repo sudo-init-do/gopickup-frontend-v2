@@ -59,7 +59,7 @@ class WalletRepository {
       final fakeRef = 'PAY-${DateTime.now().millisecondsSinceEpoch}';
 
       final response = await _apiClient.post(
-        '/wallet/topup',
+        'wallet/topup',
         data: {'amount': amount, 'payment_reference': fakeRef},
       );
       return response.statusCode == 200;

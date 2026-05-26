@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../common/constants/app_constants.dart';
-import '../../../common/config/app_config.dart';
 import '../../../models/product_models.dart';
 import '../../../state/product_provider.dart';
 import '../data/cart_provider.dart';
@@ -167,9 +166,9 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                       borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(Icons.location_on_outlined, size: 20),
                       SizedBox(width: 8),
                       Text(
@@ -712,10 +711,10 @@ class ProductCard extends ConsumerWidget {
                               color: const Color(0xFF3B7D23),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: Center(
+                            child: const Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Icon(
                                     Icons.add,
                                     color: Colors.white,

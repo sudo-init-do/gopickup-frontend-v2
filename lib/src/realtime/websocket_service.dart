@@ -9,6 +9,12 @@ class WebSocketService {
   WebSocketChannel? _channel;
   StreamSubscription? _subscription;
 
+  // Reconnect control
+  bool _intentionalClose = false;
+  int _reconnectAttempts = 0;
+  Timer? _reconnectTimer;
+  static const int _maxReconnectAttempts = 8;
+
   // Connection State
   bool get isConnected => _channel != null;
 
@@ -35,9 +41,14 @@ class WebSocketService {
   void connect(String token) {
     if (_channel != null) return;
 
+    // A fresh connect cancels any pending reconnect and re-enables retries.
+    _intentionalClose = false;
+    _reconnectTimer?.cancel();
+
     try {
       final uri = Uri.parse('$wsUrl?token=$token');
       _channel = WebSocketChannel.connect(uri);
+      _reconnectAttempts = 0;
 
       _subscription = _channel?.stream.listen(
         (message) {
@@ -45,26 +56,43 @@ class WebSocketService {
         },
         onDone: () {
           debugPrint('WebSocket closed');
-          _reconnect(token);
+          _scheduleReconnect(token);
         },
         onError: (err) {
           debugPrint('WebSocket error: $err');
-          _reconnect(token);
+          _scheduleReconnect(token);
         },
       );
     } catch (e) {
       debugPrint('Connection error: $e');
+      _scheduleReconnect(token);
     }
   }
 
-  void _reconnect(String token) {
-    disconnect();
-    Future.delayed(const Duration(seconds: 5), () {
-      connect(token);
+  void _scheduleReconnect(String token) {
+    // Don't reconnect if the caller asked us to disconnect (e.g. logout).
+    if (_intentionalClose) return;
+    if (_reconnectAttempts >= _maxReconnectAttempts) {
+      debugPrint('WebSocket: max reconnect attempts reached, giving up.');
+      return;
+    }
+
+    _subscription?.cancel();
+    _channel = null;
+    _reconnectAttempts++;
+
+    // Exponential backoff capped at 30s.
+    final delaySeconds = (1 << _reconnectAttempts).clamp(1, 30);
+    _reconnectTimer?.cancel();
+    _reconnectTimer = Timer(Duration(seconds: delaySeconds), () {
+      if (!_intentionalClose) connect(token);
     });
   }
 
   void disconnect() {
+    _intentionalClose = true;
+    _reconnectTimer?.cancel();
+    _reconnectAttempts = 0;
     _subscription?.cancel();
     _channel?.sink.close();
     _channel = null;

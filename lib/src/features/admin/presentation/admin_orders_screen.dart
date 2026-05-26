@@ -561,7 +561,7 @@ class _FocusedView extends StatelessWidget {
                         const Text('DELIVERY TIMELINE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
                         const SizedBox(height: 24),
                         
-                        _TimelineItem(
+                        const _TimelineItem(
                           isCompleted: true,
                           isLast: false,
                           title: 'Placed',
@@ -747,7 +747,7 @@ class _TimelineItem extends StatelessWidget {
                 ),
                 child: isCompleted
                     ? const Icon(Icons.check, size: 14, color: Colors.white)
-                    : (isActive ? Center(child: CircleAvatar(radius: 4, backgroundColor: Colors.blueAccent)) : null),
+                    : (isActive ? const Center(child: CircleAvatar(radius: 4, backgroundColor: Colors.blueAccent)) : null),
               ),
               if (!isLast)
                 Expanded(

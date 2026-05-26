@@ -5,7 +5,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../data/cart_provider.dart';
 import '../../../models/order_models.dart';
 import '../../../state/order_provider.dart';
-import '../../../common/config/app_config.dart';
 import '../../../common/utils/error_handler.dart';
 
 class ClientCartScreen extends ConsumerWidget {
@@ -38,8 +37,8 @@ class ClientCartScreen extends ConsumerWidget {
                 Container(
                   width: 100,
                   height: 100,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF3F4F6),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF3F4F6),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(

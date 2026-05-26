@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../driver/data/job_repository.dart';
 import '../../../common/models/order.dart' as common_order;
@@ -161,14 +160,14 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
+                  const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Driver Portal',
                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: midText),
                       ),
-                      const Text(
+                      Text(
                         'GoPickup Delivery',
                         style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: darkText),
                       ),
@@ -348,10 +347,12 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
     Color orange,
     Color green,
   ) {
-    if (_selectedTabIndex == 0)
+    if (_selectedTabIndex == 0) {
       return _buildNewAssignmentsList(darkText, midText, orange, green);
-    if (_selectedTabIndex == 1)
+    }
+    if (_selectedTabIndex == 1) {
       return _buildActiveTasksList(darkText, midText, orange, green);
+    }
     return _buildHistoryJobList(darkText, midText, orange, green);
   }
 
@@ -449,7 +450,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Error loading tasks')),
+      error: (err, stack) => const Center(child: Text('Error loading tasks')),
     );
   }
 
@@ -503,7 +504,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, stack) => Center(child: Text('Failed to load history')),
+      error: (err, stack) => const Center(child: Text('Failed to load history')),
     );
   }
 
@@ -527,8 +528,8 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFF3F4F6),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -970,13 +971,13 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: job.status == 'assigned' ? Colors.blue.withOpacity( 0.1) : Colors.green.withOpacity( 0.1),
+                  color: job.status == common_order.OrderStatus.assigned ? Colors.blue.withOpacity( 0.1) : Colors.green.withOpacity( 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  job.status == 'assigned' ? 'Assigned to You' : 'Available',
+                  job.status == common_order.OrderStatus.assigned ? 'Assigned to You' : 'Available',
                   style: TextStyle(
-                    color: job.status == 'assigned' ? Colors.blue : Colors.green,
+                    color: job.status == common_order.OrderStatus.assigned ? Colors.blue : Colors.green,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                   ),

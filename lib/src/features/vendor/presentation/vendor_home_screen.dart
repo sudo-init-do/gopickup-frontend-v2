@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../data/vendor_repository.dart';
 import '../../../common/models/order.dart';
-import '../../client/data/wallet_repository.dart';
 
 class VendorHomeScreen extends ConsumerWidget {
   const VendorHomeScreen({super.key});

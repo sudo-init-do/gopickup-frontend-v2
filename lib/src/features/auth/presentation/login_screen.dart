@@ -285,9 +285,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                             strokeWidth: 2,
                           ),
                         )
-                      : Row(
+                      : const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
+                          children: [
                             Text(
                               'Sign In',
                               style: TextStyle(

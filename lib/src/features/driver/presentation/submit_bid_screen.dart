@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../models/order_models.dart';
-import '../data/job_repository.dart';
 
 class SubmitBidScreen extends ConsumerStatefulWidget {
   final Order job;
@@ -203,7 +202,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
     final title = job.items.isNotEmpty
         ? job.items.first.name ?? 'Item'
         : 'Bulk Delivery';
-    final from = 'Vendor Depot';
+    const from = 'Vendor Depot';
     final to = job.id.substring(0, 8);
 
     return Container(
@@ -325,7 +324,7 @@ class _SubmitBidScreenState extends ConsumerState<SubmitBidScreen> {
                 // final success = await ref
                 //     .read(jobRepositoryProvider)
                 //     .submitBid(orderId: widget.job.id, amount: amount);
-                final success = false;
+                const success = false;
                 
                 if (mounted) {
                   Navigator.pop(context); // Close loading

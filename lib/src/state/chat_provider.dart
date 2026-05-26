@@ -4,6 +4,7 @@ import '../models/chat_models.dart';
 import '../api/chat_api.dart';
 import '../realtime/websocket_service.dart';
 import 'auth_provider.dart';
+import 'order_provider.dart';
 
 class ChatState {
   final List<Conversation> conversations;
@@ -35,7 +36,9 @@ class ChatState {
 
 class ChatNotifier extends Notifier<ChatState> {
   final _chatApi = ChatApi();
-  final WebSocketService _wsService = WebSocketService();
+  // Use the single shared WebSocket connection (opened on login) so chat
+  // events arrive on the same authenticated socket as order events.
+  WebSocketService get _wsService => ref.read(websocketServiceProvider);
 
   String? _currentChatId;
 

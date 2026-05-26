@@ -11,7 +11,7 @@ class ProductRepository {
   Future<List<Product>> getProducts({String? category, String? query}) async {
     try {
       final response = await _apiClient.get(
-        '/products',
+        'products',
         queryParameters: {
           'unique_vendors': 'true',
           'page': 1,

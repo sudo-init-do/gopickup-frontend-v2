@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import '../features/admin/domain/admin_stats.dart';
 import '../models/order_models.dart';
-import '../models/user_models.dart';
 import 'api_client.dart';
 
 class AdminApi {

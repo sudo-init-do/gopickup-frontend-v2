@@ -146,7 +146,7 @@ class VendorRepository {
   Future<(bool, String?)> updateOrderStatus(String orderId, String status) async {
     try {
       final response = await _apiClient.patch(
-        '/orders/$orderId/status',
+        'vendor/orders/$orderId/status',
         data: {'status': status},
       );
       if (response.statusCode == 200 || response.statusCode == 201) {

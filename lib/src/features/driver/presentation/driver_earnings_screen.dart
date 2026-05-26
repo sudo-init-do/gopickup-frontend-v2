@@ -16,8 +16,8 @@ class DriverEarningsScreen extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF0FDF4),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF0FDF4),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(

@@ -104,12 +104,12 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
                       position: _slideAnimation,
                       child: FadeTransition(
                         opacity: _fadeAnimation,
-                        child: Text(
+                        child: const Text(
                           'Coming Soon',
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
-                            color: const Color(0xFF111827),
+                            color: Color(0xFF111827),
                             letterSpacing: -0.8,
                           ),
                         ),
@@ -123,13 +123,13 @@ class _ComingSoonScreenState extends State<ComingSoonScreen>
                       position: _slideAnimation,
                       child: FadeTransition(
                         opacity: _fadeAnimation,
-                        child: Text(
+                        child: const Text(
                           'We\'re working on something amazing.\nStay tuned!',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
-                            color: const Color(0xFF6B7280),
+                            color: Color(0xFF6B7280),
                             height: 1.5,
                           ),
                         ),

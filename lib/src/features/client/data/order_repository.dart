@@ -33,7 +33,7 @@ class OrderRepository {
   }) async {
     try {
       final response = await _apiClient.post(
-        '/orders/checkout',
+        'orders/checkout',
         data: {
           'items': items,
           'delivery_address': deliveryAddress,

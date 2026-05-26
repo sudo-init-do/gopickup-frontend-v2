@@ -280,8 +280,8 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                 padding: EdgeInsets.symmetric(vertical: 16),
                 child: Divider(color: Color(0xFFF3F4F6), height: 1),
               ),
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Icon(Icons.access_time_rounded, size: 18, color: kBrandGreen),
                   SizedBox(width: 8),
                   Text(

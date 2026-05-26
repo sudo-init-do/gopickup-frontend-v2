@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../common/styles/app_colors.dart';
 import '../../../state/auth_provider.dart';
 
 class AdminScaffold extends ConsumerWidget {

@@ -405,8 +405,8 @@ class _VendorRegistrationScreenState
         const SizedBox(height: 24),
 
         // Pin on map action
-        Row(
-          children: const [
+        const Row(
+          children: [
             Icon(Icons.location_on_rounded, color: Color(0xFFA855F7), size: 20),
             SizedBox(width: 8),
             Text(
@@ -429,9 +429,9 @@ class _VendorRegistrationScreenState
             color: const Color(0xFFF3F4F6).withOpacity( 0.5),
             borderRadius: BorderRadius.circular(32),
           ),
-          child: Column(
+          child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Icon(
                 Icons.location_on_outlined,
                 size: 48,
