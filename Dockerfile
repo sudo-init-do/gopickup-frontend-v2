@@ -1,5 +1,7 @@
 # Stage 1: Build the Flutter Web app
-FROM ghcr.io/cirruslabs/flutter:stable AS build
+# Pinned to match the local dev SDK (do NOT use :stable — it floats to newer
+# Flutter versions that change theme APIs and break the build).
+FROM ghcr.io/cirruslabs/flutter:3.24.5 AS build
 
 WORKDIR /app
 
