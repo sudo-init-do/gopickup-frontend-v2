@@ -618,29 +618,6 @@ class ProductCard extends ConsumerWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: AppSpacing.xs),
-                      // Rating
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            color: Color(0xFFFBBF24),
-                            size: 16,
-                          ),
-                          const SizedBox(width: AppSpacing.xs),
-                          Text(
-                            '4.8',
-                            style: AppTextStyles.caption.copyWith(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 12,
-                            ),
-                          ),
-                          const Text(
-                            ' (124)',
-                            style: AppTextStyles.caption,
-                          ),
-                        ],
-                      ),
                       const Spacer(),
                       // Price and Stock
                       Row(
@@ -778,29 +755,6 @@ class ProductCard extends ConsumerWidget {
                 ),
               ),
             ],
-          ),
-          // MOQ Badge
-          Positioned(
-            top: AppSpacing.md,
-            left: AppSpacing.md,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.xs,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: const Text(
-                'MOQ: 1',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
           ),
         ],
       ),
