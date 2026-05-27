@@ -4,10 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/styles/app_colors.dart';
-import '../../../common/styles/app_spacing.dart';
-import '../../../common/styles/app_text_styles.dart';
-import '../../../common/widgets/app_states.dart';
-import '../../../common/widgets/primary_button.dart';
 import '../../../common/constants/app_constants.dart';
 import '../../../models/product_models.dart';
 import '../../../state/product_provider.dart';
@@ -71,7 +67,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isInit) {
-      return const Scaffold(body: AppLoading());
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (!_hasAddress) {
       return _buildAddressSelection();
@@ -81,10 +77,10 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
 
   Widget _buildAddressSelection() {
     return Scaffold(
-      backgroundColor: AppColors.card,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -93,42 +89,49 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight.withOpacity(0.5),
+                  color: AppColors.primaryLight.withOpacity( 0.5),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.location_on_rounded,
-                  color: AppColors.primary,
+                  color: Color(0xFF3B7D23),
                   size: 40,
                 ),
               ),
-              const SizedBox(height: AppSpacing.xxxl),
+              const SizedBox(height: 40),
               // Heading
-              Text(
+              const Text(
                 'Where should we deliver?',
-                style: AppTextStyles.displayLg.copyWith(
+                style: TextStyle(
                   fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1F2937),
                   letterSpacing: -0.5,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: 16),
               // Subheading
               Text(
                 'Enter your delivery address to see available\nproducts and shipping costs',
-                style: AppTextStyles.body.copyWith(height: 1.5),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                  height: 1.5,
+                  fontWeight: FontWeight.w500,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
               // Text Field
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.card,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                  border: Border.all(color: AppColors.border),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(color: const Color(0xFFF3F4F6)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withOpacity( 0.03),
                       blurRadius: 15,
                       offset: const Offset(0, 4),
                     ),
@@ -137,27 +140,49 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Enter delivery address',
-                    hintStyle: AppTextStyles.body.copyWith(
-                      color: AppColors.textTertiary,
-                    ),
+                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xl,
-                      vertical: AppSpacing.lg,
+                      horizontal: 24,
+                      vertical: 16,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: AppSpacing.xl),
+              const SizedBox(height: 24),
               // Use this address button
-              PrimaryButton(
-                label: 'Use this address',
-                onPressed: _setAddressSelected,
-                icon: Icons.location_on_outlined,
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _setAddressSelected,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.location_on_outlined, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Use this address',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: 16),
               // Use current location button
               SizedBox(
                 width: double.infinity,
@@ -165,17 +190,15 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                 child: OutlinedButton(
                   onPressed: _setAddressSelected,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.textPrimary,
-                    side: const BorderSide(color: AppColors.border),
+                    foregroundColor: const Color(0xFF1F2937),
+                    side: const BorderSide(color: Color(0xFFF3F4F6)),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      borderRadius: BorderRadius.circular(28),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     'Use current location',
-                    style: AppTextStyles.button.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -192,26 +215,26 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
         final productState = ref.watch(productProvider);
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: const Color(0xFFF9FAFB),
           body: SafeArea(
             child: Column(
               children: [
-                // Custom App Bar
+                // Custom App Bar (Keep as is)
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xl,
-                    vertical: AppSpacing.md,
+                    horizontal: 20,
+                    vertical: 12,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: AppColors.card,
+                          color: Colors.white,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withOpacity( 0.04),
                               blurRadius: 10,
                             ),
                           ],
@@ -227,9 +250,13 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                           },
                         ),
                       ),
-                      Text(
+                      const Text(
                         'Go-Market',
-                        style: AppTextStyles.headingLg.copyWith(fontSize: 22),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1F2937),
+                        ),
                       ),
                       GestureDetector(
                         onTap: () => context.push('/client/cart'),
@@ -237,9 +264,9 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                           clipBehavior: Clip.none,
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(AppSpacing.sm),
+                              padding: const EdgeInsets.all(8),
                               decoration: const BoxDecoration(
-                                color: AppColors.primary,
+                                color: Color(0xFF3B7D23),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -253,9 +280,9 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                                 top: -4,
                                 right: -4,
                                 child: Container(
-                                  padding: const EdgeInsets.all(AppSpacing.xs),
+                                  padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
-                                    color: AppColors.destructive,
+                                    color: const Color(0xFFEF4444),
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: Colors.white,
@@ -268,7 +295,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                                   ),
                                   child: Text(
                                     '${ref.watch(cartProvider).length}',
-                                    style: AppTextStyles.caption.copyWith(
+                                    style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
@@ -285,27 +312,25 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                 ),
                 // Search Bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.lg,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
-                            color: AppColors.card,
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                            border: Border.all(color: AppColors.border),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(color: const Color(0xFFF3F4F6)),
                           ),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.search,
-                                color: AppColors.textTertiary,
+                                color: Colors.grey[400],
                                 size: 22,
                               ),
-                              const SizedBox(width: AppSpacing.md),
+                              const SizedBox(width: 10),
                               Expanded(
                                 child: TextField(
                                   controller: _searchController,
@@ -316,22 +341,18 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                                     if (_debounce?.isActive ?? false) {
                                       _debounce!.cancel();
                                     }
-                                    _debounce = Timer(
-                                      const Duration(milliseconds: 500),
-                                      () {
-                                        ref
-                                            .read(productProvider.notifier)
-                                            .fetchProducts(
-                                              category:
-                                                  _selectedCategory == 'All'
-                                                      ? null
-                                                      : _selectedCategory,
-                                              search: _searchQuery.isNotEmpty
-                                                  ? _searchQuery
-                                                  : null,
-                                            );
-                                      },
-                                    );
+                                    _debounce = Timer(const Duration(milliseconds: 500), () {
+                                      ref
+                                          .read(productProvider.notifier)
+                                          .fetchProducts(
+                                            category: _selectedCategory == 'All'
+                                                ? null
+                                                : _selectedCategory,
+                                            search: _searchQuery.isNotEmpty
+                                                ? _searchQuery
+                                                : null,
+                                          );
+                                    });
                                   },
                                   onSubmitted: (_) {
                                     ref
@@ -347,8 +368,9 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                                   },
                                   decoration: InputDecoration(
                                     hintText: 'Search products...',
-                                    hintStyle: AppTextStyles.body.copyWith(
-                                      color: AppColors.textTertiary,
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey[400],
+                                      fontSize: 15,
                                     ),
                                     suffixIcon: _searchQuery.isNotEmpty
                                         ? IconButton(
@@ -385,28 +407,28 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: AppSpacing.md),
+                      const SizedBox(width: 12),
                       Container(
-                        padding: const EdgeInsets.all(AppSpacing.md),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.card,
+                          color: Colors.white,
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.border),
+                          border: Border.all(color: const Color(0xFFF3F4F6)),
                         ),
                         child: const Icon(
                           Icons.tune_rounded,
-                          color: AppColors.textPrimary,
+                          color: Color(0xFF1F2937),
                           size: 22,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: 20),
                 // Categories
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: AppConstants.productCategories.map((category) {
                       return _buildCategoryChip(
@@ -416,43 +438,34 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                     }).toList(),
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: 20),
                 // Product Grid
                 Expanded(
                   child: Builder(
                     builder: (context) {
                       if (productState.isLoading) {
-                        return const AppLoading();
+                        return const Center(child: CircularProgressIndicator());
                       }
                       if (productState.error != null) {
-                        return AppErrorState(
-                          message: productState.error ?? 'Unknown error',
-                          onRetry: () => ref
-                              .read(productProvider.notifier)
-                              .fetchProducts(),
+                        return Center(
+                          child: Text('Error: ${productState.error}'),
                         );
                       }
 
                       final filteredProducts = productState.products;
 
                       if (filteredProducts.isEmpty) {
-                        return const AppEmptyState(
-                          icon: Icons.search_off_rounded,
-                          title: 'No products found',
-                          message: 'Try adjusting your search or category',
-                        );
+                        return const Center(child: Text('No products found'));
                       }
 
                       return GridView.builder(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.xl,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               childAspectRatio: 0.58,
-                              crossAxisSpacing: AppSpacing.lg,
-                              mainAxisSpacing: AppSpacing.lg,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
                             ),
                         itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
@@ -482,22 +495,21 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(right: AppSpacing.md),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xl,
-          vertical: AppSpacing.md,
-        ),
+        margin: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : AppColors.card,
-          borderRadius: BorderRadius.circular(AppRadius.pill),
+          color: isSelected ? const Color(0xFF3B7D23) : Colors.white,
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? Colors.transparent : AppColors.border,
+            color: isSelected ? Colors.transparent : const Color(0xFFF3F4F6),
           ),
         ),
         child: Text(
           label,
-          style: AppTextStyles.label.copyWith(
-            color: isSelected ? Colors.white : AppColors.textSecondary,
+          style: TextStyle(
+            color: isSelected ? Colors.white : const Color(0xFF4B5563),
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
           ),
         ),
       ),
@@ -517,11 +529,11 @@ class ProductCard extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withOpacity( 0.03),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -538,9 +550,9 @@ class ProductCard extends ConsumerWidget {
                 child: Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: AppColors.backgroundSubtle,
+                    color: const Color(0xFFF3F4F6),
                     borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(AppRadius.xl),
+                      top: Radius.circular(24),
                     ),
                     image: product.imageUrl.isNotEmpty
                         ? DecorationImage(
@@ -550,11 +562,11 @@ class ProductCard extends ConsumerWidget {
                         : null,
                   ),
                   child: product.imageUrl.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Icon(
                             Icons.image_outlined,
                             size: 40,
-                            color: AppColors.textTertiary,
+                            color: Colors.grey[300],
                           ),
                         )
                       : null,
@@ -564,7 +576,7 @@ class ProductCard extends ConsumerWidget {
               Expanded(
                 flex: 6,
                 child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.md),
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -573,9 +585,10 @@ class ProductCard extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               product.vendorName,
-                              style: AppTextStyles.caption.copyWith(
-                                fontWeight: FontWeight.w500,
+                              style: TextStyle(
+                                color: Colors.grey[500],
                                 fontSize: 11,
+                                fontWeight: FontWeight.w500,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -586,17 +599,13 @@ class ProductCard extends ConsumerWidget {
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          Icon(
-                            Icons.location_on,
-                            size: 10,
-                            color: AppColors.info.withOpacity(0.7),
-                          ),
-                          const SizedBox(width: AppSpacing.xs),
+                          Icon(Icons.location_on, size: 10, color: Colors.blueAccent.withOpacity( 0.7)),
+                          const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               product.vendorAddress,
-                              style: AppTextStyles.caption.copyWith(
-                                color: AppColors.info.withOpacity(0.8),
+                              style: TextStyle(
+                                color: Colors.blueAccent.withOpacity( 0.8),
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -607,12 +616,13 @@ class ProductCard extends ConsumerWidget {
                         ],
                       ),
 
-                      const SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: 4),
                       Text(
                         product.name,
-                        style: AppTextStyles.label.copyWith(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 14,
+                          color: Color(0xFF111827),
                           height: 1.2,
                         ),
                         maxLines: 2,
@@ -625,14 +635,18 @@ class ProductCard extends ConsumerWidget {
                         children: [
                           Text(
                             '₦${product.price}',
-                            style: AppTextStyles.titleMd.copyWith(
+                            style: const TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 18,
+                              color: Color(0xFF111827),
                             ),
                           ),
-                          const Text(
+                          Text(
                             '/piece',
-                            style: AppTextStyles.caption,
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 12,
+                            ),
                           ),
                           const Spacer(),
                           Column(
@@ -640,23 +654,25 @@ class ProductCard extends ConsumerWidget {
                             children: [
                               Text(
                                 '${product.stock} in',
-                                style: AppTextStyles.caption.copyWith(
+                                style: const TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
+                                  color: Color(0xFF9CA3AF),
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 'stock',
-                                style: AppTextStyles.caption.copyWith(
+                                style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
+                                  color: Color(0xFF9CA3AF),
                                 ),
                               ),
                             ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: AppSpacing.md),
+                      const SizedBox(height: 12),
                       // Add Button or Quantity Selector
                       if (!isInCart)
                         GestureDetector(
@@ -666,9 +682,8 @@ class ProductCard extends ConsumerWidget {
                             width: double.infinity,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.pill),
+                              color: const Color(0xFF3B7D23),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: const Center(
                               child: Row(
@@ -679,7 +694,7 @@ class ProductCard extends ConsumerWidget {
                                     color: Colors.white,
                                     size: 16,
                                   ),
-                                  SizedBox(width: AppSpacing.xs),
+                                  SizedBox(width: 4),
                                   Text(
                                     'Add (1 min)',
                                     style: TextStyle(
@@ -698,8 +713,8 @@ class ProductCard extends ConsumerWidget {
                           width: double.infinity,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: AppColors.backgroundSubtle,
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                            color: const Color(0xFFF3F4F6),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -712,21 +727,22 @@ class ProductCard extends ConsumerWidget {
                                   width: 40,
                                   height: 40,
                                   decoration: const BoxDecoration(
-                                    color: AppColors.card,
+                                    color: Colors.white,
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
                                     Icons.remove,
                                     size: 20,
-                                    color: AppColors.textPrimary,
+                                    color: Color(0xFF1F2937),
                                   ),
                                 ),
                               ),
                               Text(
                                 '${cartItem.quantity}',
-                                style: AppTextStyles.titleMd.copyWith(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 16,
+                                  color: Color(0xFF1F2937),
                                 ),
                               ),
                               GestureDetector(
@@ -737,7 +753,7 @@ class ProductCard extends ConsumerWidget {
                                   width: 40,
                                   height: 40,
                                   decoration: const BoxDecoration(
-                                    color: AppColors.primary,
+                                    color: Color(0xFF3B7D23),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
