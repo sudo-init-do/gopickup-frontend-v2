@@ -10,49 +10,30 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final notifications = [
-      {
-        'title': 'Order Delivered',
-        'message':
-            'Your order ORD-002 has been successfully delivered by the driver.',
-        'time': DateTime.now().subtract(const Duration(hours: 2)),
-        'type': 'order',
-        'isRead': false,
-      },
-      {
-        'title': 'New Bid Received',
-        'message':
-            'A driver has submitted a bid of ₦120.00 for your delivery job.',
-        'time': DateTime.now().subtract(const Duration(days: 1)),
-        'type': 'bid',
-        'isRead': true,
-      },
-      {
-        'title': 'Payment Confirmed',
-        'message': 'Your wallet top-up of ₦1,000.00 has been successful.',
-        'time': DateTime.now().subtract(const Duration(days: 2)),
-        'type': 'wallet',
-        'isRead': true,
-      },
-    ];
+    // No notifications backend exists yet, so the list starts empty rather
+    // than showing fabricated entries. When an API lands, populate this from
+    // it and _buildNotificationCard renders each item.
+    final List<Map<String, dynamic>> notifications = [];
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context),
+            _buildHeader(context, notifications.isNotEmpty),
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg,
-                  vertical: AppSpacing.sm + 2,
-                ),
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  return _buildNotificationCard(notifications[index]);
-                },
-              ),
+              child: notifications.isEmpty
+                  ? _buildEmptyState()
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: AppSpacing.sm + 2,
+                      ),
+                      itemCount: notifications.length,
+                      itemBuilder: (context, index) {
+                        return _buildNotificationCard(notifications[index]);
+                      },
+                    ),
             ),
           ],
         ),
@@ -60,7 +41,40 @@ class NotificationsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xxxl),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.notifications_none_rounded,
+                size: 48,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            const Text('No notifications yet', style: AppTextStyles.headingMd),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              "You're all caught up. We'll let you know when\nsomething needs your attention.",
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, bool showClearAll) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
       child: Stack(
@@ -93,16 +107,17 @@ class NotificationsScreen extends StatelessWidget {
               letterSpacing: -0.5,
             ),
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () {},
-              child: Text(
-                'Clear all',
-                style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
+          if (showClearAll)
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {},
+                child: Text(
+                  'Clear all',
+                  style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
