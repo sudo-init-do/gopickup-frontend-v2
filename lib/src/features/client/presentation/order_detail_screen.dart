@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../../common/utils/launch_url.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/order_provider.dart';
 import '../../../models/order_models.dart';
@@ -15,23 +15,15 @@ class OrderDetailScreen extends StatelessWidget {
 
   const OrderDetailScreen({super.key, required this.order});
 
-  Future<void> _launchWhatsApp() async {
-    final url = order.whatsappUrl;
-    if (url != null && await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-      return;
-    }
-
-    // Fallback
-    const phone = AppConfig.supportPhone;
-    final message =
-        "Hello GoPickup Support, I have an inquiry about my order: ${order.id}";
-    final fallbackUrl =
-        "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
-    if (await canLaunchUrl(Uri.parse(fallbackUrl))) {
-      await launchUrl(
-        Uri.parse(fallbackUrl),
-        mode: LaunchMode.externalApplication,
+  Future<void> _launchWhatsApp(BuildContext context) async {
+    final url = order.whatsappUrl ??
+        AppConfig.supportWhatsappUrl(
+          'Hello GoPickup Support, I have an inquiry about my order: ${order.id}',
+        );
+    final ok = await openExternalUrl(url);
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open WhatsApp.')),
       );
     }
   }
@@ -66,7 +58,7 @@ class OrderDetailScreen extends StatelessWidget {
                               width: double.infinity,
                               height: 56,
                               child: ElevatedButton.icon(
-                                onPressed: _launchWhatsApp,
+                                onPressed: () => _launchWhatsApp(context),
                                 icon: const Icon(
                                   Icons.chat_bubble_outline_rounded,
                                 ),
@@ -128,7 +120,7 @@ class OrderDetailScreen extends StatelessWidget {
                           width: double.infinity,
                           height: 56,
                           child: ElevatedButton.icon(
-                            onPressed: _launchWhatsApp,
+                            onPressed: () => _launchWhatsApp(context),
                             icon: const Icon(
                               Icons.chat_bubble_outline_rounded,
                             ),

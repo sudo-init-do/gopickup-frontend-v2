@@ -407,7 +407,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                 children: [
                   const Text('Recent Orders', style: AppTextStyles.headingMd),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () => context.go('/client/orders'),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       padding: const EdgeInsets.symmetric(
@@ -661,7 +661,7 @@ class _FloatingSearchBar extends StatelessWidget {
                     color: AppColors.primary,
                     size: 22,
                   ),
-                  onPressed: () {},
+                  onPressed: () => context.go('/client/products'),
                 ),
               ],
             ),

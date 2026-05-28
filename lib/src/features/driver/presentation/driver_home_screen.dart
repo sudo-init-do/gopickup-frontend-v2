@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../../common/utils/launch_url.dart';
 import '../../driver/data/job_repository.dart';
 import '../../../common/models/order.dart' as common_order;
 import '../../../models/order_models.dart';
@@ -26,15 +26,15 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
   int _selectedTabIndex = 0;
 
   Future<void> _launchWhatsApp(String orderId, [String? customUrl]) async {
-    if (customUrl != null && await canLaunchUrl(Uri.parse(customUrl))) {
-      await launchUrl(Uri.parse(customUrl), mode: LaunchMode.externalApplication);
-      return;
-    }
-    const phone = AppConfig.supportPhone; // Admin Support
-    final message = "Hello, I am agreeing to the delivery for Order #$orderId";
-    final url = "https://wa.me/$phone?text=${Uri.encodeComponent(message)}";
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    final url = customUrl ??
+        AppConfig.supportWhatsappUrl(
+          'Hello, I am agreeing to the delivery for Order #$orderId',
+        );
+    final ok = await openExternalUrl(url);
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open WhatsApp.')),
+      );
     }
   }
 

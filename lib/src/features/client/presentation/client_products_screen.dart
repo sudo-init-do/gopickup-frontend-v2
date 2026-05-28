@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../common/styles/app_colors.dart';
+import '../../../common/styles/app_spacing.dart';
+import '../../../common/styles/app_text_styles.dart';
 import '../../../common/constants/app_constants.dart';
 import '../../../models/product_models.dart';
 import '../../../state/product_provider.dart';
@@ -23,6 +25,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
   bool _isInit = true;
   String _selectedCategory = 'All';
   String _searchQuery = '';
+  String _sortBy = 'default'; // default | price_asc | price_desc | name
   late final TextEditingController _searchController;
   Timer? _debounce;
 
@@ -62,6 +65,98 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
     _debounce?.cancel();
     _searchController.dispose();
     super.dispose();
+  }
+
+  List<Product> _applySort(List<Product> products) {
+    if (_sortBy == 'default') return products;
+    final sorted = [...products];
+    switch (_sortBy) {
+      case 'price_asc':
+        sorted.sort((a, b) => a.price.compareTo(b.price));
+        break;
+      case 'price_desc':
+        sorted.sort((a, b) => b.price.compareTo(a.price));
+        break;
+      case 'name':
+        sorted.sort(
+          (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+        );
+        break;
+    }
+    return sorted;
+  }
+
+  void _showSortSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (sheetContext) {
+        Widget tile(String value, String label, IconData icon) {
+          final selected = _sortBy == value;
+          return ListTile(
+            leading: Icon(
+              icon,
+              color: selected ? AppColors.primary : AppColors.textSecondary,
+            ),
+            title: Text(
+              label,
+              style: AppTextStyles.body.copyWith(
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                color: selected ? AppColors.primary : AppColors.textPrimary,
+              ),
+            ),
+            trailing: selected
+                ? const Icon(Icons.check_rounded, color: AppColors.primary)
+                : null,
+            onTap: () {
+              setState(() => _sortBy = value);
+              Navigator.pop(sheetContext);
+            },
+          );
+        }
+
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: AppSpacing.md),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Sort by', style: AppTextStyles.headingMd),
+                    if (_sortBy != 'default')
+                      TextButton(
+                        onPressed: () {
+                          setState(() => _sortBy = 'default');
+                          Navigator.pop(sheetContext);
+                        },
+                        child: const Text('Clear'),
+                      ),
+                  ],
+                ),
+              ),
+              tile('price_asc', 'Price: Low to High', Icons.arrow_upward_rounded),
+              tile('price_desc', 'Price: High to Low', Icons.arrow_downward_rounded),
+              tile('name', 'Name (A–Z)', Icons.sort_by_alpha_rounded),
+              const SizedBox(height: AppSpacing.lg),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -408,17 +503,24 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: const Color(0xFFF3F4F6)),
-                        ),
-                        child: const Icon(
-                          Icons.tune_rounded,
-                          color: Color(0xFF1F2937),
-                          size: 22,
+                      GestureDetector(
+                        onTap: _showSortSheet,
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: _sortBy == 'default'
+                                ? Colors.white
+                                : const Color(0xFF45A225),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: const Color(0xFFF3F4F6)),
+                          ),
+                          child: Icon(
+                            Icons.tune_rounded,
+                            color: _sortBy == 'default'
+                                ? const Color(0xFF1F2937)
+                                : Colors.white,
+                            size: 22,
+                          ),
                         ),
                       ),
                     ],
@@ -452,7 +554,7 @@ class _ClientProductsScreenState extends ConsumerState<ClientProductsScreen> {
                         );
                       }
 
-                      final filteredProducts = productState.products;
+                      final filteredProducts = _applySort(productState.products);
 
                       if (filteredProducts.isEmpty) {
                         return const Center(child: Text('No products found'));

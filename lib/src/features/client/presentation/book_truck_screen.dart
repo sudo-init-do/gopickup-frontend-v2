@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../common/config/app_config.dart';
+import '../../../common/utils/launch_url.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../common/styles/app_spacing.dart';
 import '../../../common/styles/app_text_styles.dart';
@@ -109,11 +109,9 @@ class _BookTruckScreenState extends State<BookTruckScreen> {
     }
 
     setState(() => _submitting = true);
-    final uri = Uri.parse(AppConfig.supportWhatsappUrl(_buildMessage()));
     try {
-      final launched = await canLaunchUrl(uri) &&
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!launched && mounted) {
+      final ok = await openExternalUrl(AppConfig.supportWhatsappUrl(_buildMessage()));
+      if (!ok && mounted) {
         _showSnack('Could not open WhatsApp. Please contact support directly.');
       }
     } finally {
