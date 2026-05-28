@@ -59,8 +59,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             physics: const BouncingScrollPhysics(),
             child: Column(
               children: [
-                // Premium Header
-                _buildPremiumHeader(
+                _buildHeader(
+                  context,
+                  _nameController.text.trim(),
                   user?.email ?? '',
                   profile['profile_picture_url'] ?? profile['store_banner_url'],
                   user?.role ?? 'client',
@@ -100,7 +101,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
                       const SizedBox(height: AppSpacing.xxxl),
 
-                      // Action Buttons
+                      // Primary action: edit / save
                       PrimaryButton(
                         label: _isEditing ? 'Save Changes' : 'Edit Profile',
                         icon: _isEditing ? Icons.check_circle_outline : Icons.edit_note_rounded,
@@ -115,36 +116,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         color: AppColors.primary,
                       ),
 
-                      const SizedBox(height: AppSpacing.lg),
+                      const SizedBox(height: AppSpacing.md),
 
-                      // Log Out (outlined style preserved)
+                      // Secondary action: log out (neutral, not alarming)
                       SizedBox(
                         width: double.infinity,
-                        height: 60,
+                        height: 54,
                         child: OutlinedButton.icon(
                           onPressed: _handleLogout,
-                          icon: const Icon(Icons.logout_rounded, size: 22),
+                          icon: const Icon(Icons.logout_rounded, size: 20),
                           label: Text(
                             'Log Out',
-                            style: AppTextStyles.button.copyWith(fontSize: 17, fontWeight: FontWeight.w800),
+                            style: AppTextStyles.button.copyWith(
+                              color: AppColors.textPrimary,
+                            ),
                           ),
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.destructive,
-                            side: const BorderSide(color: AppColors.destructive, width: 2),
+                            foregroundColor: AppColors.textPrimary,
+                            side: const BorderSide(
+                              color: AppColors.border,
+                              width: 1.5,
+                            ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(AppRadius.lg),
+                              borderRadius: BorderRadius.circular(AppRadius.md),
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.lg),
-                      PrimaryButton(
-                        label: 'Delete Account',
-                        icon: Icons.delete_forever_rounded,
-                        onPressed: _showDeleteAccountConfirmation,
-                        color: AppColors.destructive,
+
+                      const SizedBox(height: AppSpacing.xxl),
+
+                      // Destructive action de-emphasized at the bottom
+                      Center(
+                        child: TextButton.icon(
+                          onPressed: _showDeleteAccountConfirmation,
+                          icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                          label: const Text('Delete Account'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.destructive,
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 60),
+                      const SizedBox(height: AppSpacing.xxl),
                     ],
                   ),
                 ),
@@ -161,48 +174,76 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildPremiumHeader(String email, String? photoUrl, String role) {
+  Widget _buildHeader(
+    BuildContext context,
+    String name,
+    String email,
+    String? photoUrl,
+    String role,
+  ) {
     return Container(
       width: double.infinity,
-      height: 380,
       decoration: const BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(40),
-          bottomRight: Radius.circular(40),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.primary, Color(0xFF4CA634)],
+        ),
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(AppSpacing.xxl),
         ),
       ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Decorative Abstract Shape
-          Positioned(
-            top: -50,
-            right: -50,
-            child: CircleAvatar(
-              radius: 100,
-              backgroundColor: Colors.white.withOpacity(0.05),
-            ),
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            AppSpacing.md,
+            AppSpacing.xl,
+            AppSpacing.xxl,
           ),
-
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
             children: [
-              const SizedBox(height: AppSpacing.xxxl),
-              // Profile Photo
+              // Title row with settings entry point
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Profile',
+                    style: AppTextStyles.headingMd.copyWith(color: Colors.white),
+                  ),
+                  GestureDetector(
+                    onTap: () => context.push('/settings'),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.settings_outlined,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              // Profile photo with camera button
               Stack(
                 children: [
                   Container(
-                    width: 140,
-                    height: 140,
+                    width: 110,
+                    height: 110,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 4),
+                      border: Border.all(color: Colors.white, width: 3),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 10),
+                          color: Colors.black.withOpacity(0.12),
+                          blurRadius: 16,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
@@ -211,24 +252,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ? Image.network(photoUrl, fit: BoxFit.cover)
                           : Container(
                               color: Colors.white.withOpacity(0.2),
-                              child: const Icon(Icons.person, size: 80, color: Colors.white),
+                              child: const Icon(Icons.person, size: 56, color: Colors.white),
                             ),
                     ),
                   ),
                   Positioned(
-                    bottom: 4,
-                    right: 4,
+                    bottom: 0,
+                    right: 0,
                     child: GestureDetector(
                       onTap: _pickAndUploadImage,
                       child: Container(
-                        padding: const EdgeInsets.all(AppSpacing.sm + 2),
+                        padding: const EdgeInsets.all(AppSpacing.sm),
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
                           Icons.camera_alt_rounded,
-                          size: 20,
+                          size: 18,
                           color: AppColors.primary,
                         ),
                       ),
@@ -236,14 +277,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: AppSpacing.xl),
+              const SizedBox(height: AppSpacing.lg),
+              // Name leads the hierarchy; email is secondary
+              Text(
+                name.isEmpty ? 'Set up your profile' : name,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.headingLg.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 email,
-                style: AppTextStyles.headingLg.copyWith(color: Colors.white),
+                style: AppTextStyles.bodySm.copyWith(
+                  color: Colors.white.withOpacity(0.85),
+                ),
               ),
               const SizedBox(height: AppSpacing.md),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs + 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.xs + 2,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -251,7 +307,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 child: Text(
                   role.toUpperCase(),
-                  style: AppTextStyles.bodySm.copyWith(
+                  style: AppTextStyles.caption.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.2,
@@ -260,7 +316,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
