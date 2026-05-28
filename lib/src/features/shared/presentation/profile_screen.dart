@@ -345,8 +345,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         Padding(
           padding: const EdgeInsets.only(left: AppSpacing.xs, bottom: AppSpacing.sm),
           child: Text(
-            label,
-            style: AppTextStyles.label.copyWith(color: AppColors.textSecondary),
+            label.toUpperCase(),
+            style: AppTextStyles.caption.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.5,
+            ),
           ),
         ),
         Container(
@@ -354,24 +358,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             color: isEditing ? AppColors.card : AppColors.backgroundSubtle,
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(
-              color: isEditing ? AppColors.primary.withOpacity(0.3) : AppColors.border,
+              color: isEditing ? AppColors.primary : AppColors.border,
               width: 1.5,
             ),
             boxShadow: isEditing
                 ? [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.05),
-                      blurRadius: 10,
+                      color: AppColors.primary.withOpacity(0.08),
+                      blurRadius: 12,
                       offset: const Offset(0, 4),
                     )
                   ]
                 : null,
           ),
+          // readOnly (not disabled) keeps saved values crisp & full-colour
+          // in view mode instead of greyed out.
           child: TextField(
             controller: controller,
-            enabled: isEditing,
+            readOnly: !isEditing,
             maxLines: maxLines,
-            style: AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w600),
+            cursorColor: AppColors.primary,
+            style: AppTextStyles.body.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
             decoration: InputDecoration(
               prefixIcon: Icon(
                 icon,
@@ -379,9 +390,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 size: 22,
               ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
-              hintText: 'Enter $label',
-              hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.lg,
+              ),
+              hintText: 'Enter ${label.toLowerCase()}',
+              hintStyle: AppTextStyles.body.copyWith(
+                color: AppColors.textTertiary,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ),
