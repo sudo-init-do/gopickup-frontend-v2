@@ -174,6 +174,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  Widget _avatarFallback() {
+    return Container(
+      width: 110,
+      height: 110,
+      color: Colors.white.withOpacity(0.2),
+      child: const Icon(Icons.person, size: 56, color: Colors.white),
+    );
+  }
+
   Widget _buildHeader(
     BuildContext context,
     String name,
@@ -249,11 +258,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     child: ClipOval(
                       child: photoUrl != null
-                          ? Image.network(photoUrl, fit: BoxFit.cover)
-                          : Container(
-                              color: Colors.white.withOpacity(0.2),
-                              child: const Icon(Icons.person, size: 56, color: Colors.white),
-                            ),
+                          ? Image.network(
+                              photoUrl,
+                              fit: BoxFit.cover,
+                              width: 110,
+                              height: 110,
+                              errorBuilder: (_, __, ___) => _avatarFallback(),
+                            )
+                          : _avatarFallback(),
                     ),
                   ),
                   Positioned(

@@ -623,6 +623,15 @@ class ProductCard extends ConsumerWidget {
   final Product product;
   const ProductCard({super.key, required this.product});
 
+  Widget _imagePlaceholder() {
+    return Container(
+      color: const Color(0xFFF3F4F6),
+      child: Center(
+        child: Icon(Icons.image_outlined, size: 40, color: Colors.grey[300]),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cart = ref.watch(cartProvider);
@@ -649,29 +658,25 @@ class ProductCard extends ConsumerWidget {
               // Image Area
               Expanded(
                 flex: 4,
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF3F4F6),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24),
-                    ),
-                    image: product.imageUrl.isNotEmpty
-                        ? DecorationImage(
-                            image: NetworkImage(product.imageUrl),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(24),
                   ),
-                  child: product.imageUrl.isEmpty
-                      ? Center(
-                          child: Icon(
-                            Icons.image_outlined,
-                            size: 40,
-                            color: Colors.grey[300],
-                          ),
-                        )
-                      : null,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: product.imageUrl.isNotEmpty
+                        ? Image.network(
+                            product.imageUrl,
+                            fit: BoxFit.cover,
+                            // Gracefully fall back to a placeholder when the
+                            // image 404s (server uploads missing) instead of
+                            // throwing an uncaught error.
+                            errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                            loadingBuilder: (_, child, progress) =>
+                                progress == null ? child : _imagePlaceholder(),
+                          )
+                        : _imagePlaceholder(),
+                  ),
                 ),
               ),
               // Content Area
