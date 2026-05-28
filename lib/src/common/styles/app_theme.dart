@@ -32,6 +32,26 @@ class AppTheme {
           borderRadius: BorderRadius.circular(24.0),
         ),
       ),
+      // Consistent, polished toast/prompt styling for every SnackBar in the
+      // app: floating, rounded, dismissible, with semibold white text. Call
+      // sites still set their own backgroundColor (success/error/primary), so
+      // semantic colour is preserved.
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        elevation: 6,
+        backgroundColor: AppColors.textPrimary,
+        contentTextStyle: AppTextStyles.body.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+        ),
+        actionTextColor: Colors.white,
+        showCloseIcon: true,
+        closeIconColor: Colors.white,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14.0),
+        ),
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           elevation: 2.0,
