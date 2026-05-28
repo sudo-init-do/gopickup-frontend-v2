@@ -26,8 +26,6 @@ class WebSocketService {
       StreamController<Map<String, dynamic>>.broadcast();
   final _driverMovedController =
       StreamController<Map<String, dynamic>>.broadcast();
-  final _newMessageController =
-      StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get onOrderStatusUpdated =>
       _orderStatusController.stream;
@@ -36,7 +34,6 @@ class WebSocketService {
       _bidAcceptedController.stream;
   Stream<Map<String, dynamic>> get onDriverMoved =>
       _driverMovedController.stream;
-  Stream<Map<String, dynamic>> get onNewMessage => _newMessageController.stream;
 
   void connect(String token) {
     if (_channel != null) return;
@@ -119,9 +116,6 @@ class WebSocketService {
         case 'driver_moved':
           _driverMovedController.add(payload);
           break;
-        case 'new_message':
-          _newMessageController.add(payload);
-          break;
         case 'notification':
           // Handle general notification event if needed
           break;
@@ -151,14 +145,6 @@ class WebSocketService {
     _sendEvent('leave_order_room', {'order_id': orderId});
   }
 
-  void joinChatRoom(String chatId) {
-    _sendEvent('join_chat_room', {'chat_id': chatId});
-  }
-
-  void sendChatMessage(String chatId, String text) {
-    _sendEvent('chat_message', {'chat_id': chatId, 'text': text});
-  }
-
   void sendDriverLocationUpdate(String orderId, double lat, double lng) {
     _sendEvent('driver_location_update', {
       'order_id': orderId,
@@ -173,6 +159,5 @@ class WebSocketService {
     _newBidController.close();
     _bidAcceptedController.close();
     _driverMovedController.close();
-    _newMessageController.close();
   }
 }

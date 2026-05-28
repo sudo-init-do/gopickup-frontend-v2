@@ -20,14 +20,6 @@ class NotificationsScreen extends StatelessWidget {
         'isRead': false,
       },
       {
-        'title': 'New Message',
-        'message':
-            'BuildMart Supplies: "Hello, we have confirmed your order and it is being processed."',
-        'time': DateTime.now().subtract(const Duration(hours: 5)),
-        'type': 'chat',
-        'isRead': false,
-      },
-      {
         'title': 'New Bid Received',
         'message':
             'A driver has submitted a bid of ₦120.00 for your delivery job.',
@@ -129,11 +121,6 @@ class NotificationsScreen extends StatelessWidget {
         icon = Icons.inventory_2_outlined;
         iconColor = AppColors.info;
         bgColor = AppColors.info.withOpacity(0.1);
-        break;
-      case 'chat':
-        icon = Icons.chat_bubble_outline_rounded;
-        iconColor = AppColors.success;
-        bgColor = AppColors.success.withOpacity(0.1);
         break;
       case 'bid':
         icon = Icons.gavel_rounded;

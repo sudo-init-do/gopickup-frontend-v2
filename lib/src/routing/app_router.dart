@@ -32,14 +32,11 @@ import '../features/vendor/presentation/vendor_orders_screen.dart';
 import '../features/vendor/presentation/vendor_wallet_screen.dart';
 import '../features/vendor/presentation/vendor_order_detail_screen.dart';
 import '../features/vendor/presentation/add_product_screen.dart';
-import '../features/shared/chat/chat_list_screen.dart';
-import '../features/shared/chat/chat_screen.dart';
 import '../features/shared/presentation/scaffold_with_nav_bar.dart';
 import '../features/shared/presentation/notifications_screen.dart';
 import '../features/shared/presentation/settings_screen.dart';
 import '../features/vendor/presentation/vendor_storefront_screen.dart';
 import '../models/order_models.dart';
-import '../models/chat_models.dart';
 
 import '../features/auth/presentation/admin_login_screen.dart';
 import '../features/admin/presentation/admin_dashboard_screen.dart';
@@ -197,15 +194,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: '/chat/:id',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
-          final chat = state.extra as Conversation;
-          return ChatScreen(chat: chat);
-        },
-      ),
-
-      GoRoute(
         path: '/client/cart',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const ClientCartScreen(),
@@ -256,12 +244,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 route: '/client/orders',
               ),
               NavigationItem(
-                unselectedIcon: Icons.chat_bubble_outline_rounded,
-                selectedIcon: Icons.chat_bubble_rounded,
-                label: 'Chat',
-                route: '/client/chat',
-              ),
-              NavigationItem(
                 unselectedIcon: Icons.account_balance_wallet_outlined,
                 selectedIcon: Icons.account_balance_wallet_rounded,
                 label: 'Wallet',
@@ -304,10 +286,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
           GoRoute(
-            path: '/client/chat',
-            builder: (context, state) => const ChatListScreen(),
-          ),
-          GoRoute(
             path: '/client/wallet',
             builder: (context, state) => const ClientWalletScreen(),
           ),
@@ -347,12 +325,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 route: '/driver/earnings',
               ),
               NavigationItem(
-                unselectedIcon: Icons.chat_bubble_outline_rounded,
-                selectedIcon: Icons.chat_bubble_rounded,
-                label: 'Chat',
-                route: '/driver/chat',
-              ),
-              NavigationItem(
                 unselectedIcon: Icons.person_outline_rounded,
                 selectedIcon: Icons.person_rounded,
                 label: 'Profile',
@@ -374,10 +346,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/driver/earnings',
             builder: (context, state) => const DriverEarningsScreen(),
-          ),
-          GoRoute(
-            path: '/driver/chat',
-            builder: (context, state) => const ChatListScreen(),
           ),
           GoRoute(
             path: '/driver/profile',
@@ -411,12 +379,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 route: '/vendor/orders',
               ),
               NavigationItem(
-                unselectedIcon: Icons.chat_bubble_outline_rounded,
-                selectedIcon: Icons.chat_bubble_rounded,
-                label: 'Chat',
-                route: '/vendor/chat',
-              ),
-              NavigationItem(
                 unselectedIcon: Icons.account_balance_wallet_outlined,
                 selectedIcon: Icons.account_balance_wallet_rounded,
                 label: 'Wallet',
@@ -447,10 +409,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const AddProductScreen(),
               ),
             ],
-          ),
-          GoRoute(
-            path: '/vendor/chat',
-            builder: (context, state) => const ChatListScreen(),
           ),
           GoRoute(
             path: '/vendor/orders',
