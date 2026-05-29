@@ -76,4 +76,12 @@ class OrdersApi {
       throw Exception(e.response?.data['error'] ?? 'Failed to report payment');
     }
   }
+
+  Future<void> deleteOrder(String id) async {
+    try {
+      await ApiClient.dio.delete('orders/$id');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to delete order');
+    }
+  }
 }

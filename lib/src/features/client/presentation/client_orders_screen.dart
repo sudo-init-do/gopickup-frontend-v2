@@ -125,6 +125,69 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
     );
   }
 
+  Widget _buildOrderMenu(BuildContext context, Order order) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert_rounded,
+          color: AppColors.textTertiary, size: 20),
+      padding: EdgeInsets.zero,
+      onSelected: (value) {
+        if (value == 'delete') _confirmAndDelete(context, order);
+      },
+      itemBuilder: (_) => const [
+        PopupMenuItem(
+          value: 'delete',
+          child: Row(
+            children: [
+              Icon(Icons.delete_outline_rounded,
+                  color: AppColors.destructive, size: 20),
+              SizedBox(width: AppSpacing.sm),
+              Text('Delete order'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _confirmAndDelete(BuildContext context, Order order) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete order?'),
+        content: const Text(
+          'This permanently removes the order from your dashboard. This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.destructive),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final ok = await ref.read(orderProvider.notifier).deleteOrder(order.id);
+    if (!context.mounted) return;
+    if (ok) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Order deleted')));
+    } else {
+      final err = ref.read(orderProvider).error ?? 'Could not delete order';
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+            SnackBar(content: Text(err.replaceAll('Exception: ', ''))));
+    }
+  }
+
   Widget _buildOrderCard(BuildContext context, Order order) {
     Color badgeColor;
     Color badgeTextColor;
@@ -208,23 +271,29 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                               ),
                             ],
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.lg,
-                              vertical: AppSpacing.sm,
-                            ),
-                            decoration: BoxDecoration(
-                              color: badgeColor,
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.pill),
-                            ),
-                            child: Text(
-                              statusText,
-                              style: AppTextStyles.bodySm.copyWith(
-                                color: badgeTextColor,
-                                fontWeight: FontWeight.w800,
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.lg,
+                                  vertical: AppSpacing.sm,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: badgeColor,
+                                  borderRadius:
+                                      BorderRadius.circular(AppRadius.pill),
+                                ),
+                                child: Text(
+                                  statusText,
+                                  style: AppTextStyles.bodySm.copyWith(
+                                    color: badgeTextColor,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                               ),
-                            ),
+                              _buildOrderMenu(context, order),
+                            ],
                           ),
                         ],
                       ),

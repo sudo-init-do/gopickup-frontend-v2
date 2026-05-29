@@ -1,27 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../auth/data/auth_repository.dart';
+import '../../../state/auth_provider.dart';
 import '../../../common/config/app_config.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../common/styles/app_spacing.dart';
 import '../../../common/styles/app_text_styles.dart';
+import '../../../common/utils/launch_url.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
-  Future<void> _launchWhatsApp() async {
-    final Uri url = Uri.parse('whatsapp://send?phone=${AppConfig.supportPhone}');
-    if (!await launchUrl(url)) {
-      // Fallback to web link if app not installed
-      final Uri webUrl = Uri.parse('https://wa.me/${AppConfig.supportPhone}');
-      await launchUrl(webUrl, mode: LaunchMode.externalApplication);
+  @override
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  bool _pushNotifications = true;
+  bool _locationServices = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrefs();
+  }
+
+  Future<void> _loadPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _pushNotifications = prefs.getBool('pref_push_notifications') ?? true;
+      _locationServices = prefs.getBool('pref_location_services') ?? true;
+    });
+  }
+
+  Future<void> _setPref(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
+  }
+
+  void _toast(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _editProfile() {
+    final role = ref.read(authProvider).user?.role;
+    if (role == 'driver' || role == 'vendor' || role == 'client') {
+      context.go('/$role/profile');
+    } else {
+      context.pop();
     }
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -40,17 +76,20 @@ class SettingsScreen extends ConsumerWidget {
                     Icons.person_outline_rounded,
                     'Edit Profile',
                     'Change your name and contact info',
+                    onTap: _editProfile,
                   ),
                   _buildSettingItem(
                     Icons.lock_outline_rounded,
                     'Change Password',
-                    'Update your login credentials',
+                    'Reset via a code sent to your email',
+                    onTap: () => context.push('/forgot-password'),
                   ),
                   _buildSettingItem(
                     Icons.language_rounded,
                     'Language',
                     'English (United States)',
                     suffix: 'English',
+                    onTap: () => _toast('More languages are coming soon.'),
                   ),
 
                   const SizedBox(height: AppSpacing.xl),
@@ -58,17 +97,29 @@ class SettingsScreen extends ConsumerWidget {
                   _buildToggleItem(
                     Icons.notifications_none_rounded,
                     'Push Notifications',
-                    true,
+                    _pushNotifications,
+                    (val) {
+                      setState(() => _pushNotifications = val);
+                      _setPref('pref_push_notifications', val);
+                      _toast(val
+                          ? 'Push notifications enabled'
+                          : 'Push notifications disabled');
+                    },
                   ),
                   _buildToggleItem(
                     Icons.dark_mode_outlined,
                     'Dark Mode',
                     false,
+                    (_) => _toast('Dark mode is coming soon.'),
                   ),
                   _buildToggleItem(
                     Icons.location_on_outlined,
                     'Location Services',
-                    true,
+                    _locationServices,
+                    (val) {
+                      setState(() => _locationServices = val);
+                      _setPref('pref_location_services', val);
+                    },
                   ),
 
                   const SizedBox(height: AppSpacing.xl),
@@ -77,7 +128,7 @@ class SettingsScreen extends ConsumerWidget {
                     Icons.help_outline_rounded,
                     'Help Center',
                     'FAQs and customer support',
-                    onTap: _launchWhatsApp,
+                    onTap: () => openExternalUrl(AppConfig.supportWhatsappUrl()),
                   ),
                   _buildSettingItem(
                     Icons.shield_outlined,
@@ -95,7 +146,12 @@ class SettingsScreen extends ConsumerWidget {
                     Icons.info_outline_rounded,
                     'About App',
                     'Version 1.0.0',
-                    onTap: () {},
+                    onTap: () => showAboutDialog(
+                      context: context,
+                      applicationName: 'GoPickup',
+                      applicationVersion: '1.0.0',
+                      applicationLegalese: '© 2026 GoPickup',
+                    ),
                   ),
 
                   const SizedBox(height: AppSpacing.xxl),
@@ -216,6 +272,7 @@ class SettingsScreen extends ConsumerWidget {
     IconData icon,
     String title,
     bool value,
+    ValueChanged<bool> onChanged,
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -237,7 +294,7 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(title, style: AppTextStyles.titleMd),
         trailing: Switch.adaptive(
           value: value,
-          onChanged: (val) {},
+          onChanged: onChanged,
           activeTrackColor: AppColors.primary,
         ),
       ),
@@ -280,7 +337,7 @@ class SettingsScreen extends ConsumerWidget {
       if (context.mounted) {
         Navigator.of(context).pop(); // dismiss loading indicator
         if (success) {
-          context.go('/login');
+          context.go('/');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Failed to delete account. Please try again later.')),

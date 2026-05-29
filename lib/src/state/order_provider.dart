@@ -114,6 +114,20 @@ class OrderNotifier extends Notifier<OrderState> {
     }
   }
 
+  Future<bool> deleteOrder(String orderId) async {
+    try {
+      await _api.deleteOrder(orderId);
+      // Remove from local state so the dashboard updates immediately.
+      state = state.copyWith(
+        orders: state.orders.where((o) => o.id != orderId).toList(),
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+      return false;
+    }
+  }
+
   Future<bool> reportPaymentMade(String orderId) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
