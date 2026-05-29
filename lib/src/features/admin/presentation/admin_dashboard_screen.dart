@@ -250,10 +250,17 @@ class _StatCard extends StatelessWidget {
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text('$value', style: AppTextStyles.headingLg),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text('$value', style: AppTextStyles.headingLg),
+              ),
               Text(
                 title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.caption.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textSecondary,

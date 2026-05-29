@@ -21,6 +21,20 @@ class GoPickupApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       routerConfig: goRouter,
+      // Clamp OS text scaling so very large accessibility font settings can't
+      // overflow layouts on small devices (a common cause of broken UI).
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        return MediaQuery(
+          data: mq.copyWith(
+            textScaler: mq.textScaler.clamp(
+              minScaleFactor: 0.85,
+              maxScaleFactor: 1.15,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
   }
 }
