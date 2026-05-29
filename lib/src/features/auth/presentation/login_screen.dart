@@ -7,7 +7,7 @@ import '../../../common/styles/app_spacing.dart';
 import '../../../common/styles/app_text_styles.dart';
 import '../../../common/widgets/primary_button.dart';
 import '../../../state/auth_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../../../common/utils/launch_url.dart';
 import '../../../common/config/app_config.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -28,11 +28,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
   bool _isLoading = false;
 
   Future<void> _launchSupport() async {
-    final Uri url = Uri.parse('whatsapp://send?phone=${AppConfig.supportPhone}');
-    if (!await launchUrl(url)) {
-      final Uri webUrl = Uri.parse('https://wa.me/${AppConfig.supportPhone}');
-      await launchUrl(webUrl, mode: LaunchMode.externalApplication);
-    }
+    await openExternalUrl(AppConfig.supportWhatsappUrl());
+  }
+
+  InputDecoration _fieldDecoration({
+    required String hint,
+    required IconData icon,
+    Widget? suffix,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
+      prefixIcon: Icon(icon, color: AppColors.textTertiary),
+      suffixIcon: suffix,
+      filled: true,
+      fillColor: AppColors.backgroundSubtle,
+      contentPadding: const EdgeInsets.symmetric(
+        vertical: AppSpacing.lg,
+        horizontal: AppSpacing.md,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+      ),
+    );
   }
 
   @override
@@ -152,25 +179,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: AppSpacing.xxxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Logo
                 SizedBox(
-                  width: 240,
-                  height: 100,
+                  width: 200,
+                  height: 84,
                   child: Image.asset(
                     'assets/images/app_logo.png',
                     fit: BoxFit.fitHeight,
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xl),
+                const SizedBox(height: AppSpacing.xxl),
 
-                // Subtitle
+                // Welcome heading
                 Text(
-                  'Sign in to your account',
+                  'Welcome back',
+                  style: AppTextStyles.displayLg.copyWith(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'Sign in to continue to GoPickup',
                   style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: AppSpacing.xxxl),
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Email Field
                 TextField(
@@ -178,26 +213,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                   enabled: !_isLoading,
                   onChanged: (_) => _validateForm(),
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    hintText: 'Email address',
-                    hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
-                    prefixIcon: const Icon(
-                      Icons.mail_outline,
-                      color: AppColors.textTertiary,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      borderSide: const BorderSide(color: AppColors.border),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      borderSide: const BorderSide(color: AppColors.border),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      borderSide: const BorderSide(color: AppColors.primary),
-                    ),
+                  decoration: _fieldDecoration(
+                    hint: 'Email address',
+                    icon: Icons.mail_outline,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
@@ -208,14 +226,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                   enabled: !_isLoading,
                   onChanged: (_) => _validateForm(),
                   obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    hintText: 'Password',
-                    hintStyle: AppTextStyles.body.copyWith(color: AppColors.textTertiary),
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: AppColors.textTertiary,
-                    ),
-                    suffixIcon: IconButton(
+                  decoration: _fieldDecoration(
+                    hint: 'Password',
+                    icon: Icons.lock_outline,
+                    suffix: IconButton(
                       icon: Icon(
                         _obscurePassword
                             ? Icons.visibility_outlined
@@ -227,19 +241,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                           _obscurePassword = !_obscurePassword;
                         });
                       },
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      borderSide: const BorderSide(color: AppColors.border),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      borderSide: const BorderSide(color: AppColors.border),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      borderSide: const BorderSide(color: AppColors.primary),
                     ),
                   ),
                 ),
@@ -350,14 +351,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                       decoration: TextDecoration.underline,
                       decorationColor: AppColors.borderStrong,
                     ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                TextButton(
-                  onPressed: _isLoading ? null : () => context.go('/admin/login'),
-                  child: Text(
-                    'Admin Portal',
-                    style: AppTextStyles.caption.copyWith(color: AppColors.textDisabled),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
