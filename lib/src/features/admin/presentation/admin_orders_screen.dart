@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
+import '../../../common/utils/launch_url.dart';
 import '../../../models/order_models.dart';
 import 'admin_providers.dart';
 import '../../../common/styles/app_colors.dart';
@@ -707,10 +707,7 @@ class _FocusedView extends StatelessWidget {
                               ),
                               if (order.clientPhone != null)
                                 GestureDetector(
-                                  onTap: () async {
-                                    final uri = Uri.parse('tel:${order.clientPhone}');
-                                    if (await canLaunchUrl(uri)) launchUrl(uri);
-                                  },
+                                  onTap: () => openExternalUrl('tel:${order.clientPhone}'),
                                   child: Container(
                                     padding: const EdgeInsets.all(AppSpacing.sm),
                                     decoration: BoxDecoration(
@@ -766,10 +763,7 @@ class _FocusedView extends StatelessWidget {
                               ),
                               if (order.vendorPhone != null)
                                 GestureDetector(
-                                  onTap: () async {
-                                    final uri = Uri.parse('tel:${order.vendorPhone}');
-                                    if (await canLaunchUrl(uri)) launchUrl(uri);
-                                  },
+                                  onTap: () => openExternalUrl('tel:${order.vendorPhone}'),
                                   child: Container(
                                     padding: const EdgeInsets.all(AppSpacing.sm),
                                     decoration: BoxDecoration(
