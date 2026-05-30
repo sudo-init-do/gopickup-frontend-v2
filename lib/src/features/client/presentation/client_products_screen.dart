@@ -690,15 +690,24 @@ class ProductCard extends ConsumerWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              product.vendorName,
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
+                            child: GestureDetector(
+                              onTap: product.vendorId.isEmpty
+                                  ? null
+                                  : () => context.push(
+                                      '/client/vendors/${product.vendorId}'),
+                              child: Text(
+                                product.vendorName,
+                                style: TextStyle(
+                                  color: const Color(0xFF45A225),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor:
+                                      Colors.grey[400],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
