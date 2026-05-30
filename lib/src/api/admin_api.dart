@@ -105,6 +105,14 @@ class AdminApi {
     }
   }
 
+  Future<void> deleteOrder(String orderId) async {
+    try {
+      await ApiClient.dio.delete('admin/orders/$orderId');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to delete order');
+    }
+  }
+
   Future<void> verifyPayment({
     required String orderId,
     required double agreedPrice,

@@ -220,6 +220,14 @@ class _AdminOrdersScreenState extends ConsumerState<AdminOrdersScreen> {
     );
   }
 
+  String _signupDisplayName(Map<String, dynamic> user) {
+    final name = (user['full_name'] as String?)?.trim();
+    if (name != null && name.isNotEmpty) return name;
+    final email = (user['email'] as String?) ?? '';
+    if (email.contains('@')) return email.split('@').first;
+    return 'New user';
+  }
+
   Widget _buildRecentSignups(BuildContext context) {
     final recentUsersAsync = ref.watch(adminRecentUsersProvider);
 
@@ -250,7 +258,7 @@ class _AdminOrdersScreenState extends ConsumerState<AdminOrdersScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        user['full_name'] ?? 'Unknown User',
+                        _signupDisplayName(user),
                         style: AppTextStyles.titleMd,
                       ),
                       Container(
@@ -333,14 +341,57 @@ class _AdminOrdersScreenState extends ConsumerState<AdminOrdersScreen> {
   }
 }
 
-class _OrderCard extends StatelessWidget {
+class _OrderCard extends ConsumerWidget {
   final Order order;
   final VoidCallback onTap;
 
   const _OrderCard({required this.order, required this.onTap});
 
+  Future<void> _confirmAndDelete(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete order?'),
+        content: Text(
+          'Permanently delete order ORD-${order.id.substring(0, 8).toUpperCase()}? '
+          'This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.destructive),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await ref.read(adminApiProvider).deleteOrder(order.id);
+      ref.invalidate(adminOrdersProvider);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(const SnackBar(content: Text('Order deleted')));
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+              SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))));
+      }
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Generate type based on items count for UI matching
     final isLogistics = order.items.isEmpty || order.vendorId.isEmpty;
 
@@ -445,6 +496,27 @@ class _OrderCard extends StatelessWidget {
                     Text(
                       '₦${(order.totalProductAmount + (order.agreedDeliveryFee ?? 0)).toStringAsFixed(2)}',
                       style: AppTextStyles.label,
+                    ),
+                    PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_vert_rounded,
+                          color: AppColors.textTertiary, size: 20),
+                      padding: EdgeInsets.zero,
+                      onSelected: (v) {
+                        if (v == 'delete') _confirmAndDelete(context, ref);
+                      },
+                      itemBuilder: (_) => const [
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete_outline_rounded,
+                                  color: AppColors.destructive, size: 20),
+                              SizedBox(width: AppSpacing.sm),
+                              Text('Delete order'),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
