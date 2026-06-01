@@ -39,9 +39,20 @@ class AuthApi {
       );
       return response.data; // Expected { "token": "jwt...", "user": { ... } }
     } on DioException catch (e) {
-      final msg = (e.response?.data is Map) ? e.response?.data['error'] : (e.response?.data?.toString() ?? 'Login failed');
-      throw Exception(msg);
+      throw Exception(_authError(e, 'Login failed'));
     }
+  }
+
+  // Builds a user-facing error from a DioException. When there is no HTTP
+  // response at all (timeout/DNS/CORS/offline) we surface a network message
+  // instead of a misleading generic "Login failed".
+  String _authError(DioException e, String fallback) {
+    if (e.response == null) {
+      return 'Network issue, please check your connection.';
+    }
+    final data = e.response?.data;
+    if (data is Map && data['error'] != null) return data['error'].toString();
+    return data?.toString() ?? fallback;
   }
 
   Future<Map<String, dynamic>> adminLogin(String email, String password) async {
@@ -52,7 +63,7 @@ class AuthApi {
       );
       return response.data;
     } on DioException catch (e) {
-      throw Exception(e.response?.data['error'] ?? 'Admin login failed');
+      throw Exception(_authError(e, 'Admin login failed'));
     }
   }
 

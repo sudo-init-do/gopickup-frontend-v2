@@ -202,7 +202,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'Sign in to continue to GoPickup',
+                  'Sign in to continue',
                   style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: AppSpacing.xxl),
