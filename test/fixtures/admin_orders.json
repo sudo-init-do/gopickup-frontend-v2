@@ -1,0 +1,114 @@
+[
+  {
+    "id": "16da1b60-39bc-4036-aea5-791a0ad5ae68",
+    "client_id": "a4266943-b655-4483-9a8e-8648bb67729a",
+    "vendor_id": "98e65b71-e2ff-40b9-8bae-51e729140a84",
+    "driver_id": null,
+    "total_product_amount": 11000,
+    "agreed_price": null,
+    "agreed_delivery_fee": null,
+    "payment_method": "whatsapp",
+    "pickup_address": "Sample pickup",
+    "delivery_address": "12 Example Street, Garki, Abuja",
+    "delivery_lat": null,
+    "delivery_lng": null,
+    "status": "awaiting_payment",
+    "client": {
+      "email": "sample.client@example.com",
+      "client_profile": {
+        "full_name": "Sample Client",
+        "phone_number": "08000000001"
+      }
+    },
+    "vendor": {
+      "store_name": "Sample Store Ltd",
+      "phone_number": "08000000002"
+    },
+    "items": [
+      {
+        "id": "b0b85db2-146a-43a0-844d-1eecebda92d4",
+        "product_id": "1be91e55-72fc-4c9f-9c30-020c4d6c61cd",
+        "name": "Iron Rods",
+        "price": 11000,
+        "quantity": 1
+      }
+    ],
+    "created_at": "2026-06-02T08:57:22.502835Z"
+  },
+  {
+    "id": "27eb2c71-4acd-5147-bfb6-8a2b1cef6f79",
+    "client_id": "b5377a54-c766-5594-ab9f-9759cc788a0b",
+    "vendor_id": "0a76ec82-f300-51ca-9cbf-62830a251f95",
+    "driver_id": "8311e946-fd86-43d8-9970-983595c009a6",
+    "total_product_amount": 125000,
+    "agreed_price": 125000,
+    "agreed_delivery_fee": 25000,
+    "payment_method": "whatsapp",
+    "pickup_address": "Another pickup",
+    "delivery_address": "A very long delivery address that should ellipsize, Plot 4500, Off Some Extremely Long Road Name, Wuse 2, Abuja, FCT, Nigeria",
+    "delivery_lat": null,
+    "delivery_lng": null,
+    "status": "assigned",
+    "client": {
+      "email": "an.extremely.long.client.email.address.for.overflow.testing@verylongdomainname.example.com",
+      "client_profile": {
+        "full_name": "Maximilian Alexander Christopher Wellington-Featherstonehaugh III",
+        "phone_number": "08000000003"
+      }
+    },
+    "vendor": {
+      "store_name": "KelvinLinks Global Limited & Sons Enterprises Worldwide",
+      "phone_number": "08000000004"
+    },
+    "items": [
+      { "product_id": "p1", "name": "DN paint", "price": 31000, "quantity": 2 }
+    ],
+    "created_at": "2026-06-01T10:00:00.000000Z"
+  },
+  {
+    "id": "38fc3d82-5bde-6258-c0c7-9b3c2dfa7080",
+    "client_id": "c6488b65-d877-66a5-bca0-086a0dd899b1",
+    "vendor_id": "1b87fd93-0411-62db-adc0-739410362a06",
+    "driver_id": null,
+    "total_product_amount": 5000,
+    "agreed_price": null,
+    "agreed_delivery_fee": null,
+    "payment_method": "whatsapp",
+    "pickup_address": "P3",
+    "delivery_address": "Short addr",
+    "delivery_lat": null,
+    "delivery_lng": null,
+    "status": "pending",
+    "client": null,
+    "vendor": null,
+    "items": [],
+    "created_at": "2026-05-30T14:30:00.000000Z"
+  },
+  {
+    "id": "49ad4e93-6cef-7369-d1d8-0c4d3e0b8191",
+    "client_id": "d7599c76-e988-77b6-cdb1-197b1ee900c2",
+    "vendor_id": "2c98fea4-1522-73ec-bed1-840521473b17",
+    "driver_id": "8311e946-fd86-43d8-9970-983595c009a6",
+    "total_product_amount": 80000,
+    "agreed_price": 80000,
+    "agreed_delivery_fee": 10000,
+    "payment_method": "whatsapp",
+    "pickup_address": "P4",
+    "delivery_address": "Lokogoma District, Abuja",
+    "delivery_lat": null,
+    "delivery_lng": null,
+    "status": "delivered",
+    "client": {
+      "email": "third.client@example.com",
+      "client_profile": { "full_name": "Third Client", "phone_number": "08000000005" }
+    },
+    "vendor": {
+      "store_name": "Sam Apex Steel Company Ltd",
+      "phone_number": "08000000006"
+    },
+    "items": [
+      { "product_id": "p2", "name": "Cement", "price": 8000, "quantity": 10 }
+    ],
+    "created_at": "2026-05-28T09:15:00.000000Z"
+  }
+]

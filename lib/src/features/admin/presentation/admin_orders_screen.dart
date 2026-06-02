@@ -149,17 +149,28 @@ class _AdminOrdersScreenState extends ConsumerState<AdminOrdersScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'LIVE FEED',
-                  style: AppTextStyles.bodySm.copyWith(
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+                Flexible(
+                  child: Text(
+                    'LIVE FEED',
+                    style: AppTextStyles.bodySm.copyWith(
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                ordersAsync.whenData((orders) => Text(
-                  '${orders.length} Active Transmissions',
-                  style: AppTextStyles.caption,
-                )).value ?? const SizedBox(),
+                const SizedBox(width: AppSpacing.md),
+                Flexible(
+                  child: ordersAsync.whenData((orders) => Text(
+                        '${orders.length} Active Transmissions',
+                        style: AppTextStyles.caption,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                      )).value ??
+                      const SizedBox(),
+                ),
               ],
             ),
           ),
@@ -451,28 +462,41 @@ class _OrderCard extends ConsumerWidget {
                       const SizedBox(height: AppSpacing.xs),
                       Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.backgroundSubtle,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              isLogistics ? 'Logistics' : 'Marketplace',
-                              style: AppTextStyles.caption,
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.backgroundSubtle,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                isLogistics ? 'Logistics' : 'Marketplace',
+                                style: AppTextStyles.caption,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
                           const SizedBox(width: AppSpacing.sm),
-                          const Text('Placed recent', style: AppTextStyles.caption),
+                          const Flexible(
+                            child: Text(
+                              'Placed recent',
+                              style: AppTextStyles.caption,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                Column(
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 120),
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
@@ -496,6 +520,8 @@ class _OrderCard extends ConsumerWidget {
                     Text(
                       '₦${(order.totalProductAmount + (order.agreedDeliveryFee ?? 0)).toStringAsFixed(2)}',
                       style: AppTextStyles.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     PopupMenuButton<String>(
                       icon: const Icon(Icons.more_vert_rounded,
@@ -520,25 +546,33 @@ class _OrderCard extends ConsumerWidget {
                     ),
                   ],
                 ),
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.lg),
             const Divider(height: 1, color: AppColors.border),
             const SizedBox(height: AppSpacing.md),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.person, size: 14, color: AppColors.textTertiary),
-                    const SizedBox(width: AppSpacing.xs),
-                    Text(
-                      order.clientName ?? order.clientEmail ?? order.shortClientId,
-                      style: AppTextStyles.bodySm,
-                    ),
-                  ],
+                Expanded(
+                  child: Row(
+                    children: [
+                      const Icon(Icons.person, size: 14, color: AppColors.textTertiary),
+                      const SizedBox(width: AppSpacing.xs),
+                      Expanded(
+                        child: Text(
+                          order.clientName ?? order.clientEmail ?? order.shortClientId,
+                          style: AppTextStyles.bodySm,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: AppSpacing.sm),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.location_on, size: 14, color: AppColors.textTertiary),
                     const SizedBox(width: AppSpacing.xs),
