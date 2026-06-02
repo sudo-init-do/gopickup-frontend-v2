@@ -12,6 +12,10 @@ class ErrorHandler {
     if (msg.toLowerCase().contains('not verified')) {
       return 'Account not verified. Please check your email for OTP.';
     }
+    if (msg.toLowerCase().contains('forbidden') ||
+        msg.toLowerCase().contains('insufficient permissions')) {
+      return "This account can't place orders. Please sign in with a customer account and try again.";
+    }
     if (msg.toLowerCase().contains('user already exists')) {
       return 'An account with this email already exists.';
     }

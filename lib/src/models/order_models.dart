@@ -89,6 +89,12 @@ class Order {
 
   OrderVendor? get vendor => vendorStoreName != null ? OrderVendor(id: vendorId, storeName: vendorStoreName!) : OrderVendor(id: vendorId, storeName: 'GoPickup Store');
 
+  // Short, display-safe id fragments. Guards against RangeError when an id is
+  // missing/short (Order.fromJson defaults absent ids to '').
+  String get shortId => id.length >= 8 ? id.substring(0, 8) : id;
+  String get shortClientId => clientId.length >= 8 ? clientId.substring(0, 8) : clientId;
+  String get shortVendorId => vendorId.length >= 8 ? vendorId.substring(0, 8) : vendorId;
+
   Order({
     required this.id,
     required this.clientId,

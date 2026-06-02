@@ -468,7 +468,7 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
                               ),
                               borderRadius: BorderRadius.circular(AppRadius.xl),
                               child: _RecentOrderCard(
-                                title: 'Order ${order.id.substring(0, 8)}',
+                                title: 'Order ${order.shortId}',
                                 status: order.status.toUpperCase(),
                                 items: order.items.length,
                                 time: 'Recently',

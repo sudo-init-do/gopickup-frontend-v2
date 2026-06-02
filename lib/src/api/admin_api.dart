@@ -42,8 +42,14 @@ class AdminApi {
   Future<List<Order>> getOrders() async {
     try {
       final response = await ApiClient.dio.get('admin/orders');
-      final List<dynamic> ordersJson = response.data;
-      return ordersJson.map((json) => Order.fromJson(json)).toList();
+      final data = response.data;
+      // Tolerate both a bare array and an enveloped { "data": [...] } response.
+      final List<dynamic> ordersJson = data is List
+          ? data
+          : (data is Map && data['data'] is List ? data['data'] as List : <dynamic>[]);
+      return ordersJson
+          .map((json) => Order.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Failed to load orders');
     }

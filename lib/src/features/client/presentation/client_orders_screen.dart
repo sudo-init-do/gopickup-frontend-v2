@@ -255,7 +255,7 @@ class _ClientOrdersScreenState extends ConsumerState<ClientOrdersScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                order.id.substring(0, 8),
+                                order.shortId,
                                 style: AppTextStyles.headingMd.copyWith(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w900,

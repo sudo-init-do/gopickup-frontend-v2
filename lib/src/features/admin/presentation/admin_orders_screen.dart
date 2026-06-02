@@ -353,7 +353,7 @@ class _OrderCard extends ConsumerWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('Delete order?'),
         content: Text(
-          'Permanently delete order ORD-${order.id.substring(0, 8).toUpperCase()}? '
+          'Permanently delete order ORD-${order.shortId.toUpperCase()}? '
           'This cannot be undone.',
         ),
         actions: [
@@ -445,7 +445,7 @@ class _OrderCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'ORD-${order.id.substring(0, 8).toUpperCase()}',
+                        'ORD-${order.shortId.toUpperCase()}',
                         style: AppTextStyles.label,
                       ),
                       const SizedBox(height: AppSpacing.xs),
@@ -533,7 +533,7 @@ class _OrderCard extends ConsumerWidget {
                     const Icon(Icons.person, size: 14, color: AppColors.textTertiary),
                     const SizedBox(width: AppSpacing.xs),
                     Text(
-                      order.clientName ?? order.clientEmail ?? order.clientId.substring(0, 8),
+                      order.clientName ?? order.clientEmail ?? order.shortClientId,
                       style: AppTextStyles.bodySm,
                     ),
                   ],
@@ -627,7 +627,7 @@ class _FocusedView extends StatelessWidget {
                             ),
                             const SizedBox(height: AppSpacing.xs),
                             Text(
-                              'Order #${order.id.substring(0, 8).toUpperCase()}',
+                              'Order #${order.shortId.toUpperCase()}',
                               style: AppTextStyles.headingMd,
                             ),
                           ],
@@ -767,7 +767,7 @@ class _FocusedView extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      order.clientName ?? order.clientEmail ?? 'Client #${order.clientId.substring(0, 8)}',
+                                      order.clientName ?? order.clientEmail ?? 'Client #${order.shortClientId}',
                                       style: AppTextStyles.label,
                                     ),
                                     if (order.clientPhone != null)
@@ -823,7 +823,7 @@ class _FocusedView extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      order.vendorStoreName ?? 'Vendor #${order.vendorId.substring(0, 8)}',
+                                      order.vendorStoreName ?? 'Vendor #${order.shortVendorId}',
                                       style: AppTextStyles.label,
                                     ),
                                     if (order.vendorPhone != null)
@@ -1015,7 +1015,7 @@ class _ManageOrderDialogState extends State<_ManageOrderDialog> {
                         ),
                         const SizedBox(height: AppSpacing.xs),
                         Text(
-                          'Order #${order.id.substring(0, 8).toUpperCase()}',
+                          'Order #${order.shortId.toUpperCase()}',
                           style: AppTextStyles.headingMd,
                         ),
                       ],
