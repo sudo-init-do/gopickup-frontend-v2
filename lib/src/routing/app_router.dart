@@ -23,7 +23,12 @@ import '../features/client/presentation/client_addresses_screen.dart';
 import '../features/client/presentation/order_detail_screen.dart';
 import '../features/client/presentation/create_job_screen.dart';
 import '../features/client/presentation/book_truck_screen.dart';
+import '../features/client/presentation/book_driver/book_driver_request_screen.dart';
+import '../features/client/presentation/book_driver/book_driver_matching_screen.dart';
+import '../features/client/presentation/book_driver/book_driver_tracking_screen.dart';
 import '../features/driver/presentation/driver_home_screen.dart';
+import '../features/driver/presentation/driver_loads_screen.dart';
+import '../features/driver/presentation/driver_load_tracking_screen.dart';
 import '../features/driver/presentation/driver_bids_screen.dart';
 import '../features/driver/presentation/driver_earnings_screen.dart';
 import '../features/driver/presentation/submit_bid_screen.dart';
@@ -211,9 +216,42 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CreateJobScreen(),
       ),
       GoRoute(
+        path: '/client/post-load',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const CreateJobScreen(),
+      ),
+      GoRoute(
         path: '/client/book-truck',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const BookTruckScreen(),
+      ),
+      GoRoute(
+        path: '/client/book-driver',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const BookDriverRequestScreen(),
+      ),
+      GoRoute(
+        path: '/client/book-driver/matching',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            BookDriverMatchingScreen(loadId: state.extra as String),
+      ),
+      GoRoute(
+        path: '/client/book-driver/tracking',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            BookDriverTrackingScreen(loadId: state.extra as String),
+      ),
+      GoRoute(
+        path: '/driver/loads',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const DriverLoadsScreen(),
+      ),
+      GoRoute(
+        path: '/driver/load/:id/track',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            DriverLoadTrackingScreen(loadId: state.pathParameters['id']!),
       ),
       GoRoute(
         path: '/notifications',

@@ -50,7 +50,7 @@ android {
         applicationId "com.gopickup.gomarket"
         minSdk flutter.minSdkVersion
         targetSdk 35
-        versionCode 7
+        versionCode 8
         versionName flutterVersionName
     }
 

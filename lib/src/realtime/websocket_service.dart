@@ -26,14 +26,25 @@ class WebSocketService {
       StreamController<Map<String, dynamic>>.broadcast();
   final _driverMovedController =
       StreamController<Map<String, dynamic>>.broadcast();
+  // Loads system (Book Driver / Post Load)
+  final _loadBidController = StreamController<Map<String, dynamic>>.broadcast();
+  final _loadStatusController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get onOrderStatusUpdated =>
       _orderStatusController.stream;
   Stream<Map<String, dynamic>> get onNewBid => _newBidController.stream;
   Stream<Map<String, dynamic>> get onBidAccepted =>
       _bidAcceptedController.stream;
+  // Driver position updates. Payload carries either `order_id` or `load_id`;
+  // consumers filter on the key relevant to their screen.
   Stream<Map<String, dynamic>> get onDriverMoved =>
       _driverMovedController.stream;
+  // A driver placed a bid on one of the client's loads.
+  Stream<Map<String, dynamic>> get onLoadBid => _loadBidController.stream;
+  // A load's status changed (assigned/picked_up/delivered/cancelled).
+  Stream<Map<String, dynamic>> get onLoadStatus =>
+      _loadStatusController.stream;
 
   void connect(String token) {
     if (_channel != null) return;
@@ -116,6 +127,12 @@ class WebSocketService {
         case 'driver_moved':
           _driverMovedController.add(payload);
           break;
+        case 'load_bid':
+          _loadBidController.add(payload);
+          break;
+        case 'load_status_updated':
+          _loadStatusController.add(payload);
+          break;
         case 'notification':
           // Handle general notification event if needed
           break;
@@ -153,11 +170,33 @@ class WebSocketService {
     });
   }
 
+  // --- Loads system rooms / location relay ---
+
+  void joinLoadRoom(String loadId) {
+    _sendEvent('join_load_room', {'load_id': loadId});
+  }
+
+  void leaveLoadRoom(String loadId) {
+    _sendEvent('leave_load_room', {'load_id': loadId});
+  }
+
+  /// Driver streams its position for an assigned load. The server validates the
+  /// caller owns the load and rebroadcasts `driver_moved` to `load:{loadId}`.
+  void sendDriverLocationUpdateForLoad(String loadId, double lat, double lng) {
+    _sendEvent('driver_location_update', {
+      'load_id': loadId,
+      'lat': lat,
+      'lng': lng,
+    });
+  }
+
   void dispose() {
     disconnect();
     _orderStatusController.close();
     _newBidController.close();
     _bidAcceptedController.close();
     _driverMovedController.close();
+    _loadBidController.close();
+    _loadStatusController.close();
   }
 }

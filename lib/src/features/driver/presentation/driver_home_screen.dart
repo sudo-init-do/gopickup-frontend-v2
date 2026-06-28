@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../common/utils/launch_url.dart';
 import '../../driver/data/job_repository.dart';
 import '../../../common/models/order.dart' as common_order;
@@ -160,6 +161,7 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
               ),
             ),
             _buildSearchAndFilter(),
+            _buildDeliveryRequestsBanner(),
             _buildTabs(_selectedTabIndex, (index) {
               setState(() => _selectedTabIndex = index);
             }),
@@ -226,6 +228,55 @@ class _DriverHomeScreenState extends ConsumerState<DriverHomeScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDeliveryRequestsBanner() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.xl, AppSpacing.lg, AppSpacing.xl, 0),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.push('/driver/loads'),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          child: Container(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.driverAccent,
+                  AppColors.driverAccent.withOpacity(0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.bolt_rounded, color: Colors.white, size: 28),
+                const SizedBox(width: AppSpacing.md),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Delivery Requests',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 15)),
+                      SizedBox(height: 2),
+                      Text('Bid on live jobs & share your location',
+                          style:
+                              TextStyle(color: Colors.white70, fontSize: 12)),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: Colors.white),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
