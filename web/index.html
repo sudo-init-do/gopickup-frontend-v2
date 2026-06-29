@@ -34,5 +34,51 @@
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
+
+  <!--
+    Auto-update the installed PWA. Without this, Flutter's service worker
+    installs a new build but keeps serving the OLD cached app until every tab
+    is closed — so users (and the boss!) see stale screens after a deploy.
+
+    This watches for a newer service worker, tells it to take over immediately
+    (Flutter's SW handles the 'skipWaiting' message), and reloads the page once
+    when the new version takes control. Net effect: a deploy refreshes everyone
+    on their next visit, no manual cache clearing.
+  -->
+  <script>
+    (function () {
+      if (!('serviceWorker' in navigator)) return;
+
+      var reloading = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (reloading) return;
+        reloading = true;
+        window.location.reload();
+      });
+
+      function activate(worker) {
+        if (!worker) return;
+        worker.addEventListener('statechange', function () {
+          // A new worker finished installing while an old one is in control.
+          if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+            worker.postMessage('skipWaiting');
+          }
+        });
+      }
+
+      navigator.serviceWorker.ready.then(function (reg) {
+        // If an update is already waiting, promote it now.
+        if (reg.waiting && navigator.serviceWorker.controller) {
+          reg.waiting.postMessage('skipWaiting');
+        }
+        reg.addEventListener('updatefound', function () {
+          activate(reg.installing);
+        });
+        // Check for a new deploy on load and every 60s while the app is open.
+        reg.update();
+        setInterval(function () { reg.update(); }, 60000);
+      }).catch(function () {});
+    })();
+  </script>
 </body>
 </html>
