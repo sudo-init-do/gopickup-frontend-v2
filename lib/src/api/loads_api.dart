@@ -13,12 +13,17 @@ class LoadsApi {
     required String pickupAddress,
     required String deliveryAddress,
     String? description,
+    String? equipmentType,
+    String? loadRequirement,
     double? weight,
+    double? lengthFt,
     double? budgetAmount,
     double? pickupLat,
     double? pickupLng,
+    String? pickupPin,
     double? deliveryLat,
     double? deliveryLng,
+    String? dropoffPin,
     DateTime? scheduledAt,
   }) async {
     try {
@@ -31,12 +36,20 @@ class LoadsApi {
           'delivery_address': deliveryAddress,
           if (description != null && description.isNotEmpty)
             'description': description,
+          if (equipmentType != null && equipmentType.isNotEmpty)
+            'equipment_type': equipmentType,
+          if (loadRequirement != null && loadRequirement.isNotEmpty)
+            'load_requirement': loadRequirement,
           if (weight != null) 'weight': weight,
+          if (lengthFt != null) 'length_ft': lengthFt,
           if (budgetAmount != null) 'budget_amount': budgetAmount,
           if (pickupLat != null) 'pickup_lat': pickupLat,
           if (pickupLng != null) 'pickup_lng': pickupLng,
+          if (pickupPin != null && pickupPin.isNotEmpty) 'pickup_pin': pickupPin,
           if (deliveryLat != null) 'delivery_lat': deliveryLat,
           if (deliveryLng != null) 'delivery_lng': deliveryLng,
+          if (dropoffPin != null && dropoffPin.isNotEmpty)
+            'dropoff_pin': dropoffPin,
           if (scheduledAt != null)
             'scheduled_at': scheduledAt.toUtc().toIso8601String(),
         },

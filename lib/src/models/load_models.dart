@@ -57,13 +57,18 @@ class Load {
   final String title;
   final String? description;
   final String goodsType;
+  final String? equipmentType;
+  final String? loadRequirement; // 'full' | 'partial'
   final double? weight;
+  final double? lengthFt;
   final String pickupAddress;
   final double? pickupLat;
   final double? pickupLng;
+  final String? pickupPin;
   final String deliveryAddress;
   final double? deliveryLat;
   final double? deliveryLng;
+  final String? dropoffPin;
   final double? budgetAmount;
   final double? agreedAmount;
   final String status; // open, assigned, picked_up, delivered, cancelled
@@ -84,13 +89,18 @@ class Load {
     required this.title,
     this.description,
     required this.goodsType,
+    this.equipmentType,
+    this.loadRequirement,
     this.weight,
+    this.lengthFt,
     required this.pickupAddress,
     this.pickupLat,
     this.pickupLng,
+    this.pickupPin,
     required this.deliveryAddress,
     this.deliveryLat,
     this.deliveryLng,
+    this.dropoffPin,
     this.budgetAmount,
     this.agreedAmount,
     required this.status,
@@ -135,13 +145,18 @@ class Load {
       title: json['title'] as String? ?? 'Delivery',
       description: json['description'] as String?,
       goodsType: json['goods_type'] as String? ?? '',
+      equipmentType: json['equipment_type'] as String?,
+      loadRequirement: json['load_requirement'] as String?,
       weight: (json['weight'] as num?)?.toDouble(),
+      lengthFt: (json['length_ft'] as num?)?.toDouble(),
       pickupAddress: json['pickup_address'] as String? ?? '',
       pickupLat: (json['pickup_lat'] as num?)?.toDouble(),
       pickupLng: (json['pickup_lng'] as num?)?.toDouble(),
+      pickupPin: json['pickup_pin'] as String?,
       deliveryAddress: json['delivery_address'] as String? ?? '',
       deliveryLat: (json['delivery_lat'] as num?)?.toDouble(),
       deliveryLng: (json['delivery_lng'] as num?)?.toDouble(),
+      dropoffPin: json['dropoff_pin'] as String?,
       budgetAmount: (json['budget_amount'] as num?)?.toDouble(),
       agreedAmount: (json['agreed_amount'] as num?)?.toDouble(),
       status: json['status'] as String? ?? 'open',

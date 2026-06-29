@@ -205,17 +205,45 @@ class _BookDriverMatchingScreenState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.local_shipping_outlined,
-                size: 64, color: AppColors.textTertiary.withOpacity(0.6)),
-            const SizedBox(height: AppSpacing.lg),
-            const Text('Waiting for offers',
+            const SizedBox(
+              width: 54,
+              height: 54,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: AlwaysStoppedAnimation(AppColors.vendorAccent),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            const Text('Searching for drivers',
                 style: AppTextStyles.titleMd, textAlign: TextAlign.center),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              'Drivers near your pickup are being notified. Their offers will '
-              'appear here as they come in.',
+              'Hang tight — we\'re reaching out to nearby drivers. We\'ll notify '
+              'you as offers arrive, so keep an eye on your notifications 🔔 for '
+              'driver bids. You can safely wait here or leave this screen.',
               textAlign: TextAlign.center,
               style: AppTextStyles.bodySm.copyWith(height: 1.5),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+              decoration: BoxDecoration(
+                color: AppColors.vendorAccent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.notifications_active_outlined,
+                      size: 16, color: AppColors.vendorAccent),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text('Watch your notifications for bids',
+                      style: AppTextStyles.caption.copyWith(
+                          color: AppColors.vendorAccent,
+                          fontWeight: FontWeight.w700)),
+                ],
+              ),
             ),
           ],
         ),

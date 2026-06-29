@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../common/styles/app_spacing.dart';
 import '../../../common/styles/app_text_styles.dart';
+import '../../../common/utils/launch_url.dart';
 import '../../../common/utils/location_service.dart';
 import '../../../common/widgets/primary_button.dart';
 import '../../../models/load_models.dart';
@@ -114,6 +115,26 @@ class _DriverLoadTrackingScreenState
       (_load?.deliveryLat != null && _load?.deliveryLng != null)
           ? LatLng(_load!.deliveryLat!, _load!.deliveryLng!)
           : null;
+
+  /// A tappable navigation link for the current stop: the customer-supplied
+  /// Google pin/Plus code if present, otherwise a Maps search of the address.
+  String? get _navTarget {
+    final load = _load;
+    if (load == null) return null;
+    final isDropoff = _status == 'picked_up';
+    final pin = isDropoff ? load.dropoffPin : load.pickupPin;
+    if (pin != null && pin.trim().isNotEmpty) {
+      final p = pin.trim();
+      if (p.startsWith('http')) return p;
+      // Treat anything else (e.g. a Plus code) as a Maps query.
+      return 'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(p)}';
+    }
+    final address = isDropoff ? load.deliveryAddress : load.pickupAddress;
+    if (address.isNotEmpty) {
+      return 'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}';
+    }
+    return null;
+  }
 
   Future<void> _advance(String to) async {
     setState(() => _updatingStatus = true);
@@ -258,6 +279,26 @@ class _DriverLoadTrackingScreenState
                         fontWeight: FontWeight.w800)),
               ],
             ),
+            if (_navTarget != null) ...[
+              const SizedBox(height: AppSpacing.md),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => openExternalUrl(_navTarget!),
+                  icon: const Icon(Icons.navigation_rounded, size: 18),
+                  label: Text(_status == 'picked_up'
+                      ? 'Navigate to drop-off'
+                      : 'Navigate to pickup'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.info,
+                    side: const BorderSide(color: AppColors.info),
+                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md)),
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: AppSpacing.lg),
             if (_status == 'assigned')
               PrimaryButton(

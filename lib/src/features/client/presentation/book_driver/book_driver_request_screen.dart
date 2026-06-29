@@ -8,6 +8,7 @@ import '../../../../common/styles/app_text_styles.dart';
 import '../../../../common/utils/location_service.dart';
 import '../../../../common/widgets/primary_button.dart';
 import '../../../../state/load_provider.dart';
+import '../shared/load_form_fields.dart';
 
 /// Step 1 of the live "Book Driver" flow: the client describes the trip and we
 /// create an open Load. Drivers then bid on it (step 2: matching).
@@ -21,21 +22,18 @@ class BookDriverRequestScreen extends ConsumerStatefulWidget {
 
 class _BookDriverRequestScreenState
     extends ConsumerState<BookDriverRequestScreen> {
-  static const List<String> _goodsTypes = [
-    'Parcel',
-    'Cement',
-    'Sand / Gravel',
-    'Blocks',
-    'Furniture',
-    'Equipment',
-    'Other',
-  ];
-
-  final _pickupController = TextEditingController();
-  final _dropoffController = TextEditingController();
+  final _pickupCity = TextEditingController();
+  final _pickupPin = TextEditingController();
+  final _dropoffCity = TextEditingController();
+  final _dropoffPin = TextEditingController();
   final _budgetController = TextEditingController();
+  final _notesController = TextEditingController();
 
   String? _goodsType;
+  String? _equipment;
+  String _loadReq = 'full';
+  String? _pickupState;
+  String? _dropoffState;
   double? _pickupLat;
   double? _pickupLng;
   bool _locating = false;
@@ -43,9 +41,12 @@ class _BookDriverRequestScreenState
 
   @override
   void dispose() {
-    _pickupController.dispose();
-    _dropoffController.dispose();
+    _pickupCity.dispose();
+    _pickupPin.dispose();
+    _dropoffCity.dispose();
+    _dropoffPin.dispose();
     _budgetController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
@@ -55,26 +56,28 @@ class _BookDriverRequestScreenState
     if (!mounted) return;
     setState(() => _locating = false);
     if (pos == null) {
-      _showSnack(
-        'Couldn\'t get your location. Please type the pickup address.',
-      );
+      _showSnack('Couldn\'t get your location. Please type the address + pin.');
       return;
     }
     setState(() {
       _pickupLat = pos.latitude;
       _pickupLng = pos.longitude;
-      if (_pickupController.text.trim().isEmpty) {
-        _pickupController.text = 'My current location '
-            '(${pos.latitude.toStringAsFixed(4)}, '
-            '${pos.longitude.toStringAsFixed(4)})';
-      }
+      // Fill the pickup pin with a tappable Google Maps link for the driver.
+      _pickupPin.text =
+          'https://www.google.com/maps?q=${pos.latitude},${pos.longitude}';
     });
+    _showSnack('Pickup location pinned.');
   }
 
   String? _firstMissingField() {
     if (_goodsType == null) return 'Select what you are sending';
-    if (_pickupController.text.trim().isEmpty) return 'Enter a pickup address';
-    if (_dropoffController.text.trim().isEmpty) return 'Enter a drop-off address';
+    if (_equipment == null) return 'Select an equipment type';
+    if (_pickupCity.text.trim().isEmpty || _pickupState == null) {
+      return 'Enter pickup city and state';
+    }
+    if (_dropoffCity.text.trim().isEmpty || _dropoffState == null) {
+      return 'Enter drop-off city and state';
+    }
     return null;
   }
 
@@ -89,11 +92,18 @@ class _BookDriverRequestScreenState
       final load = await ref.read(loadsApiProvider).createLoad(
             title: _goodsType!,
             goodsType: _goodsType!,
-            pickupAddress: _pickupController.text.trim(),
-            deliveryAddress: _dropoffController.text.trim(),
+            equipmentType: _equipment,
+            loadRequirement: _loadReq,
+            pickupAddress: '${_pickupCity.text.trim()}, $_pickupState',
+            deliveryAddress: '${_dropoffCity.text.trim()}, $_dropoffState',
             budgetAmount: double.tryParse(_budgetController.text.trim()),
             pickupLat: _pickupLat,
             pickupLng: _pickupLng,
+            pickupPin: _pickupPin.text.trim(),
+            dropoffPin: _dropoffPin.text.trim(),
+            description: _notesController.text.trim().isEmpty
+                ? null
+                : _notesController.text.trim(),
           );
       if (mounted) {
         context.pushReplacement('/client/book-driver/matching', extra: load.id);
@@ -142,8 +152,8 @@ class _BookDriverRequestScreenState
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
-                      'Request a driver now. Nearby drivers will send you offers '
-                      'in real time — accept one and track them live.',
+                      'Request a driver now. Nearby drivers send you offers in '
+                      'real time — accept one and track them live.',
                       style: AppTextStyles.bodySm.copyWith(height: 1.4),
                     ),
                   ),
@@ -152,72 +162,89 @@ class _BookDriverRequestScreenState
             ),
             const SizedBox(height: AppSpacing.xl),
 
-            _label('What are you sending?'),
+            fieldLabel('What are you sending?'),
             const SizedBox(height: AppSpacing.sm),
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: _goodsTypes.map(_buildChip).toList(),
+            ChipSelector(
+              options: kGoodsTypes,
+              selected: _goodsType,
+              accent: AppColors.vendorAccent,
+              onSelected: (v) => setState(() => _goodsType = v),
             ),
             const SizedBox(height: AppSpacing.xl),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _label('Pickup'),
-                TextButton.icon(
-                  onPressed: _locating ? null : _useCurrentLocation,
-                  icon: _locating
-                      ? const SizedBox(
-                          width: 14,
-                          height: 14,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.my_location_rounded, size: 16),
-                  label: Text(_pickupLat != null
-                      ? 'Location set'
-                      : 'Use my location'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: _pickupLat != null
-                        ? AppColors.success
-                        : AppColors.primary,
-                  ),
-                ),
-              ],
-            ),
+            fieldLabel('Equipment type'),
             const SizedBox(height: AppSpacing.sm),
-            _textField(
-              controller: _pickupController,
-              hint: 'Pickup address',
+            ChipSelector(
+              options: kEquipmentTypes,
+              selected: _equipment,
+              accent: AppColors.vendorAccent,
+              onSelected: (v) => setState(() => _equipment = v),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            fieldLabel('Load requirement'),
+            const SizedBox(height: AppSpacing.sm),
+            LoadRequirementSelector(
+              selectedKey: _loadReq,
+              accent: AppColors.vendorAccent,
+              onSelected: (v) => setState(() => _loadReq = v),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            CityStateLocation(
+              title: 'Pickup',
               icon: Icons.trip_origin_rounded,
-              onChanged: (_) {
-                // Typing a new address invalidates the GPS pin.
-                if (_pickupLat != null) {
-                  setState(() {
-                    _pickupLat = null;
-                    _pickupLng = null;
-                  });
-                }
-              },
+              iconColor: AppColors.primary,
+              cityController: _pickupCity,
+              state: _pickupState,
+              onStateChanged: (v) => setState(() => _pickupState = v),
+              pinController: _pickupPin,
+              trailing: TextButton.icon(
+                onPressed: _locating ? null : _useCurrentLocation,
+                icon: _locating
+                    ? const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.my_location_rounded, size: 16),
+                label: Text(_pickupLat != null ? 'Pinned' : 'Use my location'),
+                style: TextButton.styleFrom(
+                  foregroundColor:
+                      _pickupLat != null ? AppColors.success : AppColors.primary,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
             ),
             const SizedBox(height: AppSpacing.xl),
 
-            _label('Drop-off'),
-            const SizedBox(height: AppSpacing.sm),
-            _textField(
-              controller: _dropoffController,
-              hint: 'Drop-off address',
+            CityStateLocation(
+              title: 'Drop-off',
               icon: Icons.location_on_outlined,
+              iconColor: AppColors.destructive,
+              cityController: _dropoffCity,
+              state: _dropoffState,
+              onStateChanged: (v) => setState(() => _dropoffState = v),
+              pinController: _dropoffPin,
             ),
             const SizedBox(height: AppSpacing.xl),
 
-            _label('Your budget (₦)'),
+            fieldLabel('Your budget (₦)'),
             const SizedBox(height: AppSpacing.sm),
-            _textField(
+            _simpleField(
               controller: _budgetController,
               hint: 'Optional — helps drivers price the trip',
               icon: Icons.payments_outlined,
               keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            fieldLabel('Extra details'),
+            const SizedBox(height: AppSpacing.sm),
+            _simpleField(
+              controller: _notesController,
+              hint: 'Anything the driver should know? (e.g. 20 bags, call on arrival)',
+              icon: Icons.notes_rounded,
+              maxLines: 3,
             ),
             const SizedBox(height: AppSpacing.xxl),
 
@@ -235,48 +262,17 @@ class _BookDriverRequestScreenState
     );
   }
 
-  Widget _label(String text) => Text(
-        text,
-        style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w700),
-      );
-
-  Widget _buildChip(String type) {
-    final selected = _goodsType == type;
-    return GestureDetector(
-      onTap: () => setState(() => _goodsType = type),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
-        ),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.vendorAccent : AppColors.card,
-          borderRadius: BorderRadius.circular(AppRadius.pill),
-          border: Border.all(
-            color: selected ? Colors.transparent : AppColors.border,
-          ),
-        ),
-        child: Text(
-          type,
-          style: AppTextStyles.label.copyWith(
-            color: selected ? Colors.white : AppColors.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _textField({
+  Widget _simpleField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
+    int maxLines = 1,
     TextInputType? keyboardType,
-    ValueChanged<String>? onChanged,
   }) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
-      onChanged: onChanged,
+      maxLines: maxLines,
       inputFormatters: keyboardType == TextInputType.number
           ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))]
           : null,
@@ -288,9 +284,7 @@ class _BookDriverRequestScreenState
         filled: true,
         fillColor: AppColors.card,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.lg,
-        ),
+            horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide: const BorderSide(color: AppColors.border),

@@ -7,11 +7,11 @@ import '../../../common/styles/app_spacing.dart';
 import '../../../common/styles/app_text_styles.dart';
 import '../../../common/widgets/primary_button.dart';
 import '../../../state/load_provider.dart';
+import 'shared/load_form_fields.dart';
 
 /// "Post Load" — lets a client schedule a delivery. The request is saved to the
 /// backend as an open Load that the GoPickup team confirms manually (and that
-/// drivers can bid on). This is the scheduled counterpart to the live
-/// "Book Driver" flow.
+/// drivers can bid on). Scheduled counterpart to the live "Book Driver" flow.
 class CreateJobScreen extends ConsumerStatefulWidget {
   const CreateJobScreen({super.key});
 
@@ -20,16 +20,6 @@ class CreateJobScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
-  static const List<String> _goodsTypes = [
-    'Cement',
-    'Sand / Gravel',
-    'Blocks',
-    'Furniture',
-    'Equipment',
-    'Food items',
-    'Other',
-  ];
-
   static const List<String> _weekdays = [
     'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',
   ];
@@ -38,13 +28,19 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
 
-  final _pickupController = TextEditingController();
-  final _dropoffController = TextEditingController();
+  final _pickupCity = TextEditingController();
+  final _pickupPin = TextEditingController();
+  final _dropoffCity = TextEditingController();
+  final _dropoffPin = TextEditingController();
   final _weightController = TextEditingController();
   final _budgetController = TextEditingController();
   final _notesController = TextEditingController();
 
   String? _goodsType;
+  String? _equipment;
+  String _loadReq = 'full';
+  String? _pickupState;
+  String? _dropoffState;
   DateTime? _date;
   TimeOfDay? _time;
   bool _submitting = false;
@@ -52,8 +48,10 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
 
   @override
   void dispose() {
-    _pickupController.dispose();
-    _dropoffController.dispose();
+    _pickupCity.dispose();
+    _pickupPin.dispose();
+    _dropoffCity.dispose();
+    _dropoffPin.dispose();
     _weightController.dispose();
     _budgetController.dispose();
     _notesController.dispose();
@@ -89,8 +87,13 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
 
   String? _firstMissingField() {
     if (_goodsType == null) return 'Select what you are moving';
-    if (_pickupController.text.trim().isEmpty) return 'Enter a pickup address';
-    if (_dropoffController.text.trim().isEmpty) return 'Enter a drop-off address';
+    if (_equipment == null) return 'Select an equipment type';
+    if (_pickupCity.text.trim().isEmpty || _pickupState == null) {
+      return 'Enter pickup city and state';
+    }
+    if (_dropoffCity.text.trim().isEmpty || _dropoffState == null) {
+      return 'Enter drop-off city and state';
+    }
     if (_date == null) return 'Select a date';
     if (_time == null) return 'Select a time';
     return null;
@@ -99,8 +102,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
   DateTime? get _scheduledAt {
     if (_date == null || _time == null) return null;
     return DateTime(
-      _date!.year, _date!.month, _date!.day, _time!.hour, _time!.minute,
-    );
+        _date!.year, _date!.month, _date!.day, _time!.hour, _time!.minute);
   }
 
   Future<void> _submit() async {
@@ -109,33 +111,27 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
       _showSnack(missing);
       return;
     }
-
     setState(() => _submitting = true);
     try {
-      final weight = double.tryParse(_weightController.text.trim());
-      final budget = double.tryParse(_budgetController.text.trim());
-      final scheduled = _scheduledAt;
-      final notes = _notesController.text.trim();
-      final description = [
-        if (scheduled != null) 'Requested for $_dateLabel at $_timeLabel.',
-        if (notes.isNotEmpty) notes,
-      ].join(' ');
-
       await ref.read(loadsApiProvider).createLoad(
             title: _goodsType!,
             goodsType: _goodsType!,
-            pickupAddress: _pickupController.text.trim(),
-            deliveryAddress: _dropoffController.text.trim(),
-            description: description.isEmpty ? null : description,
-            weight: weight,
-            budgetAmount: budget,
-            scheduledAt: scheduled,
+            equipmentType: _equipment,
+            loadRequirement: _loadReq,
+            pickupAddress: '${_pickupCity.text.trim()}, $_pickupState',
+            deliveryAddress: '${_dropoffCity.text.trim()}, $_dropoffState',
+            pickupPin: _pickupPin.text.trim(),
+            dropoffPin: _dropoffPin.text.trim(),
+            weight: double.tryParse(_weightController.text.trim()),
+            budgetAmount: double.tryParse(_budgetController.text.trim()),
+            scheduledAt: _scheduledAt,
+            description: _notesController.text.trim().isEmpty
+                ? null
+                : _notesController.text.trim(),
           );
       if (mounted) setState(() => _done = true);
     } catch (e) {
-      if (mounted) {
-        _showSnack(e.toString().replaceFirst('Exception: ', ''));
-      }
+      if (mounted) _showSnack(e.toString().replaceFirst('Exception: ', ''));
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -158,9 +154,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
         title: const Text('Post Load', style: AppTextStyles.headingMd),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: _done ? _buildSuccess() : _buildForm(),
-      ),
+      body: SafeArea(child: _done ? _buildSuccess() : _buildForm()),
     );
   }
 
@@ -174,9 +168,8 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
+                  color: AppColors.success.withOpacity(0.1),
+                  shape: BoxShape.circle),
               child: const Icon(Icons.check_circle_rounded,
                   color: AppColors.success, size: 56),
             ),
@@ -185,7 +178,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
             const SizedBox(height: AppSpacing.sm),
             Text(
               'We\'ve received your request and will confirm the driver and '
-              'price with you shortly. You can track it from your orders.',
+              'price with you shortly. Watch your notifications for updates.',
               textAlign: TextAlign.center,
               style: AppTextStyles.bodySm.copyWith(height: 1.5),
             ),
@@ -205,7 +198,6 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.xl),
       children: [
-        // Intro
         Container(
           padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
@@ -230,34 +222,55 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
         ),
         const SizedBox(height: AppSpacing.xl),
 
-        _label('What are you moving?'),
+        fieldLabel('What are you moving?'),
         const SizedBox(height: AppSpacing.sm),
-        Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: _goodsTypes.map(_buildGoodsChip).toList(),
+        ChipSelector(
+          options: kGoodsTypes,
+          selected: _goodsType,
+          onSelected: (v) => setState(() => _goodsType = v),
         ),
         const SizedBox(height: AppSpacing.xl),
 
-        _label('Pickup address'),
+        fieldLabel('Equipment type'),
         const SizedBox(height: AppSpacing.sm),
-        _textField(
-          controller: _pickupController,
-          hint: 'Where should we collect from?',
-          icon: Icons.my_location_rounded,
+        ChipSelector(
+          options: kEquipmentTypes,
+          selected: _equipment,
+          onSelected: (v) => setState(() => _equipment = v),
         ),
         const SizedBox(height: AppSpacing.xl),
 
-        _label('Drop-off address'),
+        fieldLabel('Load requirement'),
         const SizedBox(height: AppSpacing.sm),
-        _textField(
-          controller: _dropoffController,
-          hint: 'Where are we delivering to?',
+        LoadRequirementSelector(
+          selectedKey: _loadReq,
+          onSelected: (v) => setState(() => _loadReq = v),
+        ),
+        const SizedBox(height: AppSpacing.xl),
+
+        CityStateLocation(
+          title: 'Pickup',
+          icon: Icons.trip_origin_rounded,
+          iconColor: AppColors.primary,
+          cityController: _pickupCity,
+          state: _pickupState,
+          onStateChanged: (v) => setState(() => _pickupState = v),
+          pinController: _pickupPin,
+        ),
+        const SizedBox(height: AppSpacing.xl),
+
+        CityStateLocation(
+          title: 'Drop-off',
           icon: Icons.location_on_outlined,
+          iconColor: AppColors.destructive,
+          cityController: _dropoffCity,
+          state: _dropoffState,
+          onStateChanged: (v) => setState(() => _dropoffState = v),
+          pinController: _dropoffPin,
         ),
         const SizedBox(height: AppSpacing.xl),
 
-        _label('When do you need it?'),
+        fieldLabel('When do you need it?'),
         const SizedBox(height: AppSpacing.sm),
         Row(
           children: [
@@ -289,9 +302,9 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _label('Weight (kg)'),
+                  fieldLabel('Weight (kg)'),
                   const SizedBox(height: AppSpacing.sm),
-                  _textField(
+                  _simpleField(
                     controller: _weightController,
                     hint: 'Optional',
                     icon: Icons.scale_outlined,
@@ -305,9 +318,9 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _label('Budget (₦)'),
+                  fieldLabel('Budget (₦)'),
                   const SizedBox(height: AppSpacing.sm),
-                  _textField(
+                  _simpleField(
                     controller: _budgetController,
                     hint: 'Optional',
                     icon: Icons.payments_outlined,
@@ -320,9 +333,9 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
         ),
         const SizedBox(height: AppSpacing.xl),
 
-        _label('Extra details'),
+        fieldLabel('Extra details'),
         const SizedBox(height: AppSpacing.sm),
-        _textField(
+        _simpleField(
           controller: _notesController,
           hint: 'Anything the driver should know? (e.g. 50 bags, 3rd floor)',
           icon: Icons.notes_rounded,
@@ -341,38 +354,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
     );
   }
 
-  Widget _label(String text) => Text(
-        text,
-        style: AppTextStyles.label.copyWith(fontWeight: FontWeight.w700),
-      );
-
-  Widget _buildGoodsChip(String type) {
-    final selected = _goodsType == type;
-    return GestureDetector(
-      onTap: () => setState(() => _goodsType = type),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
-        ),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.card,
-          borderRadius: BorderRadius.circular(AppRadius.pill),
-          border: Border.all(
-            color: selected ? Colors.transparent : AppColors.border,
-          ),
-        ),
-        child: Text(
-          type,
-          style: AppTextStyles.label.copyWith(
-            color: selected ? Colors.white : AppColors.textSecondary,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _textField({
+  Widget _simpleField({
     required TextEditingController controller,
     required String hint,
     required IconData icon,
@@ -394,9 +376,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
         filled: true,
         fillColor: AppColors.card,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.lg,
-        ),
+            horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide: const BorderSide(color: AppColors.border),
@@ -423,9 +403,7 @@ class _CreateJobScreenState extends ConsumerState<CreateJobScreen> {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.lg,
-        ),
+            horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
         decoration: BoxDecoration(
           color: AppColors.card,
           borderRadius: BorderRadius.circular(AppRadius.md),

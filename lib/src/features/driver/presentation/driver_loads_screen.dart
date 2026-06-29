@@ -326,6 +326,23 @@ class _LoadCard extends StatelessWidget {
                         color: AppColors.driverAccent)),
             ],
           ),
+          if (load.equipmentType != null || load.loadRequirement != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.xs,
+              children: [
+                if (load.equipmentType != null)
+                  _tag(Icons.local_shipping_outlined, load.equipmentType!),
+                if (load.loadRequirement != null)
+                  _tag(
+                      Icons.layers_outlined,
+                      load.loadRequirement == 'partial'
+                          ? 'Partial Load'
+                          : 'Full Load'),
+              ],
+            ),
+          ],
           const SizedBox(height: AppSpacing.md),
           _row(Icons.trip_origin_rounded, load.pickupAddress, AppColors.primary),
           const SizedBox(height: AppSpacing.xs),
@@ -346,6 +363,27 @@ class _LoadCard extends StatelessWidget {
               child: Text(actionLabel),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _tag(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+      decoration: BoxDecoration(
+        color: AppColors.driverAccent.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: AppColors.driverAccent),
+          const SizedBox(width: 4),
+          Text(text,
+              style: AppTextStyles.caption.copyWith(
+                  color: AppColors.driverAccent, fontWeight: FontWeight.w700)),
         ],
       ),
     );
