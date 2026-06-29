@@ -85,6 +85,7 @@ class Load {
   // Nested client info (the requester) — preloaded for the admin console.
   final String? clientName;
   final String? clientPhone;
+  final String? clientEmail;
 
   Load({
     required this.id,
@@ -117,6 +118,7 @@ class Load {
     this.driverPlate,
     this.clientName,
     this.clientPhone,
+    this.clientEmail,
   });
 
   /// Short, display-safe id fragment (guards against short/empty ids).
@@ -181,6 +183,7 @@ class Load {
       driverPlate: driverProfile?['plate_number'] as String?,
       clientName: clientProfile?['full_name'] as String?,
       clientPhone: clientProfile?['phone_number'] as String?,
+      clientEmail: clientObj?['email'] as String?,
     );
   }
 }

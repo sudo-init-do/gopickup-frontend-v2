@@ -233,11 +233,23 @@ class _LoadAdminCard extends StatelessWidget {
                   size: 18, color: AppColors.textTertiary),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
-                child: Text(
-                  load.clientName ?? 'Customer',
-                  style: AppTextStyles.bodySm
-                      .copyWith(fontWeight: FontWeight.w700),
-                  overflow: TextOverflow.ellipsis,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      load.clientName ?? load.clientEmail ?? 'Customer',
+                      style: AppTextStyles.bodySm
+                          .copyWith(fontWeight: FontWeight.w700),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (load.clientName != null && load.clientEmail != null)
+                      Text(
+                        load.clientEmail!,
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.textTertiary),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
                 ),
               ),
               Container(
