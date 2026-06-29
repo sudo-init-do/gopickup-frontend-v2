@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../api/admin_api.dart';
+import '../../../models/load_models.dart';
 import '../domain/admin_stats.dart';
 
 final adminApiProvider = Provider<AdminApi>((ref) => AdminApi());
@@ -12,6 +13,10 @@ final adminUsersProvider = FutureProvider.family<List<Map<String, dynamic>>, Str
 
 final adminOrdersProvider = FutureProvider((ref) {
   return ref.read(adminApiProvider).getOrders();
+});
+
+final adminLoadsProvider = FutureProvider<List<Load>>((ref) {
+  return ref.read(adminApiProvider).getLoads();
 });
 
 final adminRecentUsersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {

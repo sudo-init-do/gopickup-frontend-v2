@@ -82,6 +82,10 @@ class Load {
   final String? driverVehicle;
   final String? driverPlate;
 
+  // Nested client info (the requester) — preloaded for the admin console.
+  final String? clientName;
+  final String? clientPhone;
+
   Load({
     required this.id,
     required this.clientId,
@@ -111,6 +115,8 @@ class Load {
     this.driverPhone,
     this.driverVehicle,
     this.driverPlate,
+    this.clientName,
+    this.clientPhone,
   });
 
   /// Short, display-safe id fragment (guards against short/empty ids).
@@ -137,6 +143,8 @@ class Load {
 
     final driverObj = json['driver'] as Map<String, dynamic>?;
     final driverProfile = driverObj?['driver_profile'] as Map<String, dynamic>?;
+    final clientObj = json['client'] as Map<String, dynamic>?;
+    final clientProfile = clientObj?['client_profile'] as Map<String, dynamic>?;
 
     return Load(
       id: json['id'] as String? ?? '',
@@ -171,6 +179,8 @@ class Load {
       driverPhone: driverProfile?['phone_number'] as String?,
       driverVehicle: driverProfile?['vehicle_type'] as String?,
       driverPlate: driverProfile?['plate_number'] as String?,
+      clientName: clientProfile?['full_name'] as String?,
+      clientPhone: clientProfile?['phone_number'] as String?,
     );
   }
 }

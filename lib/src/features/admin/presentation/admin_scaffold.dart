@@ -17,8 +17,9 @@ class AdminScaffold extends ConsumerWidget {
   });
 
   int _getSelectedIndex(String location) {
+    if (location.startsWith('/admin/loads')) return 3;
     if (location.startsWith('/admin/orders')) return 2;
-    if (location.startsWith('/admin/products')) return 3;
+    if (location.startsWith('/admin/products')) return 4;
     if (location.startsWith('/admin/users')) return 1;
     return 0; // '/admin'
   }
@@ -35,6 +36,9 @@ class AdminScaffold extends ConsumerWidget {
         context.go('/admin/orders');
         break;
       case 3:
+        context.go('/admin/loads');
+        break;
+      case 4:
         context.go('/admin/products');
         break;
     }
@@ -100,6 +104,7 @@ class AdminScaffold extends ConsumerWidget {
                 BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'DASHBOARD'),
                 BottomNavigationBarItem(icon: Icon(Icons.people), label: 'USERS'),
                 BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'ORDERS'),
+                BottomNavigationBarItem(icon: Icon(Icons.local_shipping), label: 'LOADS'),
                 BottomNavigationBarItem(icon: Icon(Icons.storefront), label: 'MARKET'),
               ],
             ),
@@ -170,10 +175,16 @@ class _AdminDrawer extends ConsumerWidget {
               isSelected: currentLocation == '/admin/users',
             ),
             _DrawerItem(
-              icon: Icons.local_shipping_outlined,
+              icon: Icons.shopping_cart_outlined,
               label: 'Order Monitoring',
               route: '/admin/orders',
               isSelected: currentLocation == '/admin/orders',
+            ),
+            _DrawerItem(
+              icon: Icons.local_shipping_outlined,
+              label: 'Driver Bookings & Loads',
+              route: '/admin/loads',
+              isSelected: currentLocation == '/admin/loads',
             ),
             _DrawerItem(
               icon: Icons.storefront_outlined,
@@ -283,10 +294,16 @@ class _AdminSidebar extends ConsumerWidget {
             isSelected: currentLocation == '/admin/users',
           ),
           _SidebarItem(
-            icon: Icons.local_shipping_outlined,
+            icon: Icons.shopping_cart_outlined,
             label: 'Order Monitoring',
             route: '/admin/orders',
             isSelected: currentLocation == '/admin/orders',
+          ),
+          _SidebarItem(
+            icon: Icons.local_shipping_outlined,
+            label: 'Driver Bookings & Loads',
+            route: '/admin/loads',
+            isSelected: currentLocation == '/admin/loads',
           ),
           _SidebarItem(
             icon: Icons.storefront_outlined,

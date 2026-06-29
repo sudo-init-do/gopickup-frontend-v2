@@ -48,6 +48,7 @@ import '../features/auth/presentation/admin_login_screen.dart';
 import '../features/admin/presentation/admin_dashboard_screen.dart';
 import '../features/admin/presentation/admin_users_screen.dart';
 import '../features/admin/presentation/admin_orders_screen.dart';
+import '../features/admin/presentation/admin_loads_screen.dart';
 import '../features/admin/presentation/admin_products_screen.dart';
 import '../features/admin/presentation/admin_scaffold.dart';
 import '../state/auth_provider.dart';
@@ -500,6 +501,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/admin/orders',
             builder: (context, state) => const AdminOrdersScreen(),
+          ),
+          GoRoute(
+            path: '/admin/loads',
+            builder: (context, state) => const AdminLoadsScreen(),
           ),
           GoRoute(
             path: '/admin/products',

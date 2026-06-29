@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../features/admin/domain/admin_stats.dart';
 import '../models/order_models.dart';
+import '../models/load_models.dart';
 import 'api_client.dart';
 
 class AdminApi {
@@ -52,6 +53,22 @@ class AdminApi {
           .toList();
     } on DioException catch (e) {
       throw Exception(e.response?.data['error'] ?? 'Failed to load orders');
+    }
+  }
+
+  /// All Book Driver + Post Load requests, for the admin loads console.
+  Future<List<Load>> getLoads() async {
+    try {
+      final response = await ApiClient.dio.get('admin/loads');
+      final data = response.data;
+      final List<dynamic> loadsJson = data is List
+          ? data
+          : (data is Map && data['data'] is List ? data['data'] as List : <dynamic>[]);
+      return loadsJson
+          .map((json) => Load.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to load loads');
     }
   }
 
