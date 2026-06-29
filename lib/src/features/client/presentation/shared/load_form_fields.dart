@@ -187,63 +187,58 @@ class CityStateLocation extends StatelessWidget {
           children: [
             Icon(icon, size: 18, color: iconColor),
             const SizedBox(width: AppSpacing.sm),
-            fieldLabel(title),
-            const Spacer(),
-            if (trailing != null) trailing!,
+            Expanded(child: fieldLabel(title)),
+            if (trailing != null) Flexible(child: trailing!),
           ],
         ),
         const SizedBox(height: AppSpacing.sm),
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               flex: 3,
-              child: _box(
-                child: TextField(
-                  controller: cityController,
-                  style: AppTextStyles.body,
-                  decoration: _inputDec('City (e.g. Ikeja)'),
-                ),
+              child: TextField(
+                controller: cityController,
+                style: AppTextStyles.body,
+                decoration: _inputDec('City (e.g. Ikeja)'),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               flex: 2,
-              child: _box(
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: state,
-                    isExpanded: true,
-                    hint: Text('State',
-                        style: AppTextStyles.body
-                            .copyWith(color: AppColors.textTertiary)),
-                    items: kNigerianStates
-                        .map((s) => DropdownMenuItem(
-                              value: s,
-                              child: Text(s,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles.bodySm),
-                            ))
-                        .toList(),
-                    onChanged: onStateChanged,
-                  ),
-                ),
+              child: DropdownButtonFormField<String>(
+                value: state,
+                isExpanded: true,
+                icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                    color: AppColors.textTertiary),
+                style: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
+                hint: Text('State',
+                    style: AppTextStyles.body
+                        .copyWith(color: AppColors.textTertiary)),
+                decoration: _inputDec('State'),
+                items: kNigerianStates
+                    .map((s) => DropdownMenuItem(
+                          value: s,
+                          child: Text(s,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: AppTextStyles.body),
+                        ))
+                    .toList(),
+                onChanged: onStateChanged,
               ),
             ),
           ],
         ),
-        const SizedBox(height: AppSpacing.sm),
-        _box(
-          child: TextField(
-            controller: pinController,
-            style: AppTextStyles.bodySm,
-            decoration: _inputDec(
-              'Paste Google Maps pin or Plus code (optional)',
-              prefix: Icons.pin_drop_outlined,
-            ),
+        const SizedBox(height: AppSpacing.md),
+        TextField(
+          controller: pinController,
+          style: AppTextStyles.bodySm,
+          decoration: _inputDec(
+            'Google Maps pin / Plus code (optional)',
+            prefix: Icons.pin_drop_outlined,
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           'Helps the driver navigate to the exact spot.',
           style: AppTextStyles.caption.copyWith(color: AppColors.textTertiary),
@@ -252,26 +247,30 @@ class CityStateLocation extends StatelessWidget {
     );
   }
 
-  Widget _box({required Widget child}) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: child,
-      );
-
+  /// Standard app input style: filled card, rounded border, primary focus
+  /// highlight — matching every other field in the app.
   InputDecoration _inputDec(String hint, {IconData? prefix}) => InputDecoration(
         hintText: hint,
         isDense: true,
+        filled: true,
+        fillColor: AppColors.card,
         hintStyle: AppTextStyles.bodySm.copyWith(color: AppColors.textTertiary),
         prefixIcon: prefix != null
-            ? Icon(prefix, size: 18, color: AppColors.textTertiary)
+            ? Icon(prefix, size: 20, color: AppColors.textTertiary)
             : null,
-        prefixIconConstraints:
-            const BoxConstraints(minWidth: 28, minHeight: 0),
-        border: InputBorder.none,
-        contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
       );
 }
