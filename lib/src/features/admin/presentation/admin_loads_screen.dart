@@ -237,12 +237,18 @@ class _LoadAdminCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      load.clientName ?? load.clientEmail ?? 'Customer',
+                      load.clientRole == 'admin'
+                          ? 'Booked by admin'
+                          : (load.clientName ??
+                              load.clientEmail ??
+                              'Customer'),
                       style: AppTextStyles.bodySm
                           .copyWith(fontWeight: FontWeight.w700),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (load.clientName != null && load.clientEmail != null)
+                    if ((load.clientRole == 'admin' ||
+                            load.clientName != null) &&
+                        load.clientEmail != null)
                       Text(
                         load.clientEmail!,
                         style: AppTextStyles.caption

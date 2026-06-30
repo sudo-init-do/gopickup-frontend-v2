@@ -86,6 +86,7 @@ class Load {
   final String? clientName;
   final String? clientPhone;
   final String? clientEmail;
+  final String? clientRole;
 
   Load({
     required this.id,
@@ -119,6 +120,7 @@ class Load {
     this.clientName,
     this.clientPhone,
     this.clientEmail,
+    this.clientRole,
   });
 
   /// Short, display-safe id fragment (guards against short/empty ids).
@@ -184,6 +186,7 @@ class Load {
       clientName: clientProfile?['full_name'] as String?,
       clientPhone: clientProfile?['phone_number'] as String?,
       clientEmail: clientObj?['email'] as String?,
+      clientRole: clientObj?['role'] as String?,
     );
   }
 }
