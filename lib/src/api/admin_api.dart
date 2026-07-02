@@ -93,6 +93,56 @@ class AdminApi {
     }
   }
 
+  /// Admin directly assigns (or re-assigns) a driver to a Book Driver / Post
+  /// Load request, bypassing the bidding flow. Returns the updated load.
+  Future<Load> assignDriverToLoad({
+    required String loadId,
+    required String driverId,
+    double? agreedAmount,
+  }) async {
+    try {
+      final response = await ApiClient.dio.post(
+        'admin/loads/assign-driver',
+        data: {
+          'load_id': loadId,
+          'driver_id': driverId,
+          if (agreedAmount != null) 'agreed_amount': agreedAmount,
+        },
+      );
+      return Load.fromJson(_unwrapLoad(response.data));
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to assign driver');
+    }
+  }
+
+  /// Admin pushes a status update on a load (assigned/picked_up/delivered/
+  /// cancelled); the client and driver are notified live. Returns the load.
+  Future<Load> updateLoadStatus(String loadId, String status) async {
+    try {
+      final response = await ApiClient.dio.patch(
+        'admin/loads/status',
+        data: {'load_id': loadId, 'status': status},
+      );
+      return Load.fromJson(_unwrapLoad(response.data));
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['error'] ?? 'Failed to update status');
+    }
+  }
+
+  /// Load endpoints return the object directly or wrapped in {data|load}.
+  Map<String, dynamic> _unwrapLoad(dynamic data) {
+    if (data is Map<String, dynamic>) {
+      if (data['data'] is Map<String, dynamic>) {
+        return data['data'] as Map<String, dynamic>;
+      }
+      if (data['load'] is Map<String, dynamic>) {
+        return data['load'] as Map<String, dynamic>;
+      }
+      return data;
+    }
+    return <String, dynamic>{};
+  }
+
   Future<void> updateOrderStatus(String orderId, String status) async {
     try {
       await ApiClient.dio.patch(
