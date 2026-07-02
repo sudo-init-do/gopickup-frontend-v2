@@ -293,6 +293,7 @@ class _LoadAdminCard extends StatelessWidget {
                 ),
               ),
             ),
+          _LoadAdminActions(load),
         ],
       ),
     );
@@ -372,5 +373,368 @@ class _LoadAdminCard extends StatelessWidget {
     final ampm = local.hour < 12 ? 'AM' : 'PM';
     final m = local.minute.toString().padLeft(2, '0');
     return '${local.day}/${local.month}/${local.year} • $h:$m $ampm';
+  }
+}
+
+/// Admin actions on a load: assign/re-assign a driver and push status updates.
+/// The client and driver are notified live by the backend.
+class _LoadAdminActions extends ConsumerStatefulWidget {
+  final Load load;
+  const _LoadAdminActions(this.load);
+
+  @override
+  ConsumerState<_LoadAdminActions> createState() => _LoadAdminActionsState();
+}
+
+class _LoadAdminActionsState extends ConsumerState<_LoadAdminActions> {
+  bool _busy = false;
+
+  Load get load => widget.load;
+  bool get _isCompleted =>
+      load.status == 'delivered' || load.status == 'cancelled';
+
+  @override
+  Widget build(BuildContext context) {
+    final assignedName = load.driverName;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (assignedName != null) ...[
+          const SizedBox(height: AppSpacing.md),
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColors.info.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.local_shipping_rounded,
+                    size: 18, color: AppColors.info),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    'Driver: $assignedName'
+                    '${load.driverVehicle != null ? ' • ${load.driverVehicle}' : ''}',
+                    style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        const SizedBox(height: AppSpacing.md),
+        if (_busy)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(AppSpacing.sm),
+              child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2)),
+            ),
+          )
+        else
+          Row(
+            children: [
+              if (!_isCompleted)
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _openDriverPicker,
+                    icon: Icon(
+                        assignedName == null
+                            ? Icons.person_add_alt_1_rounded
+                            : Icons.swap_horiz_rounded,
+                        size: 18),
+                    label: Text(
+                        assignedName == null ? 'Assign driver' : 'Reassign'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.adminAccent,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding:
+                          const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md)),
+                    ),
+                  ),
+                ),
+              if (!_isCompleted) const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _openStatusPicker,
+                  icon: const Icon(Icons.campaign_rounded, size: 18),
+                  label: const Text('Update'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.adminAccent,
+                    side: const BorderSide(color: AppColors.adminAccent),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.md)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+
+  Future<void> _openDriverPicker() async {
+    final result = await showModalBottomSheet<({String driverId, double? amount})>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (_) => _DriverPickerSheet(load: load),
+    );
+    if (result == null) return;
+    await _run(() => ref.read(adminApiProvider).assignDriverToLoad(
+          loadId: load.id,
+          driverId: result.driverId,
+          agreedAmount: result.amount,
+        ));
+  }
+
+  Future<void> _openStatusPicker() async {
+    final status = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: AppColors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (_) => _StatusPickerSheet(current: load.status),
+    );
+    if (status == null || status == load.status) return;
+    await _run(
+        () => ref.read(adminApiProvider).updateLoadStatus(load.id, status));
+  }
+
+  /// Runs an admin action with a spinner, refreshes the list, and reports the
+  /// outcome via a snackbar.
+  Future<void> _run(Future<void> Function() action) async {
+    setState(() => _busy = true);
+    try {
+      await action();
+      ref.invalidate(adminLoadsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Load updated — customer notified.'),
+              backgroundColor: AppColors.success),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+}
+
+/// Bottom sheet listing drivers to assign, with an optional agreed amount.
+/// Pops `(driverId, amount)` on selection.
+class _DriverPickerSheet extends ConsumerStatefulWidget {
+  final Load load;
+  const _DriverPickerSheet({required this.load});
+
+  @override
+  ConsumerState<_DriverPickerSheet> createState() => _DriverPickerSheetState();
+}
+
+class _DriverPickerSheetState extends ConsumerState<_DriverPickerSheet> {
+  late final TextEditingController _amount = TextEditingController(
+    text: widget.load.agreedAmount?.toStringAsFixed(0) ??
+        widget.load.budgetAmount?.toStringAsFixed(0) ??
+        '',
+  );
+
+  @override
+  void dispose() {
+    _amount.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final driversAsync = ref.watch(adminUsersProvider('driver'));
+    return Padding(
+      padding: EdgeInsets.only(
+        left: AppSpacing.xl,
+        right: AppSpacing.xl,
+        top: AppSpacing.lg,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.xl,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2)),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Text('Assign a driver',
+              style: AppTextStyles.titleMd
+                  .copyWith(fontWeight: FontWeight.w800)),
+          const SizedBox(height: AppSpacing.md),
+          TextField(
+            controller: _amount,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Agreed amount (₦) — optional',
+              prefixText: '₦ ',
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md)),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Flexible(
+            child: driversAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(AppSpacing.xl),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (e, _) => Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Text('Failed to load drivers: $e',
+                    style: AppTextStyles.bodySm),
+              ),
+              data: (drivers) {
+                if (drivers.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.all(AppSpacing.xl),
+                    child: Text('No drivers found.'),
+                  );
+                }
+                return ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: drivers.length,
+                  separatorBuilder: (_, __) =>
+                      const Divider(height: 1, color: AppColors.border),
+                  itemBuilder: (context, i) => _driverTile(drivers[i]),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _driverTile(Map<String, dynamic> driver) {
+    final profile = driver['driver_profile'] as Map<String, dynamic>?;
+    final name = profile?['full_name'] as String? ??
+        driver['email'] as String? ??
+        'Driver';
+    final vehicle = profile?['vehicle_type'] as String?;
+    final plate = profile?['plate_number'] as String?;
+    final approved = profile?['is_approved'] == true;
+    final id = driver['id'] as String?;
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(
+        backgroundColor: AppColors.adminAccent.withOpacity(0.12),
+        child: const Icon(Icons.person_rounded, color: AppColors.adminAccent),
+      ),
+      title: Text(name,
+          style: AppTextStyles.bodySm.copyWith(fontWeight: FontWeight.w700)),
+      subtitle: Text(
+        [
+          if (vehicle != null) vehicle,
+          if (plate != null) plate,
+          if (!approved) 'Not approved',
+        ].join(' • '),
+        style: AppTextStyles.caption.copyWith(
+            color: approved ? AppColors.textTertiary : AppColors.destructive),
+      ),
+      trailing: const Icon(Icons.chevron_right_rounded),
+      onTap: id == null
+          ? null
+          : () {
+              final amt = double.tryParse(_amount.text.trim());
+              Navigator.of(context).pop((driverId: id, amount: amt));
+            },
+    );
+  }
+}
+
+/// Bottom sheet to pick a new load status. Pops the chosen status string.
+class _StatusPickerSheet extends StatelessWidget {
+  final String current;
+  const _StatusPickerSheet({required this.current});
+
+  static const _options = [
+    ('assigned', 'Driver assigned', Icons.assignment_ind_rounded),
+    ('picked_up', 'Picked up', Icons.inventory_rounded),
+    ('delivered', 'Delivered', Icons.check_circle_rounded),
+    ('cancelled', 'Cancelled', Icons.cancel_rounded),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2)),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text('Send status update',
+                style:
+                    AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w800)),
+            const SizedBox(height: AppSpacing.sm),
+            Text('The customer is notified instantly.',
+                style: AppTextStyles.caption
+                    .copyWith(color: AppColors.textTertiary)),
+            const SizedBox(height: AppSpacing.md),
+            for (final o in _options)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(o.$3,
+                    color: o.$1 == current
+                        ? AppColors.textTertiary
+                        : AppColors.adminAccent),
+                title: Text(o.$2,
+                    style: AppTextStyles.bodySm
+                        .copyWith(fontWeight: FontWeight.w700)),
+                trailing: o.$1 == current
+                    ? Text('Current',
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.textTertiary))
+                    : const Icon(Icons.chevron_right_rounded),
+                onTap: o.$1 == current
+                    ? null
+                    : () => Navigator.of(context).pop(o.$1),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
