@@ -82,6 +82,13 @@ class Load {
   final String? driverVehicle;
   final String? driverPlate;
 
+  // Assigned driver's last-known live position (from DriverProfile), used to
+  // seed the tracking map instantly instead of waiting for the first websocket
+  // `driver_moved` event. Present once a driver is assigned and has shared GPS.
+  final double? driverLat;
+  final double? driverLng;
+  final DateTime? driverLocationAt;
+
   // Nested client info (the requester) — preloaded for the admin console.
   final String? clientName;
   final String? clientPhone;
@@ -117,6 +124,9 @@ class Load {
     this.driverPhone,
     this.driverVehicle,
     this.driverPlate,
+    this.driverLat,
+    this.driverLng,
+    this.driverLocationAt,
     this.clientName,
     this.clientPhone,
     this.clientEmail,
@@ -183,6 +193,11 @@ class Load {
       driverPhone: driverProfile?['phone_number'] as String?,
       driverVehicle: driverProfile?['vehicle_type'] as String?,
       driverPlate: driverProfile?['plate_number'] as String?,
+      driverLat: (driverProfile?['current_location_lat'] as num?)?.toDouble(),
+      driverLng: (driverProfile?['current_location_lng'] as num?)?.toDouble(),
+      driverLocationAt: driverProfile?['updated_at'] != null
+          ? DateTime.tryParse(driverProfile!['updated_at'] as String)
+          : null,
       clientName: clientProfile?['full_name'] as String?,
       clientPhone: clientProfile?['phone_number'] as String?,
       clientEmail: clientObj?['email'] as String?,

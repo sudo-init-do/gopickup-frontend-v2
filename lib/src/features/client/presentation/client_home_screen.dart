@@ -5,6 +5,7 @@ import '../../../common/styles/app_colors.dart';
 import '../../../common/styles/app_spacing.dart';
 import '../../../common/styles/app_text_styles.dart';
 import '../../../common/widgets/app_states.dart';
+import '../../../state/load_provider.dart';
 import '../../../state/order_provider.dart';
 
 class ClientHomeScreen extends ConsumerStatefulWidget {
@@ -397,6 +398,88 @@ class _ClientHomeScreenState extends ConsumerState<ClientHomeScreen> {
           ),
 
           const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xxl)),
+
+          // Live Load Tracking banner — jump straight back to the map for a load
+          // that's currently on the move (Book Driver / Post Load deliveries).
+          SliverToBoxAdapter(
+            child: Builder(
+              builder: (context) {
+                final loadsAsync = ref.watch(myLoadsProvider);
+                final active = loadsAsync.asData?.value
+                        .where((l) =>
+                            l.status == 'assigned' || l.status == 'picked_up')
+                        .toList() ??
+                    const [];
+                if (active.isEmpty) return const SizedBox.shrink();
+                final load = active.first;
+                final inTransit = load.status == 'picked_up';
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.xl, 0, AppSpacing.xl, AppSpacing.xxl),
+                  child: InkWell(
+                    onTap: () => context.push(
+                        '/client/book-driver/tracking', extra: load.id),
+                    borderRadius: BorderRadius.circular(AppSpacing.xxl),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      decoration: BoxDecoration(
+                        color: AppColors.vendorAccent.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(AppSpacing.xxl),
+                        border: Border.all(
+                            color: AppColors.vendorAccent.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.local_shipping_rounded,
+                                color: AppColors.vendorAccent, size: 26),
+                          ),
+                          const SizedBox(width: AppSpacing.xl),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: const BoxDecoration(
+                                          color: AppColors.vendorAccent,
+                                          shape: BoxShape.circle),
+                                    ),
+                                    const SizedBox(width: AppSpacing.sm),
+                                    Text(
+                                      inTransit
+                                          ? 'Load in transit'
+                                          : 'Driver on the way',
+                                      style: AppTextStyles.titleMd,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.xs),
+                                Text('Tap to track ${load.title} live',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTextStyles.bodySm),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.chevron_right_rounded,
+                              color: AppColors.vendorAccent),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
 
           // Recent Orders Header
           SliverToBoxAdapter(

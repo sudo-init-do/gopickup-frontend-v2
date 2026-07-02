@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
@@ -8,13 +7,18 @@ import '../../../../common/styles/app_colors.dart';
 import '../../../../common/styles/app_spacing.dart';
 import '../../../../common/styles/app_text_styles.dart';
 import '../../../../common/utils/launch_url.dart';
+import '../../../../common/utils/osrm_service.dart';
+import '../../../../common/widgets/live_tracking_map.dart';
 import '../../../../models/load_models.dart';
+import '../../../../realtime/notification_service.dart';
 import '../../../../state/load_provider.dart';
-import '../../../../state/order_provider.dart' show websocketServiceProvider;
+import '../../../../state/order_provider.dart'
+    show websocketServiceProvider, notificationServiceProvider;
 
 /// Step 3 of "Book Driver": the live map. The assigned driver streams GPS over
-/// the websocket; we plot it on an OpenStreetMap map and update the status as
-/// the trip progresses (assigned → picked_up → delivered).
+/// the websocket; we glide it along the road on an OpenStreetMap map, show a
+/// live ETA, and update the status as the trip progresses
+/// (assigned → picked_up → delivered).
 class BookDriverTrackingScreen extends ConsumerStatefulWidget {
   final String loadId;
   const BookDriverTrackingScreen({super.key, required this.loadId});
@@ -26,17 +30,14 @@ class BookDriverTrackingScreen extends ConsumerStatefulWidget {
 
 class _BookDriverTrackingScreenState
     extends ConsumerState<BookDriverTrackingScreen> {
-  // Default map center until we have real coordinates (Lagos).
-  static const LatLng _fallbackCenter = LatLng(6.5244, 3.3792);
-
-  final MapController _mapController = MapController();
   StreamSubscription? _moveSub;
   StreamSubscription? _statusSub;
 
   Load? _load;
   LatLng? _driver;
+  RouteResult? _eta;
   String _status = 'assigned';
-  bool _hasCenteredOnDriver = false;
+  bool _arrivingNotified = false;
 
   @override
   void initState() {
@@ -50,14 +51,18 @@ class _BookDriverTrackingScreenState
       final lng = (payload['lng'] as num?)?.toDouble();
       if (lat == null || lng == null) return;
       setState(() => _driver = LatLng(lat, lng));
-      _mapController.move(LatLng(lat, lng), _hasCenteredOnDriver ? _mapController.camera.zoom : 15);
-      _hasCenteredOnDriver = true;
     });
 
     _statusSub = ws.onLoadStatus.listen((payload) {
       if (payload['load_id']?.toString() != widget.loadId) return;
       final s = payload['status']?.toString();
-      if (s != null) setState(() => _status = s);
+      if (s != null && s != _status) {
+        setState(() {
+          _status = s;
+          // Allow a fresh "arriving" alert for the next leg (e.g. to drop-off).
+          _arrivingNotified = false;
+        });
+      }
     });
 
     _fetchLoad();
@@ -70,8 +75,33 @@ class _BookDriverTrackingScreenState
       setState(() {
         _load = load;
         _status = load.status;
+        // Seed the map immediately from the driver's last-known position so the
+        // truck shows up right away instead of waiting for the first live ping.
+        if (_driver == null &&
+            load.driverLat != null &&
+            load.driverLng != null) {
+          _driver = LatLng(load.driverLat!, load.driverLng!);
+        }
       });
     } catch (_) {/* keep showing the map; live events still flow */}
+  }
+
+  /// Fire a one-time "driver is arriving" notification once the live ETA to the
+  /// current stop drops under ~2 minutes.
+  void _maybeNotifyArriving(RouteResult? r) {
+    if (_arrivingNotified || r == null) return;
+    if (_status != 'assigned' && _status != 'picked_up') return;
+    if (r.durationSeconds <= 0 || r.durationSeconds > 120) return;
+    _arrivingNotified = true;
+    final heading =
+        _status == 'picked_up' ? 'Your load is almost there' : 'Driver arriving';
+    ref.read(notificationServiceProvider).show(
+          id: NotificationService.idForLoad(widget.loadId),
+          title: '$heading 🚚',
+          body: 'Your driver is about ${r.etaLabel.replaceAll(' away', '')} '
+              'away (${r.distanceLabel}). Please get ready.',
+          payload: widget.loadId,
+        );
   }
 
   LatLng? get _pickup => (_load?.pickupLat != null && _load?.pickupLng != null)
@@ -82,8 +112,6 @@ class _BookDriverTrackingScreenState
       (_load?.deliveryLat != null && _load?.deliveryLng != null)
           ? LatLng(_load!.deliveryLat!, _load!.deliveryLng!)
           : null;
-
-  LatLng get _initialCenter => _driver ?? _pickup ?? _dropoff ?? _fallbackCenter;
 
   @override
   void dispose() {
@@ -99,7 +127,19 @@ class _BookDriverTrackingScreenState
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          _buildMap(),
+          LiveTrackingMap(
+            driver: _driver,
+            status: _status,
+            pickup: _pickup,
+            dropoff: _dropoff,
+            driverIcon: Icons.local_shipping_rounded,
+            driverColor: AppColors.vendorAccent,
+            showRoute: _status != 'delivered' && _status != 'cancelled',
+            onRoute: (r) {
+              if (mounted) setState(() => _eta = r);
+              _maybeNotifyArriving(r);
+            },
+          ),
           // Floating back/close button.
           SafeArea(
             child: Padding(
@@ -119,69 +159,6 @@ class _BookDriverTrackingScreenState
             child: _buildBottomCard(),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildMap() {
-    final markers = <Marker>[
-      if (_pickup != null)
-        _marker(_pickup!, Icons.trip_origin_rounded, AppColors.primary),
-      if (_dropoff != null)
-        _marker(_dropoff!, Icons.location_on_rounded, AppColors.destructive),
-      if (_driver != null)
-        _marker(_driver!, Icons.local_shipping_rounded, AppColors.vendorAccent,
-            big: true),
-    ];
-
-    // Line from the driver to their next stop.
-    final nextStop = _status == 'picked_up' ? _dropoff : _pickup;
-    final polylines = <Polyline>[
-      if (_driver != null && nextStop != null)
-        Polyline(
-          points: [_driver!, nextStop],
-          strokeWidth: 4,
-          color: AppColors.vendorAccent.withOpacity(0.7),
-        ),
-    ];
-
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        initialCenter: _initialCenter,
-        initialZoom: 14,
-        interactionOptions: const InteractionOptions(
-          flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-        ),
-      ),
-      children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.gopickup.app',
-          maxZoom: 19,
-        ),
-        if (polylines.isNotEmpty) PolylineLayer(polylines: polylines),
-        MarkerLayer(markers: markers),
-      ],
-    );
-  }
-
-  Marker _marker(LatLng point, IconData icon, Color color, {bool big = false}) {
-    final size = big ? 46.0 : 38.0;
-    return Marker(
-      point: point,
-      width: size,
-      height: size,
-      child: Container(
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 2.5),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 6),
-          ],
-        ),
-        child: Icon(icon, color: Colors.white, size: big ? 24 : 20),
       ),
     );
   }
@@ -246,6 +223,10 @@ class _BookDriverTrackingScreenState
     final vehicle = _load?.driverVehicle ?? acceptedBid?.driverVehicle;
     final plate = _load?.driverPlate ?? acceptedBid?.driverPlate;
     final price = _load?.agreedAmount ?? acceptedBid?.amount;
+    final showEta = _driver != null &&
+        _eta != null &&
+        _status != 'delivered' &&
+        _status != 'cancelled';
 
     return Container(
       width: double.infinity,
@@ -265,29 +246,41 @@ class _BookDriverTrackingScreenState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Status pill.
-            Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-              decoration: BoxDecoration(
-                color: info.color.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(AppRadius.pill),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration:
-                        BoxDecoration(color: info.color, shape: BoxShape.circle),
+            // Status pill + live ETA.
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+                  decoration: BoxDecoration(
+                    color: info.color.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(info.title,
-                      style: AppTextStyles.caption.copyWith(
-                          color: info.color, fontWeight: FontWeight.w800)),
-                ],
-              ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                            color: info.color, shape: BoxShape.circle),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(info.title,
+                          style: AppTextStyles.caption.copyWith(
+                              color: info.color, fontWeight: FontWeight.w800)),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                if (showEta)
+                  Text(
+                    '${_eta!.etaLabel} • ${_eta!.distanceLabel}',
+                    style: AppTextStyles.caption.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w800),
+                  ),
+              ],
             ),
             const SizedBox(height: AppSpacing.md),
             Text(info.subtitle,

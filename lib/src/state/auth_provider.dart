@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/auth_api.dart';
 import '../api/api_client.dart';
 import '../models/user_models.dart';
+import '../realtime/driver_location_broadcaster.dart';
 import 'order_provider.dart'; // Add this to access websocketServiceProvider
 
 final authApiProvider = Provider<AuthApi>((ref) => AuthApi());
@@ -50,6 +51,7 @@ class AuthNotifier extends Notifier<AuthState> {
       final user = await _authApi.getCurrentUser();
       state = state.copyWith(isLoading: false, user: user, error: null);
       ref.read(websocketServiceProvider).connect(token);
+      _resumeDriverTracking(user);
     } catch (_) {
       // Token is invalid/expired — clear it and require a fresh login.
       await ApiClient.secureStorage.delete(key: 'jwt_token');
@@ -70,11 +72,20 @@ class AuthNotifier extends Notifier<AuthState> {
 
       state = state.copyWith(user: user, isLoading: false);
       ref.read(websocketServiceProvider).connect(token);
+      _resumeDriverTracking(user);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       return false;
     }
+  }
+
+  /// After a driver logs in or restores a session, resume location broadcasting
+  /// for any delivery that's already in progress, so tracking survives the app
+  /// being killed and relaunched.
+  void _resumeDriverTracking(User user) {
+    if (user.role.toLowerCase() != 'driver') return;
+    ref.read(driverLocationBroadcasterProvider).syncFromActiveLoads();
   }
 
   Future<bool> adminLogin(String email, String password) async {
@@ -129,6 +140,7 @@ class AuthNotifier extends Notifier<AuthState> {
 
   Future<void> logout() async {
     await ApiClient.secureStorage.delete(key: 'jwt_token');
+    await ref.read(driverLocationBroadcasterProvider).stop();
     ref.read(websocketServiceProvider).disconnect();
     state = AuthState(); // Reset state
   }

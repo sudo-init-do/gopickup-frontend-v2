@@ -45,5 +45,16 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Live delivery tracking: location usage descriptions + background mode so a
+	     driver's position keeps streaming to the customer while the app is
+	     backgrounded or the phone is locked. -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>GoPickup uses your location to show your delivery on the map and share it with your customer.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>GoPickup shares your live location with the customer during an active delivery, even when the app is in the background, so they can see where their load is.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 </dict>
 </plist>
