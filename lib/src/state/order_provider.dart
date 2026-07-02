@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../api/orders_api.dart';
 import '../models/order_models.dart';
+import '../realtime/notification_service.dart';
 import '../realtime/websocket_service.dart';
 
 final ordersApiProvider = Provider((ref) => OrdersApi());
@@ -10,6 +11,10 @@ final websocketServiceProvider = Provider<WebSocketService>((ref) {
   ref.onDispose(() => service.disconnect());
   return service;
 });
+
+/// App-wide local-notification presenter (delivery updates, driver arriving…).
+final notificationServiceProvider =
+    Provider<NotificationService>((ref) => NotificationService());
 
 class OrderState {
   final List<Order> orders;

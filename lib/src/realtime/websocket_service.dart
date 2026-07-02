@@ -30,6 +30,10 @@ class WebSocketService {
   final _loadBidController = StreamController<Map<String, dynamic>>.broadcast();
   final _loadStatusController =
       StreamController<Map<String, dynamic>>.broadcast();
+  // Server-pushed user notifications ({title, body, data}) delivered to the
+  // user's private room — surfaced as local/heads-up notifications.
+  final _notificationController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   Stream<Map<String, dynamic>> get onOrderStatusUpdated =>
       _orderStatusController.stream;
@@ -45,6 +49,9 @@ class WebSocketService {
   // A load's status changed (assigned/picked_up/delivered/cancelled).
   Stream<Map<String, dynamic>> get onLoadStatus =>
       _loadStatusController.stream;
+  // A backend-pushed notification ({title, body, data}) for this user.
+  Stream<Map<String, dynamic>> get onNotification =>
+      _notificationController.stream;
 
   void connect(String token) {
     if (_channel != null) return;
@@ -134,7 +141,7 @@ class WebSocketService {
           _loadStatusController.add(payload);
           break;
         case 'notification':
-          // Handle general notification event if needed
+          _notificationController.add(payload);
           break;
         default:
           debugPrint('Unknown WS event: $event');
@@ -198,5 +205,6 @@ class WebSocketService {
     _driverMovedController.close();
     _loadBidController.close();
     _loadStatusController.close();
+    _notificationController.close();
   }
 }

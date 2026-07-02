@@ -1,23 +1,24 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../common/styles/app_colors.dart';
 import '../../../common/styles/app_spacing.dart';
 import '../../../common/styles/app_text_styles.dart';
 import '../../../common/utils/launch_url.dart';
-import '../../../common/utils/location_service.dart';
+import '../../../common/widgets/live_tracking_map.dart';
 import '../../../common/widgets/primary_button.dart';
 import '../../../models/load_models.dart';
+import '../../../realtime/driver_location_broadcaster.dart';
 import '../../../state/load_provider.dart';
 import '../../../state/order_provider.dart' show websocketServiceProvider;
 
-/// Driver-side live screen for an assigned delivery. Streams the driver's GPS
-/// to the backend (which relays it to the client's tracking map) and lets the
-/// driver advance the delivery status.
+/// Driver-side live screen for an assigned delivery. The actual GPS streaming is
+/// owned by [DriverLocationBroadcaster] (which keeps running in the background
+/// even when this screen is closed); here we just visualise the driver's own
+/// position, draw the route to the next stop, and let the driver advance the
+/// delivery status.
 class DriverLoadTrackingScreen extends ConsumerStatefulWidget {
   final String loadId;
   const DriverLoadTrackingScreen({super.key, required this.loadId});
@@ -29,16 +30,12 @@ class DriverLoadTrackingScreen extends ConsumerStatefulWidget {
 
 class _DriverLoadTrackingScreenState
     extends ConsumerState<DriverLoadTrackingScreen> {
-  static const LatLng _fallbackCenter = LatLng(6.5244, 3.3792);
-
-  final MapController _mapController = MapController();
-  StreamSubscription<Position>? _posSub;
+  StreamSubscription? _posSub;
   StreamSubscription? _statusSub;
 
   Load? _load;
   LatLng? _me;
   String _status = 'assigned';
-  bool _sharing = false;
   bool _updatingStatus = false;
 
   @override
@@ -51,8 +48,17 @@ class _DriverLoadTrackingScreenState
       final s = payload['status']?.toString();
       if (s != null && mounted) setState(() => _status = s);
     });
+
+    // Start background broadcasting for this delivery and mirror its positions
+    // onto our own map. The broadcaster survives this screen being closed.
+    final broadcaster = ref.read(driverLocationBroadcasterProvider);
+    _me = broadcaster.current;
+    _posSub = broadcaster.positions.listen((p) {
+      if (mounted) setState(() => _me = p);
+    });
+    broadcaster.start(widget.loadId);
+
     _fetchLoad();
-    _startSharing();
   }
 
   Future<void> _fetchLoad() async {
@@ -68,44 +74,6 @@ class _DriverLoadTrackingScreenState
         });
       }
     } catch (_) {/* keep going; sharing still works */}
-  }
-
-  Future<void> _startSharing() async {
-    final ok = await LocationService.ensurePermission();
-    if (!ok) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-                'Location permission is needed so the customer can track you.'),
-          ),
-        );
-      }
-      return;
-    }
-    setState(() => _sharing = true);
-    final ws = ref.read(websocketServiceProvider);
-
-    // Send an immediate first fix, then stream on movement.
-    final first = await LocationService.currentPosition();
-    if (first != null && mounted) {
-      _onPosition(first, ws);
-    }
-
-    _posSub = LocationService.positionStream(distanceFilter: 10).listen(
-      (pos) => _onPosition(pos, ws),
-      onError: (_) {},
-    );
-  }
-
-  void _onPosition(Position pos, ws) {
-    if (!mounted) return;
-    final here = LatLng(pos.latitude, pos.longitude);
-    setState(() => _me = here);
-    _mapController.move(here, 15);
-    // Backend rate-limits to 1/5s and validates assignment + status.
-    ws.sendDriverLocationUpdateForLoad(
-        widget.loadId, pos.latitude, pos.longitude);
   }
 
   LatLng? get _pickup => (_load?.pickupLat != null && _load?.pickupLng != null)
@@ -142,7 +110,9 @@ class _DriverLoadTrackingScreenState
       await ref.read(loadsApiProvider).updateLoadStatus(widget.loadId, to);
       if (mounted) setState(() => _status = to);
       if (to == 'delivered') {
-        await _posSub?.cancel();
+        // The broadcaster also stops itself on the delivered status event, but
+        // stop explicitly so location sharing ends the moment we're done.
+        await ref.read(driverLocationBroadcasterProvider).stop();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -166,6 +136,8 @@ class _DriverLoadTrackingScreenState
 
   @override
   void dispose() {
+    // Only detach this screen's listeners — the broadcaster keeps streaming in
+    // the background until the delivery is completed.
     _posSub?.cancel();
     _statusSub?.cancel();
     ref.read(websocketServiceProvider).leaveLoadRoom(widget.loadId);
@@ -174,6 +146,8 @@ class _DriverLoadTrackingScreenState
 
   @override
   Widget build(BuildContext context) {
+    final sharing =
+        ref.watch(driverLocationBroadcasterProvider).isSharing || _me != null;
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -185,59 +159,24 @@ class _DriverLoadTrackingScreenState
       ),
       body: Column(
         children: [
-          Expanded(child: _buildMap()),
-          _buildControls(),
+          Expanded(
+            child: LiveTrackingMap(
+              driver: _me,
+              status: _status,
+              pickup: _pickup,
+              dropoff: _dropoff,
+              driverIcon: Icons.navigation_rounded,
+              driverColor: AppColors.driverAccent,
+              showRoute: _status != 'delivered' && _status != 'cancelled',
+            ),
+          ),
+          _buildControls(sharing),
         ],
       ),
     );
   }
 
-  Widget _buildMap() {
-    final markers = <Marker>[
-      if (_pickup != null) _marker(_pickup!, Icons.trip_origin_rounded, AppColors.primary),
-      if (_dropoff != null)
-        _marker(_dropoff!, Icons.location_on_rounded, AppColors.destructive),
-      if (_me != null)
-        _marker(_me!, Icons.navigation_rounded, AppColors.driverAccent, big: true),
-    ];
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        initialCenter: _me ?? _pickup ?? _fallbackCenter,
-        initialZoom: 14,
-        interactionOptions: const InteractionOptions(
-          flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-        ),
-      ),
-      children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.gopickup.app',
-          maxZoom: 19,
-        ),
-        MarkerLayer(markers: markers),
-      ],
-    );
-  }
-
-  Marker _marker(LatLng point, IconData icon, Color color, {bool big = false}) {
-    final size = big ? 46.0 : 38.0;
-    return Marker(
-      point: point,
-      width: size,
-      height: size,
-      child: Container(
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 2.5),
-        ),
-        child: Icon(icon, color: Colors.white, size: big ? 24 : 20),
-      ),
-    );
-  }
-
-  Widget _buildControls() {
+  Widget _buildControls(bool sharing) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.xl),
@@ -259,13 +198,13 @@ class _DriverLoadTrackingScreenState
                   width: 10,
                   height: 10,
                   decoration: BoxDecoration(
-                    color: _sharing ? AppColors.success : AppColors.textTertiary,
+                    color: sharing ? AppColors.success : AppColors.textTertiary,
                     shape: BoxShape.circle,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Text(
-                  _sharing
+                  sharing
                       ? 'Sharing your live location'
                       : 'Location not shared',
                   style: AppTextStyles.bodySm.copyWith(

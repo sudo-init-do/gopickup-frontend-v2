@@ -8,6 +8,7 @@ import '../../../common/styles/app_text_styles.dart';
 import '../../../common/widgets/app_states.dart';
 import '../../../common/widgets/primary_button.dart';
 import '../../../models/load_models.dart';
+import '../../../realtime/driver_location_broadcaster.dart';
 import '../../../state/load_provider.dart';
 
 /// Driver-facing "Book Driver" jobs: open delivery requests to bid on, plus the
@@ -31,6 +32,15 @@ class _DriverLoadsScreenState extends ConsumerState<DriverLoadsScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Whenever the driver's assigned-loads list resolves, reconcile the
+    // background broadcaster: start streaming an in-progress delivery, or stop
+    // if there are none. This makes tracking self-heal after an app restart.
+    ref.listen<AsyncValue<List<Load>>>(assignedLoadsProvider, (_, next) {
+      if (next.hasValue) {
+        ref.read(driverLocationBroadcasterProvider).syncFromActiveLoads();
+      }
+    });
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(

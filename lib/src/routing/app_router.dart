@@ -26,6 +26,7 @@ import '../features/client/presentation/book_truck_screen.dart';
 import '../features/client/presentation/book_driver/book_driver_request_screen.dart';
 import '../features/client/presentation/book_driver/book_driver_matching_screen.dart';
 import '../features/client/presentation/book_driver/book_driver_tracking_screen.dart';
+import '../features/client/presentation/client_deliveries_screen.dart';
 import '../features/driver/presentation/driver_home_screen.dart';
 import '../features/driver/presentation/driver_loads_screen.dart';
 import '../features/driver/presentation/driver_load_tracking_screen.dart';
@@ -242,6 +243,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
             BookDriverTrackingScreen(loadId: state.extra as String),
+      ),
+      GoRoute(
+        path: '/client/deliveries',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const ClientDeliveriesScreen(),
       ),
       GoRoute(
         path: '/driver/loads',

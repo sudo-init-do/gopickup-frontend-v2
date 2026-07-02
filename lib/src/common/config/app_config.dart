@@ -14,6 +14,13 @@ class AppConfig {
   // WebSocket endpoint
   static const String wsUrl = 'wss://api.gopickup.com.ng/api/v1/ws';
 
+  // ─── Live tracking ───────────────────────────────────────────────────────────
+  // OSRM routing server used to draw the driver's road route and compute a live
+  // ETA on the tracking map. The public demo server needs no API key and is fine
+  // for launch, but is rate-limited and not meant for heavy production traffic —
+  // swap this for a self-hosted / proxied OSRM instance when volume grows.
+  static const String osrmBaseUrl = 'https://router.project-osrm.org';
+
   // ─── Support ────────────────────────────────────────────────────────────────
   // GoPickup support WhatsApp/phone number (no '+' prefix). Single source of
   // truth — do not hardcode this elsewhere.
