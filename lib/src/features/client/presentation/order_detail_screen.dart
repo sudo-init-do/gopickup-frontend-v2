@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../common/utils/launch_url.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/order_provider.dart';
@@ -44,6 +45,7 @@ class OrderDetailScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     _buildTrackingTop(context),
+                    _buildSummarySection(),
                     _buildTimelineSection(),
                     const SizedBox(height: AppSpacing.xl),
                     if (order.status == 'pending' ||
@@ -270,123 +272,53 @@ class OrderDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.lg),
           ],
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            decoration: BoxDecoration(
-              color: AppColors.card,
-              borderRadius: BorderRadius.circular(AppSpacing.xxl),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFFF7ED),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.local_shipping_outlined,
-                    color: AppColors.driverAccent,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.lg),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'John Driver',
-                        style: AppTextStyles.headingMd.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
-                      ),
-                      const Text(
-                        'Toyota Hilux • ABC 1234',
-                        style: AppTextStyles.body,
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.location_on_rounded,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildDriverCard(context),
         ],
       ),
     );
   }
 
+  /// Maps the detailed backend order status onto the four customer-facing
+  /// stages. Everything up to (and including) driver assignment reads as
+  /// "Order confirmed"; the later steps map 1:1. Returns -1 for a cancelled
+  /// order (handled separately).
+  int _stageIndex(String status) {
+    switch (status) {
+      case 'picked_up':
+        return 1; // Picked up
+      case 'on_the_way':
+        return 2; // Coming soon
+      case 'delivered':
+        return 3; // Delivered
+      case 'cancelled':
+        return -1;
+      default:
+        return 0; // pending … assigned/in_progress → Order confirmed
+    }
+  }
+
   Widget _buildTimelineSection() {
-    final List<Map<String, dynamic>> stages = [
+    final stages = [
       {
-        'status': 'pending',
-        'label': 'Order Placed',
-        'desc': 'Waiting for price estimation',
+        'label': 'Order confirmed',
+        'desc': 'Your order is confirmed and being prepared.',
       },
       {
-        'status': 'awaiting_payment',
-        'label': 'Negotiation',
-        'desc': 'Contact support to finalize price',
+        'label': 'Picked up',
+        'desc': 'The driver has collected your order.',
       },
       {
-        'status': 'payment_made',
-        'label': 'Payment Made',
-        'desc': 'Awaiting admin verification',
+        'label': 'Coming soon',
+        'desc': 'Your order is on the way to you.',
       },
       {
-        'status': 'processing',
-        'label': 'Finding Driver',
-        'desc': 'We are looking for a driver',
-      },
-      {
-        'status': 'assigned',
-        'label': 'Driver Assigned',
-        'desc': 'We found a driver for you',
-      },
-      {
-        'status': 'in_progress',
-        'label': 'Accepted',
-        'desc': 'Driver is heading to vendor',
-      },
-      {
-        'status': 'picked_up',
-        'label': 'Picked Up',
-        'desc': 'Goods in possession of driver',
-      },
-      {
-        'status': 'on_the_way',
-        'label': 'In Transit',
-        'desc': 'Driver is heading to you',
-      },
-      {
-        'status': 'delivered',
         'label': 'Delivered',
-        'desc': 'Order completed successfully',
+        'desc': 'Order delivered. Enjoy!',
       },
     ];
 
-    // Status priority for determining progress
-    final statusList = stages.map((s) => s['status'] as String).toList();
-    final currentIdx = statusList.indexOf(order.status);
+    final bool cancelled = order.status == 'cancelled';
+    final int currentIdx = _stageIndex(order.status);
 
     return Container(
       width: double.infinity,
@@ -406,7 +338,7 @@ class OrderDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Delivery Timeline',
+            'Updates',
             style: AppTextStyles.headingMd.copyWith(
               fontSize: 20,
               fontWeight: FontWeight.w900,
@@ -414,25 +346,232 @@ class OrderDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.xxl),
-          ...List.generate(stages.length, (index) {
-            final stage = stages[index];
-            final bool isDone =
-                index < currentIdx || order.status == 'delivered';
-            final bool isActive = index == currentIdx;
-            final bool isLast = index == stages.length - 1;
+          if (cancelled)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              decoration: BoxDecoration(
+                color: AppColors.destructive.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.cancel_rounded,
+                      color: AppColors.destructive, size: 20),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text('This order was cancelled.',
+                        style: AppTextStyles.bodySm.copyWith(
+                            color: AppColors.destructive,
+                            fontWeight: FontWeight.w700)),
+                  ),
+                ],
+              ),
+            )
+          else
+            ...List.generate(stages.length, (index) {
+              final stage = stages[index];
+              final bool isDone =
+                  index < currentIdx || order.status == 'delivered';
+              final bool isActive = index == currentIdx;
+              final bool isLast = index == stages.length - 1;
 
-            return _buildTimelineItem(
-              stage['label'],
-              stage['desc'],
-              isActive ? 'Now' : '',
-              isDone,
-              isDone || isActive,
-              isActive: isActive,
-              isLast: isLast,
-            );
-          }),
+              return _buildTimelineItem(
+                stage['label']!,
+                stage['desc']!,
+                isActive ? 'Now' : '',
+                isDone,
+                isDone || isActive,
+                isActive: isActive,
+                isLast: isLast,
+              );
+            }),
         ],
       ),
+    );
+  }
+
+  /// The assigned-driver card. Shows the real driver + vehicle once one is
+  /// assigned (with a tap-to-call button), or a "finding a driver" placeholder
+  /// while the order is still being matched.
+  Widget _buildDriverCard(BuildContext context) {
+    final assigned = order.hasDriver;
+    final subtitle = [
+      if (order.driverVehicle != null && order.driverVehicle!.isNotEmpty)
+        order.driverVehicle!,
+      if (order.driverPlate != null && order.driverPlate!.isNotEmpty)
+        order.driverPlate!,
+    ].join(' • ');
+    final canCall =
+        assigned && order.driverPhone != null && order.driverPhone!.isNotEmpty;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppSpacing.xxl),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: const BoxDecoration(
+              color: Color(0xFFFFF7ED),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              assigned
+                  ? Icons.local_shipping_rounded
+                  : Icons.local_shipping_outlined,
+              color: AppColors.driverAccent,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.lg),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  assigned ? order.driverName! : 'Finding a driver…',
+                  style:
+                      AppTextStyles.headingMd.copyWith(fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  assigned
+                      ? (subtitle.isEmpty ? 'Your driver' : subtitle)
+                      : 'We’ll assign a driver to your order shortly.',
+                  style: AppTextStyles.body
+                      .copyWith(color: AppColors.textSecondary),
+                ),
+              ],
+            ),
+          ),
+          if (canCall)
+            Material(
+              color: AppColors.primary,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () => openExternalUrl('tel:${order.driverPhone}'),
+                child: const Padding(
+                  padding: EdgeInsets.all(AppSpacing.md),
+                  child: Icon(Icons.call_rounded, color: Colors.white, size: 20),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Order summary — items with quantities, the vendor, and the total (₦).
+  Widget _buildSummarySection() {
+    final currency = NumberFormat.currency(
+        locale: 'en_NG', symbol: '₦', decimalDigits: 0);
+    final itemsTotal = order.totalProductAmount;
+    final deliveryFee = order.agreedDeliveryFee ?? 0;
+    final grandTotal = (order.agreedPrice ?? itemsTotal) + deliveryFee;
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(AppSpacing.xxl),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Summary',
+              style: AppTextStyles.headingMd
+                  .copyWith(fontWeight: FontWeight.w900, letterSpacing: -0.5)),
+          const SizedBox(height: AppSpacing.xs),
+          Text('From ${order.vendor?.storeName ?? 'GoPickup Store'}',
+              style: AppTextStyles.caption
+                  .copyWith(color: AppColors.textTertiary)),
+          const SizedBox(height: AppSpacing.lg),
+          if (order.items.isEmpty)
+            Text('No item details available.',
+                style: AppTextStyles.bodySm
+                    .copyWith(color: AppColors.textTertiary))
+          else
+            ...order.items.map((it) {
+              final name = it.name ?? 'Item';
+              final lineTotal = it.price != null ? it.price! * it.quantity : null;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryLight,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                      child: Text('${it.quantity}×',
+                          style: AppTextStyles.caption.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w800)),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(name,
+                          style: AppTextStyles.bodySm
+                              .copyWith(color: AppColors.textSecondary)),
+                    ),
+                    if (lineTotal != null)
+                      Text(currency.format(lineTotal),
+                          style: AppTextStyles.bodySm
+                              .copyWith(fontWeight: FontWeight.w700)),
+                  ],
+                ),
+              );
+            }),
+          const SizedBox(height: AppSpacing.md),
+          const Divider(height: 1, color: AppColors.border),
+          const SizedBox(height: AppSpacing.md),
+          if (deliveryFee > 0) ...[
+            _summaryRow('Items', currency.format(itemsTotal)),
+            const SizedBox(height: AppSpacing.xs),
+            _summaryRow('Delivery', currency.format(deliveryFee)),
+            const SizedBox(height: AppSpacing.sm),
+          ],
+          _summaryRow('Total', currency.format(grandTotal), emphasize: true),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryRow(String label, String value, {bool emphasize = false}) {
+    final labelStyle = emphasize
+        ? AppTextStyles.titleMd.copyWith(fontWeight: FontWeight.w800)
+        : AppTextStyles.bodySm.copyWith(color: AppColors.textSecondary);
+    final valueStyle = emphasize
+        ? AppTextStyles.titleMd
+            .copyWith(fontWeight: FontWeight.w900, color: AppColors.primary)
+        : AppTextStyles.bodySm.copyWith(fontWeight: FontWeight.w700);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [Text(label, style: labelStyle), Text(value, style: valueStyle)],
     );
   }
 

@@ -87,6 +87,15 @@ class Order {
   final String? vendorStoreName;
   final String? vendorPhone;
 
+  // Nested assigned-driver info (from driver.driver_profile), when preloaded.
+  final String? driverName;
+  final String? driverPhone;
+  final String? driverVehicle;
+  final String? driverPlate;
+
+  /// Whether a driver has been assigned and their details are available.
+  bool get hasDriver => driverName != null;
+
   OrderVendor? get vendor => vendorStoreName != null ? OrderVendor(id: vendorId, storeName: vendorStoreName!) : OrderVendor(id: vendorId, storeName: 'GoPickup Store');
 
   // Short, display-safe id fragments. Guards against RangeError when an id is
@@ -117,6 +126,10 @@ class Order {
     this.clientEmail,
     this.vendorStoreName,
     this.vendorPhone,
+    this.driverName,
+    this.driverPhone,
+    this.driverVehicle,
+    this.driverPlate,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -131,6 +144,10 @@ class Order {
 
     // Extract nested vendor object (from admin endpoint)
     final vendorObj = json['vendor'] as Map<String, dynamic>?;
+
+    // Extract nested assigned-driver profile (when preloaded).
+    final driverObj = json['driver'] as Map<String, dynamic>?;
+    final driverProfile = driverObj?['driver_profile'] as Map<String, dynamic>?;
 
     return Order(
       id: json['id'] as String? ?? '',
@@ -161,6 +178,11 @@ class Order {
       // Nested vendor fields
       vendorStoreName: vendorObj?['store_name'] as String?,
       vendorPhone: vendorObj?['phone_number'] as String?,
+      // Nested assigned-driver fields
+      driverName: driverProfile?['full_name'] as String?,
+      driverPhone: driverProfile?['phone_number'] as String?,
+      driverVehicle: driverProfile?['vehicle_type'] as String?,
+      driverPlate: driverProfile?['plate_number'] as String?,
     );
   }
 }
